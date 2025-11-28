@@ -1,6 +1,8 @@
-#include "../include/Mat.h"
+#include "../include/Container/Mat.hpp"
 
 #include <stdexcept>
+
+using namespace Container;
 
 Mat::Mat(): m_mat({})
 {}

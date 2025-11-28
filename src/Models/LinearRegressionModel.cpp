@@ -1,4 +1,4 @@
-#include "../include/Models/LinearRegressionModel.h"
+#include "../include/Models/LinearRegressionModel.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -20,9 +20,9 @@ float LinearRegressionModel::predict(const std::vector<float>& xFeatures) const
 	return prediction + m_bias;
 }
 
-void LinearRegressionModel::fit(const Mat& xData, const std::vector<float>& yData, const float learningRate, const unsigned int epochs)
+void LinearRegressionModel::fit(const Container::Mat& xData, const std::vector<float>& yData, const float learningRate, const unsigned int epochs)
 {
-	Shape xDataShape = xData.getShape();
+	Container::Shape xDataShape = xData.getShape();
 
 	if (xDataShape.rows != yData.size())
 		throw new std::invalid_argument("The size of xData and yData does not match");

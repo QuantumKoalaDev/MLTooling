@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Mat.h"
+#include "../Container/Mat.hpp"
 
 #include <vector>
 
@@ -20,6 +20,6 @@ namespace Models
 		~LinearRegressionModel() = default;
 
 		float predict(const std::vector<float>& xFeatures) const;
-		void fit(const Mat& xData, const std::vector<float>& yData, float learningRate, unsigned int epochs);
+		void fit(const Container::Mat& xData, const std::vector<float>& yData, float learningRate, unsigned int epochs);
 	};
 }

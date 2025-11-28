@@ -4,12 +4,12 @@ project(MLTooling VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(MLTooling
-    "include/Shape.h" 
-    "include/Mat.h" 
-    "src/Mat.cpp" 
-    "include/Models/LinearRegressionModel.h" 
+    "include/Container/Shape.hpp" 
+    "include/Container/Mat.hpp" 
+    "src/Container/Mat.cpp" 
+    "include/Models/LinearRegressionModel.hpp" 
     "src/Models/LinearRegressionModel.cpp"
- "include/MLTooling.h")
+)
 
 target_compile_options(MLTooling PRIVATE -fPIC)
 
@@ -24,23 +24,29 @@ install(DIRECTORY include/ DESTINATION include)
 add_executable(example_basic examples/example_basic.cpp)
 target_link_libraries(example_basic PRIVATE MLTooling)
 
-add_library(MLToolingCabi SHARED
- "bindings/c/include/MLToolingCapi.h" "bindings/c/include/Models/LinearRegression.h" "bindings/c/src/LinearRegression.cpp")
+add_library(MLToolingCapi SHARED
+ "bindings/c/include/MLToolingCapi.h"
+ "bindings/c/include/Models/LinearRegression.h"
+ "bindings/c/src/Models/LinearRegression.cpp"
+ "bindings/c/include/Container/Shape.h" 
+ "bindings/c/src/Container/Shape.cpp" 
+ "bindings/c/include/Container/Mat.h" 
+ "bindings/c/src/Container/Mat.cpp")
 
-target_link_libraries(MLToolingCabi PRIVATE MLTooling)
+target_link_libraries(MLToolingCapi PRIVATE MLTooling)
 
-target_include_directories(MLToolingCabi
+target_include_directories(MLToolingCapi
         PUBLIC ${PROJECT_SOURCE_DIR}/include
         PUBLIC ${PROJECT_SOURCE_DIR}/bindings/c/include)
 
 if (WIN32)
-    target_compile_definitions(MLToolingCabi PRIVATE MLTOOLING_CAPI_EXPORTS)
+    target_compile_definitions(MLToolingCapi PRIVATE MLTOOLING_CAPI_EXPORTS)
 endif()
 # PIC für Shared Library
-set_target_properties(MLToolingCabi PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(MLToolingCabi PROPERTIES CXX_STANDARD 20)
+set_target_properties(MLToolingCapi PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(MLToolingCapi PROPERTIES CXX_STANDARD 20)
 
-#install(TARGETS MLToolingCabi DESTINATION lib)
+#install(TARGETS MLToolingCapi DESTINATION lib)
 
 ## Kopieren ins Python-Paket-Verzeichnis nach dem Build
 #add_custom_command(TARGET MLTooling_capi POST_BUILD

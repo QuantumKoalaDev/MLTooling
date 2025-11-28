@@ -30,7 +30,7 @@ static void LinearRegressionExample1()
 
 	Models::LinearRegressionModel model = Models::LinearRegressionModel();
 
-	Mat mat = Mat(xData);
+	Container::Mat mat = Container::Mat(xData);
 
 	double lr = 0.1;
 	unsigned int epochs = 500;

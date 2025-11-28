@@ -1,4 +1,5 @@
 from . import _lib
+from .container import Mat
 import ctypes
 
 class LinearRegressionModel:
@@ -9,3 +10,16 @@ class LinearRegressionModel:
         if hasattr(self, "_ptr") and self._ptr:
             _lib.lr_destroy(self._ptr)
             self._ptr = None
+    
+    def fit(self, x_data: Mat, y_data: list[float], learning_rate: float, epochs: int):
+        ArrayType = ctypes.c_float * len(y_data)
+        c_array = ArrayType(*y_data)
+
+        _lib.lr_fit(self._ptr, x_data._ptr, c_array, len(y_data), learning_rate, epochs)
+
+    def predict(self, x_features: list[float]) -> float:
+        ArrayType = ctypes.c_float * len(x_features)
+        c_array = ArrayType(*x_features)
+        prediction = _lib.lr_predict(self._ptr, c_array, len(x_features))
+        
+        return prediction
