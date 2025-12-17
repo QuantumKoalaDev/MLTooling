@@ -5,62 +5,51 @@ import sys
 _lib_dir = pathlib.Path(__file__).parent / "_lib"
 
 if (sys.platform == "win32"):
-    _lib = ctypes.CDLL(_lib_dir / "MLToolingCapi.dll")
+    lib = ctypes.CDLL(_lib_dir / "MLToolingCapi.dll")
 elif (sys.platform == "darwin"):
-    _lib = ctypes.CDLL(_lib_dir / "libMLToolingCapi.dylib")
+    lib = ctypes.CDLL(_lib_dir / "libMLToolingCapi.dylib")
 else:
-    _lib = ctypes.CDLL(_lib_dir / "libMLToolingCapi.so")
-
-
-
-#------------------------------------------
-# Container - Shape Functions
-#------------------------------------------
-_lib.ct_shape_create.restype = ctypes.c_void_p
-_lib.ct_shape_create.argtypes = [ctypes.c_ulong, ctypes.c_ulong]
-
-_lib.ct_shape_destroy.restype = None
-_lib.ct_shape_destroy.argtypes = [ctypes.c_void_p]
-
-_lib.ct_shape_getRows.restype = ctypes.c_ulong
-_lib.ct_shape_getRows.argtypes = [ctypes.c_void_p]
-
-_lib.ct_shape_getCols.restype = ctypes.c_ulong
-_lib.ct_shape_getCols.argtypes = [ctypes.c_void_p]
+    lib = ctypes.CDLL(_lib_dir / "libMLToolingCapi.so")
 
 #------------------------------------------
 # Container - Mat Functions
 #------------------------------------------
-_lib.ct_mat_create.restype = ctypes.c_void_p
-_lib.ct_mat_create.argtypes = []
+lib.ct_mat_create_from_flat_array.restype = ctypes.c_void_p
+lib.ct_mat_create_from_flat_array.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.c_ulong, ctypes.c_ulong]
 
-_lib.ct_mat_create_from_flat_array.restype = ctypes.c_void_p
-_lib.ct_mat_create_from_flat_array.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.c_ulong, ctypes.c_ulong]
+lib.ct_mat_destroy.restype = None
+lib.ct_mat_destroy.argtypes = [ctypes.c_void_p]
 
-_lib.ct_mat_destroy.restype = None
-_lib.ct_mat_destroy.argtypes = [ctypes.c_void_p]
+lib.ct_mat_get_shape_rows.restype = ctypes.c_ulong
+lib.ct_mat_get_shape_rows.argtypes = [ctypes.c_void_p]
 
-_lib.ct_mat_copy_row.restype = None
-_lib.ct_mat_copy_row.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p]
+lib.ct_mat_get_shape_cols.restype = ctypes.c_ulong
+lib.ct_mat_get_shape_cols.argtypes = [ctypes.c_void_p]
 
-_lib.ct_mat_get_shape.restype = ctypes.c_void_p
-_lib.ct_mat_get_shape.argtypes = [ctypes.c_void_p]
+lib.ct_mat_copy_row.restype = None
+lib.ct_mat_copy_row.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p]
 
-_lib.ct_mat_add_row.restype = None
-_lib.ct_mat_add_row.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong]
+lib.ct_mat_add_row.restype = None
+lib.ct_mat_add_row.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong]
+
+lib.ct_mat_get_item.restype = ctypes.c_float
+lib.ct_mat_get_item.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong]
+
+lib.ct_mat_set_item.restype = None
+lib.ct_mat_set_item.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_float]
 
 #------------------------------------------
 # Models - LinearRegression Functions
 #------------------------------------------
 
-_lib.lr_create.restype = ctypes.c_void_p
-_lib.lr_create.argtypes = []
+lib.lr_create.restype = ctypes.c_void_p
+lib.lr_create.argtypes = []
 
-_lib.lr_destroy.restype = None
-_lib.lr_destroy.argtypes = [ctypes.c_void_p]
+lib.lr_destroy.restype = None
+lib.lr_destroy.argtypes = [ctypes.c_void_p]
 
-_lib.lr_fit.restype = None
-_lib.lr_fit.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_ulong, ctypes.c_float, ctypes.c_ulong]
+lib.lr_fit.restype = None
+lib.lr_fit.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_ulong, ctypes.c_float, ctypes.c_ulong]
 
-_lib.lr_predict.restype = ctypes.c_float
-_lib.lr_predict.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_ulong]
+lib.lr_predict.restype = ctypes.c_float
+lib.lr_predict.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_ulong]

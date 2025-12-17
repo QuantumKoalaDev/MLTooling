@@ -17,6 +17,11 @@ extern "C" {
 	
 	typedef struct Shape;
 
+//-------------------------------------------------------------------------
+//		Python Bindings (can also be used in C but might not be optimal)
+//		Depricated for Python. Got replaced by a dataclass
+//-------------------------------------------------------------------------
+
 	MLTOOLING_CAPI Shape* ct_shape_create(unsigned long rows, unsigned long cols);
 	MLTOOLING_CAPI void ct_shape_destroy(Shape* shape);
 	MLTOOLING_CAPI unsigned long ct_shape_getRows(Shape* shape);

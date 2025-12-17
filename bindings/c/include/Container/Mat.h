@@ -18,13 +18,21 @@ extern "C" {
 	
 	typedef struct Mat;
 
-	MLTOOLING_CAPI Mat* ct_mat_create();
-	MLTOOLING_CAPI Mat* ct_mat_create_from_flat_array(float* data, unsigned long rows, unsigned long cols);
+//-------------------------------------------------------------------------
+//		Python Bindings (can also be used in C but might not be optimal
+//-------------------------------------------------------------------------
+
+	MLTOOLING_CAPI Mat* ct_mat_create_from_flat_array(const float* data, unsigned long rows, unsigned long cols);
 	MLTOOLING_CAPI void ct_mat_destroy(Mat* mat);
 
+	MLTOOLING_CAPI unsigned long ct_mat_get_shape_rows(Mat* mat);
+	MLTOOLING_CAPI unsigned long ct_mat_get_shape_cols(Mat* mat);
+
 	MLTOOLING_CAPI void ct_mat_copy_row(Mat* mat, unsigned long rowIndex, float* outArray);
-	MLTOOLING_CAPI Shape* ct_mat_get_shape(Mat* mat);
 	MLTOOLING_CAPI void  ct_mat_add_row(Mat* mat, float* data, unsigned long cols);
+
+	MLTOOLING_CAPI float ct_mat_get_item(Mat* mat, unsigned long row, unsigned long col);
+	MLTOOLING_CAPI void ct_mat_set_item(Mat* mat, unsigned long row, unsigned long col, float value);
 
 #ifdef __cplusplus
 }
