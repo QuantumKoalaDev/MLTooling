@@ -25,12 +25,12 @@ std::string toString(const std::vector<T>& v)
 static void LinearRegressionExample1()
 {
 	//y = 7x - 14
-	std::vector<std::vector<float>> xData = { {0}, {1}, {2}, {3}, {4} };
+	std::vector<float> xData = { 0, 1, 2, 3, 4 };
 	std::vector<float> y_data = { -14, -7, 0, 7, 14 };
 
 	Models::LinearRegressionModel model = Models::LinearRegressionModel();
 
-	Container::Mat mat = Container::Mat(xData);
+	Container::Mat mat = Container::Mat(5, 1, xData);
 
 	double lr = 0.1;
 	unsigned int epochs = 500;

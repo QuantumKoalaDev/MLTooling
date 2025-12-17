@@ -3,17 +3,18 @@
 #include "Shape.hpp"
 
 #include <vector>
+#include <stddef.h>
 
 namespace Container
 {
 	class Mat
 	{
 	private:
-		std::vector<std::vector<float>> m_mat;
+		std::vector<float> m_mat;
+		Shape m_shape;
 
 	public:
-		Mat();
-		Mat(std::vector<std::vector<float>>& mat);
+		Mat(size_t rows, size_t cols, std::vector<float> mat);
 		~Mat() = default;
 
 		std::vector<float> getRow(size_t rowIndex) const;
@@ -21,5 +22,8 @@ namespace Container
 		Container::Shape getShape() const;
 
 		void addRow(const std::vector<float>& row);
+
+		float& operator()(size_t row, size_t col);
+		const float& operator()(size_t row, size_t col) const;
 	};
 }
