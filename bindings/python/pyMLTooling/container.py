@@ -118,6 +118,12 @@ class Mat:
         for row_idx in range(shape.rows):
             yield self.get_row(row_idx)
 
+    def __copy__(self) -> None:
+        raise NotImplementedError("Mat cannot be shallow copied")
+    
+    def __deepcopy__(self) -> None:
+        raise NotImplementedError("Mat cannot be copied")
+
     def __del__(self) -> None:
         """
         Destructor for the Mat object.
