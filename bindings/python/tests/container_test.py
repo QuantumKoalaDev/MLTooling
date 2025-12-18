@@ -40,6 +40,38 @@ class TestMat(unittest.TestCase):
 
              self.assertEqual(mat[2, 0], 1.0)
              self.assertEqual(mat[2, 1], 2.0)
+        
+        def test_add(self):
+             mat = Mat(2, 2, 3)
+             mat2 = Mat(2, 2, 2)
+
+             matAdded = mat + mat2
+
+             self.assertEqual(matAdded[0, 0], 5.0)
+             self.assertEqual(matAdded[0, 1], 5.0)
+             self.assertEqual(matAdded[1, 0], 5.0)
+             self.assertEqual(matAdded[1, 1], 5.0)
+
+             mat3 = Mat(2, 2, 5)
+             mat2 += mat3
+
+             self.assertEqual(mat2[0, 0], 7.0)
+             self.assertEqual(mat2[0, 1], 7.0)
+             self.assertEqual(mat2[1, 0], 7.0)
+             self.assertEqual(mat2[1, 1], 7.0)
+
+        def test_mul(self):
+             mat = Mat(2, 2, 2)
+             mat2 = Mat(2, 2, 3)
+
+             matMul = mat * mat2
+
+             self.assertEqual(matMul[0, 0], 12.0)
+             self.assertEqual(matMul[0, 1], 12.0)
+             self.assertEqual(matMul[1, 0], 12.0)
+             self.assertEqual(matMul[1, 1], 12.0)
+
+
 
         def test_invalid_index(self):
             mat = Mat(2, 2)

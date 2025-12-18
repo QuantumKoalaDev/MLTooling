@@ -5,7 +5,8 @@ class MltStatus(IntEnum):
     MLT_ERR_NULL_PTR = 1
     MLT_ALLOCATION_FAILED = 2
     MLT_ERR_OUT_OF_RANGE = 3
-    MLT_ERR_INTERNAL = 4
+    MIT_INVALID_ARGUMENT = 4
+    MLT_ERR_INTERNAL = 5
 
 def checkStatus(status: MltStatus):
     match status:
@@ -19,6 +20,8 @@ def checkStatus(status: MltStatus):
             raise MltInternalError()
         case MltStatus.MLT_ERR_OUT_OF_RANGE:
             raise MltOutOfRangeError()
+        case MltStatus.MIT_INVALID_ARGUMENT:
+            raise MltInvalidArgumentError()
         case _:
             raise RuntimeError(f"Unknown MltStatus: {status}")
         
@@ -43,4 +46,9 @@ class MltInternalError(RuntimeError):
 class MltOutOfRangeError(RuntimeError):
     """Exception raised when an out of range error is encountered in MLTooling C API."""
     def __init__(self, message: str = "Encountered out of range error in MLTooling C API") -> None:
+        super().__init__(message)
+
+class MltInvalidArgumentError(RuntimeError):
+    """Exception raised when an invalid argument error is encountered in MLTooling C API. """
+    def __init__(self, message: str = "Encountered invalid argument error in MLTooling C API") -> None:
         super().__init__(message)

@@ -23,6 +23,7 @@ extern "C" {
 		MLT_ERR_NULL_PTR,
 		MLT_ALLOCATION_FAILED,
 		MLT_ERR_OUT_OF_RANGE,
+		MLT_INVALID_ARGUMENT,
 		MLT_ERR_INTERNAL
 		
 	} mlt_status;
@@ -43,6 +44,11 @@ extern "C" {
 
 	MLTOOLING_CAPI mlt_status mlt_mat_get_item(unsigned long row, unsigned long col, const Mat* mat, float* out);
 	MLTOOLING_CAPI mlt_status mlt_mat_set_item(unsigned long row, unsigned long col, const float value, Mat* mat);
+
+	MLTOOLING_CAPI mlt_status mlt_mat_add(const Mat* mat, const Mat* other, Mat** out);
+	MLTOOLING_CAPI mlt_status mlt_mat_add_in_place(Mat* mat, const Mat* other);
+
+	MLTOOLING_CAPI mlt_status mlt_mat_mul(const Mat* mat, const Mat* other, Mat** out);
 
 #ifdef __cplusplus
 }

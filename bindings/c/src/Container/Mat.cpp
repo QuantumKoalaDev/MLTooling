@@ -193,6 +193,76 @@ MLTOOLING_CAPI mlt_status mlt_mat_set_item(const unsigned long row, const unsign
 	return MLT_OK;
 }
 
+MLTOOLING_CAPI mlt_status mlt_mat_add(const Mat* mat, const Mat* other, Mat** out)
+{
+	if (!mat || !other || !out)
+		return MLT_ERR_NULL_PTR;
+
+	try
+	{
+		Container::Mat addedMat = mat->impl + other->impl;
+
+		*out = new Mat(addedMat);
+	}
+	catch (std::bad_alloc&)
+	{
+		return MLT_ALLOCATION_FAILED;
+	}
+	catch (std::invalid_argument&)
+	{
+		return MLT_INVALID_ARGUMENT;
+	}
+	catch (...)
+	{
+		return MLT_ERR_INTERNAL;
+	}
+
+	return MLT_OK;
+}
+
+MLTOOLING_CAPI mlt_status mlt_mat_add_in_place(Mat* mat, const Mat* other)
+{
+	if (!mat || !other)
+		return MLT_ERR_NULL_PTR;
+
+	try
+	{
+		mat->impl += other->impl;
+	}
+	catch (std::invalid_argument&)
+	{
+		return MLT_INVALID_ARGUMENT;
+	}
+	catch (...)
+	{
+		return MLT_ERR_INTERNAL;
+	}
+
+	return MLT_OK;
+}
+
+MLTOOLING_CAPI mlt_status mlt_mat_mul(const Mat* mat, const Mat* other, Mat** out)
+{
+	if (!mat || !other || !out)
+		return MLT_ERR_NULL_PTR;
+
+	try
+	{
+		Container::Mat matMul = mat->impl * other->impl;
+		*out = new Mat(matMul);
+	}
+	catch (const std::invalid_argument&)
+	{
+		return MLT_INVALID_ARGUMENT;
+	}
+	catch (...)
+	{
+		return MLT_ERR_INTERNAL;
+	}
+
+	return MLT_OK;
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from . import lib
 from .error import checkStatus, MltStatus
-from .types_c import MatC
 
 @dataclass(frozen=True)
 class Shape:
@@ -25,18 +24,24 @@ class Mat:
             raise ValueError("Data is too large and does not fit the submitted amount of cols and rows")
         
         if data_length < max_data_length:
-            for _ in range(data_length, max_data_length):
-                data.append(0)
+            data.extend([0] * (max_data_length - data_length))
         
         ArrayType = ctypes.c_float * max_data_length
         c_array = ArrayType(*data)
 
-        mat_ptr = ctypes.POINTER(MatC)()
-        status: MltStatus = lib.mlt_ct_mat_create_from_flat_array(rows, cols, c_array, mat_ptr)
+        mat_ptr = ctypes.c_void_p()
+        status: MltStatus = lib.mlt_ct_mat_create_from_flat_array(rows, cols, c_array, ctypes.byref(mat_ptr))
         checkStatus(status)
 
         obj = cls.__new__(cls)
         obj._ptr = mat_ptr
+        return obj
+
+    
+    @classmethod
+    def _from_ptr(cls, ptr: ctypes.c_void_p) -> Self:
+        obj = cls.__new__(cls)
+        obj._ptr = ptr
         return obj
 
     def __init__(self, rows: int, cols: int, init_val: float = 0.0) -> None:
@@ -46,11 +51,11 @@ class Mat:
         - rows, cols: dimensions of the matrix.
         - init_val: the initial value of the whole matrix. Default: 0.0
         """
-        mat_ptr = ctypes.POINTER(MatC)()
+        mat_ptr = ctypes.c_void_p()
         status: MltStatus = lib.mlt_ct_mat_create_with_val(rows, cols, init_val, ctypes.byref(mat_ptr))
         checkStatus(status)
         self._ptr = mat_ptr
-
+    
     def get_shape(self) -> Shape:
         """
         Return the shape of the matrix as a Shape dataclass.
@@ -165,6 +170,23 @@ class Mat:
     
     def __deepcopy__(self) -> None:
         raise NotImplementedError("Mat cannot be copied")
+
+    def __add__(self, other: "Mat") -> "Mat":
+        mat_ptr = ctypes.c_void_p()
+        status: MltStatus = lib.mlt_mat_add(self._ptr, other._ptr, ctypes.byref(mat_ptr))
+        checkStatus(status)
+        return Mat._from_ptr(mat_ptr)
+    
+    def __iadd__(self, other: "Mat") -> "Mat":
+        status: MltStatus = lib.mlt_mat_add_in_place(self._ptr, other._ptr)
+        checkStatus(status)
+        return self
+
+    def __mul__(self, other: "Mat") -> "Mat":
+        mat_ptr = ctypes.c_void_p()
+        status: MltStatus = lib.mlt_mat_mul(self._ptr, other._ptr, ctypes.byref(mat_ptr))
+        checkStatus(status)
+        return Mat._from_ptr(mat_ptr)
 
     def __del__(self) -> None:
         """
