@@ -24,6 +24,9 @@ install(DIRECTORY include/ DESTINATION include)
 add_executable(example_basic examples/example_basic.cpp)
 target_link_libraries(example_basic PRIVATE MLTooling)
 
+add_executable(tests test/test.cpp)
+target_link_libraries(tests PRIVATE MLTooling)
+
 add_library(MLToolingCapi SHARED
  "bindings/c/include/MLToolingCapi.h"
  "bindings/c/include/Models/LinearRegression.h"
