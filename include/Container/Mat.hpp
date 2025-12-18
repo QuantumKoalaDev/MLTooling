@@ -14,6 +14,7 @@ namespace Container
 		Shape m_shape;
 
 	public:
+		Mat(size_t rows, size_t cols, float init = 0.f);
 		Mat(size_t rows, size_t cols, std::vector<float> mat);
 		~Mat() = default;
 
@@ -25,5 +26,10 @@ namespace Container
 
 		float& operator()(size_t row, size_t col);
 		const float& operator()(size_t row, size_t col) const;
+
+		Mat& operator+=(const Mat& other);
+		Mat operator+(const Mat& other) const;
+		Mat operator*(const Mat& other) const;
+		// *=, +, -
 	};
 }
