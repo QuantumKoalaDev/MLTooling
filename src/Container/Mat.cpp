@@ -15,7 +15,7 @@ Mat::Mat(size_t rows, size_t cols, std::vector<float> mat): m_mat(std::move(mat)
 std::vector<float> Mat::getRow(size_t rowIndex) const
 {
 	if (rowIndex >= m_shape.rows)
-		throw std::invalid_argument("Row index out of bound");
+		throw std::out_of_range("Row index out of bound");
 
 	std::vector<float> row(m_mat.begin() + rowIndex * m_shape.cols, m_mat.begin() + (rowIndex + 1) * m_shape.cols);
 
