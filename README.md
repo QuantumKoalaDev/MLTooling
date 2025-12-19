@@ -38,7 +38,7 @@ Consider adding a post-build step or script to automate this.
   - Use K&R brace style.
   - Custom rules may apply for certain use cases.
   - For functions tied to C++ objects the following naming convention applies:
-	- mat_[C++ namespace shortend to two letters]__[C++ class name]_[function description]
+	- `mat_[C++ namespace shortend to two letters]_[C++ class name]_[function description]`
   - All functions must start with mt_* (except for test functions).
 
 
