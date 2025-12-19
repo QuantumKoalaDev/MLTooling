@@ -31,8 +31,8 @@ add_library(MLToolingCapi SHARED
  "bindings/c/include/MLToolingCapi.h"
  "bindings/c/include/Models/LinearRegression.h"
  "bindings/c/src/Models/LinearRegression.cpp"
- "bindings/c/include/Container/Shape.h" 
- "bindings/c/src/Container/Shape.cpp" 
+  
+  
  "bindings/c/include/Container/Mat.h" 
  "bindings/c/src/Container/Mat.cpp")
 

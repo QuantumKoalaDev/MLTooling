@@ -37,7 +37,6 @@ class Mat:
         obj._ptr = mat_ptr
         return obj
 
-    
     @classmethod
     def _from_ptr(cls, ptr: ctypes.c_void_p) -> Self:
         obj = cls.__new__(cls)
