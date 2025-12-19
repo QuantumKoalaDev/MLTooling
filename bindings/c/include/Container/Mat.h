@@ -14,7 +14,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "Container/Shape.h"
 	
 	typedef struct Mat;
 
