@@ -61,11 +61,11 @@ class Mat:
         Uses the C API to query rows and columns.
         """
         rows = ctypes.c_ulong()
-        status: MltStatus = lib.mlt_mat_get_shape_rows(self._ptr, ctypes.byref(rows))
+        status: MltStatus = lib.mlt_ct_mat_get_shape_rows(self._ptr, ctypes.byref(rows))
         checkStatus(status)
 
         cols = ctypes.c_ulong()
-        status = lib.mlt_mat_get_shape_cols(self._ptr, ctypes.byref(cols))
+        status = lib.mlt_ct_mat_get_shape_cols(self._ptr, ctypes.byref(cols))
         checkStatus(status)
 
         return Shape(int(rows.value), int(cols.value))
@@ -79,7 +79,7 @@ class Mat:
 
         ArrayType = ctypes.c_float * shape.cols
         out_c_array = ArrayType()
-        status: MltStatus = lib.mlt_mat_copy_row(row_idx, self._ptr, out_c_array)
+        status: MltStatus = lib.mlt_ct_mat_copy_row(row_idx, self._ptr, out_c_array)
         checkStatus(status)
 
         return list(out_c_array)
@@ -96,7 +96,7 @@ class Mat:
         ArrayType = ctypes.c_float * data_length
         c_array = ArrayType(*row)
 
-        status: MltStatus = lib.mlt_mat_append_row(len(row), c_array, self._ptr)
+        status: MltStatus = lib.mlt_ct_mat_append_row(len(row), c_array, self._ptr)
         checkStatus(status)
 
     def __str__(self) -> str:
@@ -135,7 +135,7 @@ class Mat:
         row, col = key
 
         item = ctypes.c_float()
-        status: MltStatus = lib.mlt_mat_get_item(row, col, self._ptr, ctypes.byref(item))
+        status: MltStatus = lib.mlt_ct_mat_get_item(row, col, self._ptr, ctypes.byref(item))
         checkStatus(status)
 
         return item.value
@@ -151,7 +151,7 @@ class Mat:
         
         row, col = key
 
-        status: MltStatus = lib.mlt_mat_set_item(row, col, value, self._ptr)
+        status: MltStatus = lib.mlt_ct_mat_set_item(row, col, value, self._ptr)
         checkStatus(status)
         
     def __iter__(self) -> Iterator[list[float]]:
@@ -172,18 +172,18 @@ class Mat:
 
     def __add__(self, other: "Mat") -> "Mat":
         mat_ptr = ctypes.c_void_p()
-        status: MltStatus = lib.mlt_mat_add(self._ptr, other._ptr, ctypes.byref(mat_ptr))
+        status: MltStatus = lib.mlt_ct_mat_add(self._ptr, other._ptr, ctypes.byref(mat_ptr))
         checkStatus(status)
         return Mat._from_ptr(mat_ptr)
     
     def __iadd__(self, other: "Mat") -> "Mat":
-        status: MltStatus = lib.mlt_mat_add_in_place(self._ptr, other._ptr)
+        status: MltStatus = lib.mlt_ct_mat_add_in_place(self._ptr, other._ptr)
         checkStatus(status)
         return self
 
     def __mul__(self, other: "Mat") -> "Mat":
         mat_ptr = ctypes.c_void_p()
-        status: MltStatus = lib.mlt_mat_mul(self._ptr, other._ptr, ctypes.byref(mat_ptr))
+        status: MltStatus = lib.mlt_ct_mat_mul(self._ptr, other._ptr, ctypes.byref(mat_ptr))
         checkStatus(status)
         return Mat._from_ptr(mat_ptr)
 

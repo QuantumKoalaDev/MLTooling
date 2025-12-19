@@ -33,58 +33,58 @@ lib.mlt_ct_mat_create_with_val.restype = c_int
 lib.mlt_ct_mat_destroy.argtypes = [c_void_p]
 lib.mlt_ct_mat_destroy.restype = c_int
 
-lib.mlt_mat_get_shape_rows.argtypes = [c_void_p, POINTER(c_ulong)]
-lib.mlt_mat_get_shape_rows.restype = c_int
+lib.mlt_ct_mat_get_shape_rows.argtypes = [c_void_p, POINTER(c_ulong)]
+lib.mlt_ct_mat_get_shape_rows.restype = c_int
 
-lib.mlt_mat_get_shape_cols.argtypes = [c_void_p, POINTER(c_ulong)]
-lib.mlt_mat_get_shape_cols.restype = c_int
+lib.mlt_ct_mat_get_shape_cols.argtypes = [c_void_p, POINTER(c_ulong)]
+lib.mlt_ct_mat_get_shape_cols.restype = c_int
 
-lib.mlt_mat_copy_row.argtypes = [
+lib.mlt_ct_mat_copy_row.argtypes = [
     c_ulong,
     c_void_p,
     POINTER(c_float)
 ]
-lib.mlt_mat_copy_row.restype = c_int
+lib.mlt_ct_mat_copy_row.restype = c_int
 
-lib.mlt_mat_append_row.argtypes = [
+lib.mlt_ct_mat_append_row.argtypes = [
     c_ulong,
     POINTER(c_float),
     c_void_p
 ]
-lib.mlt_mat_append_row.restype = c_int
+lib.mlt_ct_mat_append_row.restype = c_int
 
-lib.mlt_mat_get_item.argtypes = [
+lib.mlt_ct_mat_get_item.argtypes = [
     c_ulong,
     c_ulong,
     c_void_p,
     POINTER(c_float)
 ]
-lib.mlt_mat_get_item.restype = c_int
+lib.mlt_ct_mat_get_item.restype = c_int
 
-lib.mlt_mat_set_item.argtypes = [
+lib.mlt_ct_mat_set_item.argtypes = [
     c_ulong,
     c_ulong,
     c_float,
     c_void_p
 ]
-lib.mlt_mat_set_item.restype = c_int
+lib.mlt_ct_mat_set_item.restype = c_int
 
-lib.mlt_mat_add.argtypes = [
+lib.mlt_ct_mat_add.argtypes = [
     c_void_p,
     c_void_p,
     POINTER(c_void_p)
 ]
-lib.mlt_mat_add.restype = c_int
+lib.mlt_ct_mat_add.restype = c_int
 
-lib.mlt_mat_add_in_place.argtypes = [c_void_p, c_void_p]
-lib.mlt_mat_add_in_place.restype = c_int
+lib.mlt_ct_mat_add_in_place.argtypes = [c_void_p, c_void_p]
+lib.mlt_ct_mat_add_in_place.restype = c_int
 
-lib.mlt_mat_mul.argtypes = [
+lib.mlt_ct_mat_mul.argtypes = [
     c_void_p,
     c_void_p,
     POINTER(c_void_p)
 ]
-lib.mlt_mat_mul.restype = c_int
+lib.mlt_ct_mat_mul.restype = c_int
 
 #------------------------------------------
 # Models - LinearRegression Functions

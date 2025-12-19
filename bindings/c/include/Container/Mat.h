@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 	
-	typedef struct Mat;
+	typedef struct Mat Mat;
 
 	typedef enum {
 		MLT_OK = 0,
@@ -35,19 +35,19 @@ extern "C" {
 
 	MLTOOLING_CAPI mlt_status mlt_ct_mat_destroy(Mat* mat);
 
-	MLTOOLING_CAPI mlt_status mlt_mat_get_shape_rows(const Mat* mat, unsigned long* out);
-	MLTOOLING_CAPI mlt_status mlt_mat_get_shape_cols(const Mat* mat, unsigned long* out);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_get_shape_rows(const Mat* mat, unsigned long* out);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_get_shape_cols(const Mat* mat, unsigned long* out);
 
-	MLTOOLING_CAPI mlt_status mlt_mat_copy_row(unsigned long rowIndex, const Mat* mat, float* outArray);
-	MLTOOLING_CAPI mlt_status mlt_mat_append_row(unsigned long length, const float* data, Mat* mat);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_copy_row(unsigned long rowIndex, const Mat* mat, float* outArray);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_append_row(unsigned long length, const float* data, Mat* mat);
 
-	MLTOOLING_CAPI mlt_status mlt_mat_get_item(unsigned long row, unsigned long col, const Mat* mat, float* out);
-	MLTOOLING_CAPI mlt_status mlt_mat_set_item(unsigned long row, unsigned long col, const float value, Mat* mat);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_get_item(unsigned long row, unsigned long col, const Mat* mat, float* out);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_set_item(unsigned long row, unsigned long col, const float value, Mat* mat);
 
-	MLTOOLING_CAPI mlt_status mlt_mat_add(const Mat* mat, const Mat* other, Mat** out);
-	MLTOOLING_CAPI mlt_status mlt_mat_add_in_place(Mat* mat, const Mat* other);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_add(const Mat* mat, const Mat* other, Mat** out);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_add_in_place(Mat* mat, const Mat* other);
 
-	MLTOOLING_CAPI mlt_status mlt_mat_mul(const Mat* mat, const Mat* other, Mat** out);
+	MLTOOLING_CAPI mlt_status mlt_ct_mat_mul(const Mat* mat, const Mat* other, Mat** out);
 
 #ifdef __cplusplus
 }

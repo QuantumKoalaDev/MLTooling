@@ -88,7 +88,7 @@ MLTOOLING_CAPI mlt_status mlt_ct_mat_destroy(Mat* mat)
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_get_shape_rows(const Mat* mat, unsigned long* out)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_get_shape_rows(const Mat* mat, unsigned long* out)
 {
 	if (!mat || !out)
 		return MLT_ERR_NULL_PTR;
@@ -98,7 +98,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_get_shape_rows(const Mat* mat, unsigned long* 
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_get_shape_cols(const Mat* mat, unsigned long* out)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_get_shape_cols(const Mat* mat, unsigned long* out)
 {
 	if (!mat || !out)
 		return MLT_ERR_NULL_PTR;
@@ -108,7 +108,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_get_shape_cols(const Mat* mat, unsigned long* 
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_copy_row(const unsigned long rowIndex, const Mat* mat, float* outArray)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_copy_row(const unsigned long rowIndex, const Mat* mat, float* outArray)
 {
 	if (!mat || !outArray)
 		return MLT_ERR_NULL_PTR;
@@ -132,7 +132,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_copy_row(const unsigned long rowIndex, const M
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_append_row(const unsigned long length, const float* data, Mat* mat)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_append_row(const unsigned long length, const float* data, Mat* mat)
 {
 	if (!mat || !data)
 		return MLT_ERR_NULL_PTR;
@@ -151,7 +151,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_append_row(const unsigned long length, const f
 
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_get_item(const unsigned long row, const unsigned long col, const Mat* mat, float* out)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_get_item(const unsigned long row, const unsigned long col, const Mat* mat, float* out)
 {
 	if (!mat || !out)
 		return MLT_ERR_NULL_PTR;
@@ -172,7 +172,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_get_item(const unsigned long row, const unsign
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_set_item(const unsigned long row, const unsigned long col, const float value, Mat* mat)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_set_item(const unsigned long row, const unsigned long col, const float value, Mat* mat)
 {
 	if (!mat)
 		return MLT_ERR_NULL_PTR;
@@ -193,7 +193,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_set_item(const unsigned long row, const unsign
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_add(const Mat* mat, const Mat* other, Mat** out)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_add(const Mat* mat, const Mat* other, Mat** out)
 {
 	if (!mat || !other || !out)
 		return MLT_ERR_NULL_PTR;
@@ -220,7 +220,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_add(const Mat* mat, const Mat* other, Mat** ou
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_add_in_place(Mat* mat, const Mat* other)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_add_in_place(Mat* mat, const Mat* other)
 {
 	if (!mat || !other)
 		return MLT_ERR_NULL_PTR;
@@ -241,7 +241,7 @@ MLTOOLING_CAPI mlt_status mlt_mat_add_in_place(Mat* mat, const Mat* other)
 	return MLT_OK;
 }
 
-MLTOOLING_CAPI mlt_status mlt_mat_mul(const Mat* mat, const Mat* other, Mat** out)
+MLTOOLING_CAPI mlt_status mlt_ct_mat_mul(const Mat* mat, const Mat* other, Mat** out)
 {
 	if (!mat || !other || !out)
 		return MLT_ERR_NULL_PTR;
