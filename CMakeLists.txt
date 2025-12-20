@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(MLTooling VERSION 0.1.0 LANGUAGES CXX)
+project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
+
+
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -27,27 +29,7 @@ target_link_libraries(example_basic PRIVATE MLTooling)
 add_executable(tests test/test.cpp)
 target_link_libraries(tests PRIVATE MLTooling)
 
-add_library(MLToolingCapi SHARED
- "bindings/c/include/MLToolingCapi.h"
- "bindings/c/include/Models/LinearRegression.h"
- "bindings/c/src/Models/LinearRegression.cpp"
-  
-  
- "bindings/c/include/Container/Mat.h" 
- "bindings/c/src/Container/Mat.cpp")
-
-target_link_libraries(MLToolingCapi PRIVATE MLTooling)
-
-target_include_directories(MLToolingCapi
-        PUBLIC ${PROJECT_SOURCE_DIR}/include
-        PUBLIC ${PROJECT_SOURCE_DIR}/bindings/c/include)
-
-if (WIN32)
-    target_compile_definitions(MLToolingCapi PRIVATE MLTOOLING_CAPI_EXPORTS)
-endif()
-# PIC für Shared Library
-set_target_properties(MLToolingCapi PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(MLToolingCapi PROPERTIES CXX_STANDARD 20)
+add_subdirectory(bindings/c)
 
 #install(TARGETS MLToolingCapi DESTINATION lib)
 

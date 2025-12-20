@@ -11,7 +11,8 @@ def main():
     rows = 3
     cols = 3
 
-    mat = Mat(flat_data, rows, cols)
+    # mat = Mat(flat_data, rows, cols)
+    mat = Mat.from_flat_array(rows, cols, flat_data)
 
     shape = mat.get_shape()
     print("Shape:", shape.rows, "x", shape.cols)
@@ -45,7 +46,8 @@ def linear_regression_example1():
     y_data = [-14.0, -7.0, 0.0, 7.0, 14.0]
 
     # Mat erzeugen: 5 Zeilen, 1 Spalte
-    mat = Mat(data=x_data, rows=5, cols=1)
+    # mat = Mat(data=x_data, rows=5, cols=1)
+    mat = Mat.from_flat_array(5, 1, x_data)
 
     # Modell erstellen
     model = LinearRegressionModel()
