@@ -22,16 +22,16 @@ float LinearRegressionModel::predict(const std::vector<float>& xFeatures) const
 
 void LinearRegressionModel::fit(const Container::Mat& xData, const std::vector<float>& yData, const float learningRate, const unsigned int epochs)
 {
-	Container::Shape xDataShape = xData.getShape();
+	const Container::Shape xDataShape = xData.getShape();
 
 	if (xDataShape.rows != yData.size())
-		throw new std::invalid_argument("The size of xData and yData does not match");
+		throw std::invalid_argument("The size of xData and yData does not match");
 
-	m_weights = std::vector<float>(xDataShape.cols, 0.f);
+	m_weights = std::vector(xDataShape.cols, 0.f);
 	m_bias = 0.f;
 
-	const float n = xDataShape.rows;
-	const float mseHalf = 2.f / n;
+	const size_t n = xDataShape.rows;
+	const float mseHalf = 2.f / static_cast<float>(n);
 
 
 	for (unsigned int epoch = 0; epoch <= epochs; epoch++)
@@ -58,7 +58,8 @@ void LinearRegressionModel::fit(const Container::Mat& xData, const std::vector<f
 			gradB += diff;
 		}
 
-		std::for_each(gradW.begin(), gradW.end(), [&](float& item) {
+		std::ranges::for_each(
+                    gradW, [&](float& item) {
 			item = mseHalf * item;
 			});
 		gradB = mseHalf * gradB;
@@ -71,7 +72,7 @@ void LinearRegressionModel::fit(const Container::Mat& xData, const std::vector<f
 void LinearRegressionModel::updateWeights(const std::vector<float>& weightGradients, const float learningRate)
 {
 	if (m_weights.size() != weightGradients.size())
-		throw new std::invalid_argument("Size of weights and weight gradients does not match");
+		throw std::invalid_argument("Size of weights and weight gradients does not match");
 
 	for (size_t i = 0; i < m_weights.size(); i++)
 	{

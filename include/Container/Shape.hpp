@@ -9,7 +9,7 @@ namespace Container
 		size_t rows;
 		size_t cols;
 
-		Shape(size_t rows, size_t cols) : rows(rows), cols(cols)
+		Shape(const size_t rows, const size_t cols) : rows(rows), cols(cols)
 		{}
 	};
 }

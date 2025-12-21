@@ -3,7 +3,7 @@
 #include "Shape.hpp"
 
 #include <vector>
-#include <stddef.h>
+#include <cstddef>
 
 namespace Container
 {
@@ -18,9 +18,9 @@ namespace Container
 		Mat(size_t rows, size_t cols, std::vector<float> mat);
 		~Mat() = default;
 
-		std::vector<float> getRow(size_t rowIndex) const;
+		[[nodiscard]] std::vector<float> getRow(size_t rowIndex) const;
 
-		Container::Shape getShape() const;
+		[[nodiscard]] Container::Shape getShape() const;
 
 		void addRow(const std::vector<float>& row);
 

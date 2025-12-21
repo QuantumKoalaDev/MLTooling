@@ -10,7 +10,7 @@ namespace Models
 	{
 	private:
 		std::vector<float> m_weights;
-		double m_bias;
+		float m_bias;
 
 		void updateWeights(const std::vector<float>& weightGradients, float learningRate);
 		void updateBias(float biasGradient, float learningRate);
