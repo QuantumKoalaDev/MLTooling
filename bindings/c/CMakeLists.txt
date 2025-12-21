@@ -22,7 +22,8 @@ if (WIN32)
 	target_compile_definitions(MLToolingCapi PRIVATE MLTOOLING_CAPI_EXPORTS)
 endif()
 
-add_executable(ctest test/test.c)
+add_executable(ctest test/test.c
+		test/testdef.h)
 target_link_libraries(ctest PRIVATE MLToolingCapi)
 target_include_directories(ctest PRIVATE
     ${PROJECT_SOURCE_DIR}/bindings/c/include
