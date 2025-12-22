@@ -1,0 +1,56 @@
+#pragma once
+
+#include "Testrunner.h"
+
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <stdexcept>
+#include <format>
+
+#define REGISTER_TEST(func) \
+    struct func##_registrar { \
+        func##_registrar() { TestRunner::instance().registerTest(#func, func); } \
+    } func##_instance;
+
+struct AssertionFailed : std::runtime_error
+{
+	using std::runtime_error::runtime_error;
+};
+
+template <typename T>
+void assertEq(const T& actual, const T& expected, const std::string msg)
+{
+	if (actual != expected)
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", 
+			std::to_string(expected), std::to_string(actual))
+		);
+}
+
+inline void assertEq(float actual, float expected, std::string msg, float epsilon = 1e-5f)
+{
+	if (std::fabs(actual - expected) > epsilon)
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
+}
+
+inline void assertEq(double actual, double expected, std::string msg, double epsilon = 1e-9)
+{
+	if (std::fabs(actual - expected) > epsilon)
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
+}
+
+inline void assertEq(
+	const std::vector<float>& actual,
+	const std::vector<float> expected,
+	std::string msg,
+	float epsilon = 1e-6f
+)
+{
+	if (actual.size() != expected.size())
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
+
+	for (size_t i{}; i < actual.size(); ++i)
+	{
+		assertEq(actual[i], expected[i], msg, epsilon);
+	}
+}

@@ -3,7 +3,7 @@ project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
 
 
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 add_library(MLTooling
     "include/Container/Shape.hpp" 
@@ -26,7 +26,7 @@ install(DIRECTORY include/ DESTINATION include)
 add_executable(example_basic examples/example_basic.cpp)
 target_link_libraries(example_basic PRIVATE MLTooling)
 
-add_executable(tests test/test.cpp)
+add_executable(tests test/test.cpp "test/Testrunner.h" "test/math/tensor/MatrixTest.cpp")
 target_link_libraries(tests PRIVATE MLTooling)
 
 add_subdirectory(bindings/c)
