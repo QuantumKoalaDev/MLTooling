@@ -54,4 +54,5 @@ Consider adding a post-build step or script to automate this.
   - Test exectuables are located in the `out` folder in the project root.
 
 - **C**
-  - Not yet implemented.
+  - The project must be build first.
+  - Test executables are located in the `out` folder in the project root. (`ctest`)
