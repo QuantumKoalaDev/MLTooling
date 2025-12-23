@@ -22,12 +22,12 @@ namespace mlt::data
 		DataColumn& operator=(const DataColumn&) = default;
 		DataColumn& operator=(DataColumn&&) = default;
 
-
-		DataColumn(std::string name, std::vector<T>fields);
+		DataColumn(std::string name, size_t size);
+		DataColumn(std::string name, std::vector<T> fields);
+		DataColumn(std::string name, std::initializer_list<T> fields);
 
 		const T& operator()(size_t index) const;
 
-		std::type_index getType() const;
 		const std::string& getName() const override;
 		size_t getSize() const override;
 		std::span<const T> getData() const;

@@ -9,8 +9,18 @@
 using namespace mlt::data;
 
 template <typename T>
+DataColumn<T>::DataColumn(std::string name, size_t size)
+	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(size)
+{}
+
+template <typename T>
 DataColumn<T>::DataColumn(std::string name, std::vector<T> fields)
-	: m_name(std::move(name)), m_data(std::move(fields))
+	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(std::move(fields))
+{}
+
+template <typename T>
+DataColumn<T>::DataColumn(std::string name, std::initializer_list<T> fields)
+	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(fields)
 {}
 
 template <typename T>
@@ -28,9 +38,6 @@ const T& DataColumn<T>::operator()(size_t index) const
 
 	return m_data[index];
 }
-
-template <typename T>
-std::type_index DataColumn<T>::getType() const { return typeid(T); }
 
 template <typename T>
 const std::string& DataColumn<T>::getName() const { return m_name; }

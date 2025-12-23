@@ -8,6 +8,21 @@ using namespace mlt::data;
 
 static void testDataColumnConstructorAndBasicAccess()
 {
+	DataColumn<int> colIntBasic("ints", 3);
+	assertEq(colIntBasic.getName(), std::string("ints"), "int name");
+	assertEq(colIntBasic.getSize(), size_t(3), "int size");
+	assertEq(colIntBasic(1), 0, "int access");
+
+	DataColumn<float> colFloatBasic("floats", 3);
+	assertEq(colFloatBasic.getName(), std::string("floats"), "float name");
+	assertEq(colFloatBasic.getSize(), size_t(3), "float size");
+	assertEq(colFloatBasic(1), 0.f, "float access");
+
+	DataColumn<std::string> colStringBasic("strings", 3);
+	assertEq(colStringBasic.getName(), std::string("strings"), "string name");
+	assertEq(colStringBasic.getSize(), size_t(3), "string size");
+	assertEq(colStringBasic(1), std::string(""), "string access");
+
 	DataColumn<int> colInt("ints", { 1, 2, 3 });
 	assertEq(colInt.getName(), std::string("ints"), "int name");
 	assertEq(colInt.getSize(), size_t(3), "int size");
