@@ -7,6 +7,7 @@
 #include <string>
 #include <stdexcept>
 #include <format>
+#include <typeindex>
 
 #define REGISTER_TEST(func) \
     struct func##_registrar { \
@@ -53,4 +54,20 @@ inline void assertEq(
 	{
 		assertEq(actual[i], expected[i], msg, epsilon);
 	}
+}
+
+inline void assertEq(std::string actual, std::string expected, std::string msg)
+{
+	if (actual != expected)
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})",
+			expected, actual)
+		);
+}
+
+inline void assertEq(std::type_index actual, std::type_index expected, std::string msg)
+{
+	if (actual != expected)
+		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})",
+			expected.name(), actual.name())
+		);
 }
