@@ -4,7 +4,7 @@
 
 namespace Container
 {
-	struct Shape
+	struct [[deprecated("Use mlt::core::Shape instead")]] Shape
 	{
 		size_t rows;
 		size_t cols;

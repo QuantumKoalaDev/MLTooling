@@ -5,13 +5,11 @@ project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(MLTooling
-    "include/Container/Shape.hpp" 
-    "include/Container/Mat.hpp" 
+add_library(MLTooling   
     "src/Container/Mat.cpp" 
-    "include/Models/LinearRegressionModel.hpp" 
     "src/Models/LinearRegressionModel.cpp"
-    "src/data/DataColumn.cpp")
+    "src/data/DataColumn.cpp"
+    "src/data/DataFrame.cpp")
 
 target_compile_options(MLTooling PRIVATE -fPIC)
 
@@ -26,7 +24,10 @@ install(DIRECTORY include/ DESTINATION include)
 add_executable(example_basic examples/example_basic.cpp)
 target_link_libraries(example_basic PRIVATE MLTooling)
 
-add_executable(tests test/test.cpp "test/Testrunner.h" "test/math/tensor/MatrixTest.cpp" "test/data/DataFrameTest.cpp")
+add_executable(tests
+    "test/test.cpp"
+    "test/math/tensor/MatrixTest.cpp"
+    "test/data/DataFrameTest.cpp")
 target_link_libraries(tests PRIVATE MLTooling)
 
 add_subdirectory(bindings/c)

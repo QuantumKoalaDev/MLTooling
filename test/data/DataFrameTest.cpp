@@ -3,7 +3,9 @@
 #include <MLTooling.h>
 
 #include <vector>
+#include <iostream>
 
+using namespace mlt::core;
 using namespace mlt::data;
 
 static void testDataColumnConstructorAndBasicAccess()
@@ -150,6 +152,82 @@ static void testDataColumnGetTypeAllTypes()
 	);
 }
 
+static void testDataFrameConstructor()
+{
+	DataColumn<int> colInt("ints", { 1, 2, 3 });
+	DataFrame dfInt(colInt);
+
+	const DataColumn<int>& cInt = dfInt.getColumn<int>("ints");
+	assertEq(cInt.getName(), "ints", "Constructor test int - name mismatch");
+	assertEq(cInt.getType(), typeid(int), "Constructor test int - type mismatch");
+	assertEq(cInt.getSize(), static_cast<size_t>(3), "Constructor test int - size mismatch");
+	assertEq(cInt(0), 1, "Constructor test int - value mismatch at index 0");
+
+	DataColumn<float> colFloat("floats", { 1.1f, 2.2f, 3.3f });
+	DataFrame dfFloat(colFloat);
+
+	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("floats");
+	assertEq(cFloat.getName(), "floats", "Constructor test float - name mismatch");
+	assertEq(cFloat.getType(), typeid(float), "Constructor test float - type mismatch");
+	assertEq(cFloat.getSize(), static_cast<size_t>(3), "Constructor test float - size mismatch");
+	assertEq(cFloat(2), 3.3f, "Constructor test float - value mismatch at index 2");
+
+	DataColumn<std::string> colString("names", { "Alice", "Bob" });
+	DataFrame dfString(colString);
+
+	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("names");
+	assertEq(cString.getName(), "names", "Constructor test string - name mismatch");
+	assertEq(cString.getType(), typeid(std::string), "Constructor test string - type mismatch");
+	assertEq(cString.getSize(), static_cast<size_t>(2), "Constructor test string - size mismatch");
+	assertEq(cString(1), "Bob", "Constructor test string - value mismatch at index 1");
+}
+
+static void testDataFrameAppendCol()
+{
+	DataFrame dfInt(DataColumn<int>("ints", { 1,2,3 }));
+	DataColumn<int> col2Int("more_ints", { 10, 20 });
+	dfInt.appendCol(col2Int);
+
+	const DataColumn<int>& cInt = dfInt.getColumn<int>("more_ints");
+	assertEq(cInt.getSize(), size_t(2), "appendCol int - size mismatch");
+	assertEq(cInt(0), 10, "appendCol int - value mismatch at index 0");
+
+	DataFrame dfFloat(DataColumn<float>("floats", { 1.1f }));
+	DataColumn<float> col2Float("more_floats", { 4.4f, 5.5f });
+	dfFloat.appendCol(col2Float);
+
+	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("more_floats");
+	assertEq(cFloat.getSize(), size_t(2), "appendCol float - size mismatch");
+	assertEq(cFloat(1), 5.5f, "appendCol float - value mismatch at index 1");
+
+	DataFrame dfString(DataColumn<std::string>("names", { "Alice" }));
+	DataColumn<std::string> col2String("more_names", { "Charlie" });
+	dfString.appendCol(col2String);
+
+	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("more_names");
+	assertEq(cString.getSize(), size_t(1), "appendCol string - size mismatch");
+	assertEq(cString(0), "Charlie", "appendCol string - value mismatch at index 0");
+}
+
+static void testDataFrameGetCol()
+{
+	DataFrame dfInt(DataColumn<int>("ints", { 1,2 }));
+	DataFrame dfFloat(DataColumn<float>("floats", { 1.1f,2.2f }));
+	DataFrame dfString(DataColumn<std::string>("names", { "Alice","Bob" }));
+
+	const DataColumn<int>& cInt = dfInt.getColumn<int>("ints");
+	assertEq(cInt.getSize(), static_cast<size_t>(2), "getColumn int - size mismatch");
+	assertEq(cInt(1), 2, "getColumn int - value mismatch");
+
+	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("floats");
+	assertEq(cFloat.getSize(), static_cast<size_t>(2), "getColumn float - size mismatch");
+	assertEq(cFloat(0), 1.1f, "getColumn float - value mismatch");
+
+	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("names");
+	assertEq(cString.getSize(), static_cast<size_t>(2), "getColumn string - size mismatch");
+	assertEq(cString(0), "Alice", "getColumn string - value mismatch");
+}
+
 REGISTER_TEST(testDataColumnConstructorAndBasicAccess);
 REGISTER_TEST(testDataColumnOutOfRange);
 REGISTER_TEST(testDataColumnAppendValue);
@@ -157,3 +235,6 @@ REGISTER_TEST(testDataColumnReplaceValuesAllTypes);
 REGISTER_TEST(testDataColumnGetDataAllTypes);
 REGISTER_TEST(testDataColumnToStringAllTypes);
 REGISTER_TEST(testDataColumnGetTypeAllTypes);
+REGISTER_TEST(testDataFrameConstructor);
+REGISTER_TEST(testDataFrameAppendCol);
+REGISTER_TEST(testDataFrameGetCol);
