@@ -1,77 +1,93 @@
-#include "../include/data/DataColumn.hpp"
+#include "data/DataColumn.hpp"
+#include "core/Exceptions.hpp"
 
-#include <algorithm>
-#include <format>
 #include <stdexcept>
-#include <sstream>
-#include <typeinfo>
 
 using namespace mlt::data;
+using namespace mlt::core;
 
 template <typename T>
-DataColumn<T>::DataColumn(std::string name, size_t size)
-	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(size)
+DataColumn<T>::DataColumn<T>(std::vector<T> data) : m_data(std::move(data))
 {}
 
 template <typename T>
-DataColumn<T>::DataColumn(std::string name, std::vector<T> fields)
-	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(std::move(fields))
+DataColumn<T>::DataColumn<T>(size_t size) : m_data(size)
 {}
 
 template <typename T>
-DataColumn<T>::DataColumn(std::string name, std::initializer_list<T> fields)
-	: ColumnBase(typeid(T)), m_name(std::move(name)), m_data(fields)
+DataColumn<T>::DataColumn<T>() : DataColumn(0)
 {}
 
 template <typename T>
-const T& DataColumn<T>::operator()(size_t index) const
+T DataColumn<T>::operator[](size_t row) const
 {
-	if (index >= m_data.size())
-	{
-		throw std::out_of_range(
-			std::format(
-				"DataColumn '{}' out of range. Got {}, valid range is [0, {}].",
-				m_name, index, m_data.size()
-			)
-		);
-	}
+	size_t dataSize = m_data.size();
+	if (row >= dataSize)
+		throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
 
-	return m_data[index];
+	return m_data[row];
 }
 
 template <typename T>
-const std::string& DataColumn<T>::getName() const { return m_name; }
-
-template <typename T>
-size_t DataColumn<T>::getSize() const { return m_data.size(); }
-
-template <typename T>
-std::span<const T> DataColumn<T>::getData() const { return m_data; }
-
-template <typename T>
-void DataColumn<T>::setName(std::string_view newName) { m_name = newName; }
-
-template <typename T>
-void DataColumn<T>::appendValue(T value) { m_data.push_back(std::move(value)); }
-
-template <typename T>
-void DataColumn<T>::replaceValues(const T& oldValue, const T& newValue)
+T& DataColumn<T>::operator[](size_t row)
 {
-	std::replace(m_data.begin(), m_data.end(), oldValue, newValue);
+	size_t dataSize = m_data.size();
+	if (row >= m_data.size())
+		throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
+
+	return m_data[row];
 }
 
 template <typename T>
-std::string DataColumn<T>::toString() const
+bool DataColumn<T>::isEqual(DataColumn<T>& other) const
 {
-	std::ostringstream oss{};
-	oss << m_name << '\n';
-
-	for (const T& item : m_data)
-		oss << item << '\n';
-
-	return oss.str();
+	return m_data == other.m_data;
 }
 
-template class DataColumn<int>;
+template <typename T>
+DType DataColumn<T>::getType() const noexcept
+{
+	return DTypeOf<T>::value;
+}
+
+template <typename T>
+size_t DataColumn<T>::getSize() const noexcept
+{
+	return m_data.size();
+}
+
+template <typename T>
+void DataColumn<T>::append(T data)
+{
+	m_data.push_back(data);
+}
+
+template <typename T>
+void DataColumn<T>::append(std::vector<T> data)
+{
+	m_data.reserve(m_data.size() + data.size());
+
+	m_data.insert(
+		m_data.end(),
+		std::make_move_iterator(data.begin()),
+		std::make_move_iterator(data.end())
+	);
+}
+
+template <typename T>
+void DataColumn<T>::append(DataColumn<T> column)
+{
+	m_data.reserve(m_data.size() + column.m_data.size());
+
+	m_data.insert(
+		m_data.end(),
+		std::make_move_iterator(column.m_data.begin()),
+		std::make_move_iterator(column.m_data.end())
+	);
+}
+
+template class DataColumn<int64_t>;
 template class DataColumn<float>;
+template class DataColumn<double>;
+template class DataColumn<DateTime>;
 template class DataColumn<std::string>;

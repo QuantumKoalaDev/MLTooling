@@ -1,46 +1,41 @@
-#pragma once
-
-#include "ColumnBase.hpp"
+#include "data/dataUtils.hpp"
+#include "data/IDataColumn.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
-#include <string_view>
-#include <span>
 #include <vector>
-#include <ostream>
-#include <typeindex>
 
 namespace mlt::data
 {
 	template <typename T>
-	class DataColumn : public ColumnBase
+	class DataColumn : public IDataColumn
 	{
-		std::string m_name;
 		std::vector<T> m_data;
+
 	public:
+		DataColumn(std::vector<T> data);
+		DataColumn(size_t size);
+		DataColumn();
 		~DataColumn() = default;
-		DataColumn(const DataColumn& column) = default;
-		DataColumn(DataColumn&&) = default;
-		DataColumn& operator=(const DataColumn&) = default;
-		DataColumn& operator=(DataColumn&&) = default;
 
-		DataColumn(std::string name, size_t size);
-		DataColumn(std::string name, std::vector<T> fields);
-		DataColumn(std::string name, std::initializer_list<T> fields);
 
-		const T& operator()(size_t index) const;
+		T operator[](size_t row) const;
+		T& operator[](size_t row);
 
-		const std::string& getName() const override;
-		size_t getSize() const override;
-		std::span<const T> getData() const;
+		bool isEqual(DataColumn& other) const;
 
-		void setName(std::string_view newName);
-		void appendValue(T value);
-		void replaceValues(const T& oldValue, const T& newValue);
-		std::string toString() const;
+		DType getType() const noexcept override;
+		size_t getSize() const noexcept override;
+
+		void append(T data);
+		void append(std::vector<T> data);
+		void append(DataColumn<T> column);
 	};
 
-	extern template class DataColumn<int>;
+	extern template class DataColumn<int64_t>;
 	extern template class DataColumn<float>;
+	extern template class DataColumn<double>;
+	extern template class DataColumn<DateTime>;
 	extern template class DataColumn<std::string>;
 }

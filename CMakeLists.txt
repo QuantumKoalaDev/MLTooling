@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 23)
 add_library(MLTooling   
     "src/Container/Mat.cpp" 
     "src/Models/LinearRegressionModel.cpp"
-    "src/data/DataColumn.cpp"
-    "src/data/DataFrame.cpp")
+    
+ "src/data/DataColumn.cpp")
 
 target_compile_options(MLTooling PRIVATE -fPIC)
 

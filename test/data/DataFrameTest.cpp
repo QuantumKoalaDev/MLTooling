@@ -8,46 +8,13 @@
 using namespace mlt::core;
 using namespace mlt::data;
 
-static void testDataColumnConstructorAndBasicAccess()
-{
-	DataColumn<int> colIntBasic("ints", 3);
-	assertEq(colIntBasic.getName(), std::string("ints"), "int name");
-	assertEq(colIntBasic.getSize(), size_t(3), "int size");
-	assertEq(colIntBasic(1), 0, "int access");
-
-	DataColumn<float> colFloatBasic("floats", 3);
-	assertEq(colFloatBasic.getName(), std::string("floats"), "float name");
-	assertEq(colFloatBasic.getSize(), size_t(3), "float size");
-	assertEq(colFloatBasic(1), 0.f, "float access");
-
-	DataColumn<std::string> colStringBasic("strings", 3);
-	assertEq(colStringBasic.getName(), std::string("strings"), "string name");
-	assertEq(colStringBasic.getSize(), size_t(3), "string size");
-	assertEq(colStringBasic(1), std::string(""), "string access");
-
-	DataColumn<int> colInt("ints", { 1, 2, 3 });
-	assertEq(colInt.getName(), std::string("ints"), "int name");
-	assertEq(colInt.getSize(), size_t(3), "int size");
-	assertEq(colInt(1), 2, "int access");
-
-	DataColumn<float> colFloat("floats", { 1.0f, 2.5f, 3.0f });
-	assertEq(colFloat.getName(), std::string("floats"), "float name");
-	assertEq(colFloat.getSize(), size_t(3), "float size");
-	assertEq(colFloat(1), 2.5f, "float access");
-
-	DataColumn<std::string> colString("strings", { "a", "b", "c" });
-	assertEq(colString.getName(), std::string("strings"), "string name");
-	assertEq(colString.getSize(), size_t(3), "string size");
-	assertEq(colString(1), std::string("b"), "string access");
-}
-
 static void testDataColumnOutOfRange()
 {
-	DataColumn<int> col("numbers", { 1, 2, 3 });
+	DataColumn<int64_t> col({ 1, 2, 3 });
 
 	try
 	{
-		(void)col(3);
+		col[5];
 		throw AssertionFailed("Expected std::out_of_range");
 	}
 	catch (const std::out_of_range&)
@@ -56,185 +23,233 @@ static void testDataColumnOutOfRange()
 	}
 }
 
-static void testDataColumnAppendValue()
+template <typename T>
+struct ColumnTraits;
+
+template <>
+struct ColumnTraits<int64_t> {
+	static constexpr DType dtype = DType::INT64;
+	static int64_t zero() { return 0; }
+	static int64_t test() { return 5; }
+	static std::vector<int64_t> testVec() { return { -1, -3, 5}; }
+};
+
+template <>
+struct ColumnTraits<float> {
+	static constexpr DType dtype = DType::FLOAT32;
+	static float zero() { return 0.f; }
+	static float test() { return 5.54f; }
+	static std::vector<float> testVec() { return { -1.12f, -3.7777f, 5.98745f }; }
+};
+
+template <>
+struct ColumnTraits<double> {
+	static constexpr DType dtype = DType::FLOAT64;
+	static double zero() { return 0.0; }
+	static double test() { return 5.54; }
+	static std::vector<double> testVec() { return { -1.12, -3.7777, 5.98745 }; }
+};
+
+template <>
+struct ColumnTraits<std::string> {
+	static constexpr DType dtype = DType::STRING;
+	static std::string zero() { return ""; }
+	static std::string test() { return "Hello"; }
+	static std::vector<std::string> testVec() { return { "world", "!", "olleH" }; }
+};
+
+template <>
+struct ColumnTraits<DateTime> {
+	static constexpr DType dtype = DType::DATETIME;
+	static DateTime zero() { return DateTime{}; }
+	static DateTime test() {
+		std::chrono::sys_days day{ std::chrono::year{2025} / 12 / 1 };
+		return std::chrono::time_point_cast<std::chrono::nanoseconds>(day);
+	}
+	static std::vector<DateTime> testVec() {
+		std::chrono::sys_days day1{ std::chrono::year{2025} / 12 / 1 };
+		std::chrono::sys_days day2{ std::chrono::year{2025} / 12 / 2 };
+		std::chrono::sys_days day3{ std::chrono::year{2024} / 11 / 3 };
+
+		return {
+			std::chrono::time_point_cast<std::chrono::nanoseconds>(day1),
+			std::chrono::time_point_cast<std::chrono::nanoseconds>(day2),
+			std::chrono::time_point_cast<std::chrono::nanoseconds>(day3)
+		};
+	}
+};
+
+template <typename T>
+void testDataColumnConstructorAndAccess()
 {
-	DataColumn<int> colInt("ints", { 1 });
-	colInt.appendValue(2);
-	assertEq(colInt.getSize(), size_t(2), "int append size");
-	assertEq(colInt(1), 2, "int append value");
+	DataColumn<T> col(3);
+	assertEq(col.getSize(), size_t(3), "Wrong size");
+	assertEq((int)col.getType(), (int)ColumnTraits<T>::dtype, "Wrong dtype");
 
-	DataColumn<float> colFloat("floats", { 1.0f });
-	colFloat.appendValue(2.5f);
-	assertEq(colFloat.getSize(), size_t(2), "float append size");
-	assertEq(colFloat(1), 2.5f, "float append value");
+	for (size_t i = 0; i < 3; ++i)
+		assertEq(col[i], ColumnTraits<T>::zero(), "Wrong default value");
 
-	DataColumn<std::string> colString("strings", { "a" });
-	colString.appendValue("b");
-	assertEq(colString.getSize(), size_t(2), "string append size");
-	assertEq(colString(1), std::string("b"), "string append value");
+	std::vector<T> data = {
+		ColumnTraits<T>::zero(),
+		ColumnTraits<T>::zero(),
+		ColumnTraits<T>::zero()
+	};
+
+	DataColumn<T> col2(data);
+	assertEq(col2.getSize(), data.size(), "Wrong size");
+
+	for (size_t i = 0; i < data.size(); ++i)
+		assertEq(col2[i], data[i], "Wrong value");
 }
 
-static void testDataColumnReplaceValuesAllTypes()
+template <>
+void testDataColumnConstructorAndAccess<DateTime>()
 {
-	DataColumn<int> colInt("ints", { 1, 2, 2 });
-	colInt.replaceValues(2, 42);
-	assertEq(colInt(1), 42, "int replace");
+	DataColumn<DateTime> col(3);
+	assertEq(col.getSize(), size_t(3), "Wrong size");
+	assertEq((int)col.getType(), (int)ColumnTraits<DateTime>::dtype, "Wrong dtype");
 
-	DataColumn<float> colFloat("floats", { 1.0f, 2.0f, 2.0f });
-	colFloat.replaceValues(2.0f, 4.5f);
-	assertEq(colFloat(1), 4.5f, "float replace");
+	DateTime zero = ColumnTraits<DateTime>::zero();
+	std::string zeroStr = std::format("{:%F %T}", zero);
 
-	DataColumn<std::string> colString("strings", { "a", "b", "b" });
-	colString.replaceValues("b", "x");
-	assertEq(colString(1), std::string("x"), "string replace");
+	for (size_t i = 0; i < 3; ++i)
+		assertEq(std::format("{:%F %T}", col[i]), zeroStr, "Wrong default value");
+
+	std::vector<DateTime> data;
+	data.push_back(zero);
+	data.push_back(zero);
+	data.push_back(zero);
+
+	DataColumn<DateTime> col2(data);
+	assertEq(col2.getSize(), data.size(), "Wrong size");
+
+	for (size_t i = 0; i < data.size(); ++i)
+		assertEq(std::format("{:%F %T}", col2[i]),
+			std::format("{:%F %T}", data[i]),
+			"Wrong value");
 }
 
-static void testDataColumnGetDataAllTypes()
-{
-	DataColumn<int> colInt("ints", { 1, 2 });
-	std::span<const int> spanInt = colInt.getData();
-	assertEq(spanInt.size(), size_t(2), "int span size");
-	assertEq(spanInt[0], 1, "int span value");
-
-	DataColumn<float> colFloat("floats", { 1.0f, 2.0f });
-	std::span<const float> spanFloat = colFloat.getData();
-	assertEq(spanInt.size(), size_t(2), "float span size");
-	assertEq(spanFloat[1], 2.0f, "float span value");
-
-	DataColumn<std::string> colString("strings", { "a", "b" });
-	std::span<const std::string> spanString = colString.getData();
-	assertEq(spanInt.size(), size_t(2), "string span size");
-	assertEq(spanString[1], std::string("b"), "string span value");
+static void testDataColumnConstructAccessWrapper() 
+{ 
+	testDataColumnConstructorAndAccess<int64_t>();
+	testDataColumnConstructorAndAccess<float>();
+	testDataColumnConstructorAndAccess<double>();
+	testDataColumnConstructorAndAccess<std::string>();
+	testDataColumnConstructorAndAccess<DateTime>();
 }
 
-static void testDataColumnToStringAllTypes()
+template <typename T>
+void testDataColumnSetValues()
 {
-	DataColumn<int> colInt("ints", { 1, 2 });
-	assertEq(
-		colInt.toString(),
-		std::string("ints\n1\n2\n"),
-		"int toString"
-	);
+	DataColumn<T> col(3);
+	std::vector<T> colData = ColumnTraits<T>::testVec();
 
-	DataColumn<float> colFloat("floats", { 1.5f });
-	assertEq(
-		colFloat.toString(),
-		std::string("floats\n1.5\n"),
-		"float toString"
-	);
+	for (size_t i = 0; i < col.getSize(); ++i)
+		col[i] = colData[i];
 
-	DataColumn<std::string> colString("strings", { "a", "b" });
-	assertEq(
-		colString.toString(),
-		std::string("strings\na\nb\n"),
-		"string toString"
-	);
+	for (size_t i = 0; i < col.getSize(); ++i)
+		assertEq(col[i], colData[i], "Wrong value");
 }
 
-static void testDataColumnGetTypeAllTypes()
+template<>
+void testDataColumnSetValues<DateTime>()
 {
-	assertEq(
-		DataColumn<int>("i", {}).getType(),
-		std::type_index(typeid(int)),
-		"type int"
-	);
+	DataColumn<DateTime> col(3);
+	std::vector<DateTime> colData = ColumnTraits<DateTime>::testVec();
 
-	assertEq(
-		DataColumn<float>("f", {}).getType(),
-		std::type_index(typeid(float)),
-		"type float"
-	);
+	for (size_t i = 0; i < col.getSize(); ++i)
+		col[i] = colData[i];
 
-	assertEq(
-		DataColumn<std::string>("s", {}).getType(),
-		std::type_index(typeid(std::string)),
-		"type string"
-	);
+	for (size_t i = 0; i < col.getSize(); ++i)
+		assertEq(std::format("{:%F %T}", col[i]),
+			std::format("{:%F %T}", colData[i]),
+			"Wrong value");
 }
 
-static void testDataFrameConstructor()
+static void testDataColumnSetValuesWrapper()
 {
-	DataColumn<int> colInt("ints", { 1, 2, 3 });
-	DataFrame dfInt(colInt);
-
-	const DataColumn<int>& cInt = dfInt.getColumn<int>("ints");
-	assertEq(cInt.getName(), "ints", "Constructor test int - name mismatch");
-	assertEq(cInt.getType(), typeid(int), "Constructor test int - type mismatch");
-	assertEq(cInt.getSize(), static_cast<size_t>(3), "Constructor test int - size mismatch");
-	assertEq(cInt(0), 1, "Constructor test int - value mismatch at index 0");
-
-	DataColumn<float> colFloat("floats", { 1.1f, 2.2f, 3.3f });
-	DataFrame dfFloat(colFloat);
-
-	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("floats");
-	assertEq(cFloat.getName(), "floats", "Constructor test float - name mismatch");
-	assertEq(cFloat.getType(), typeid(float), "Constructor test float - type mismatch");
-	assertEq(cFloat.getSize(), static_cast<size_t>(3), "Constructor test float - size mismatch");
-	assertEq(cFloat(2), 3.3f, "Constructor test float - value mismatch at index 2");
-
-	DataColumn<std::string> colString("names", { "Alice", "Bob" });
-	DataFrame dfString(colString);
-
-	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("names");
-	assertEq(cString.getName(), "names", "Constructor test string - name mismatch");
-	assertEq(cString.getType(), typeid(std::string), "Constructor test string - type mismatch");
-	assertEq(cString.getSize(), static_cast<size_t>(2), "Constructor test string - size mismatch");
-	assertEq(cString(1), "Bob", "Constructor test string - value mismatch at index 1");
+	testDataColumnSetValues<int64_t>();
+	testDataColumnSetValues<float>();
+	testDataColumnSetValues<double>();
+	testDataColumnSetValues<std::string>();
+	testDataColumnSetValues<DateTime>();
 }
 
-static void testDataFrameAppendCol()
+template <typename T>
+void testDataColumnAppendValues()
 {
-	DataFrame dfInt(DataColumn<int>("ints", { 1,2,3 }));
-	DataColumn<int> col2Int("more_ints", { 10, 20 });
-	dfInt.appendCol(col2Int);
+	DataColumn<T> col(3);
+	T testVal = ColumnTraits<T>::test();
 
-	const DataColumn<int>& cInt = dfInt.getColumn<int>("more_ints");
-	assertEq(cInt.getSize(), size_t(2), "appendCol int - size mismatch");
-	assertEq(cInt(0), 10, "appendCol int - value mismatch at index 0");
+	col.append(testVal);
+	assertEq(col[3], testVal, "Wrong Value");
 
-	DataFrame dfFloat(DataColumn<float>("floats", { 1.1f }));
-	DataColumn<float> col2Float("more_floats", { 4.4f, 5.5f });
-	dfFloat.appendCol(col2Float);
+	DataColumn<T> col2(0);
+	std::vector<T> appendData = ColumnTraits<T>::testVec();
+	col2.append(appendData);
 
-	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("more_floats");
-	assertEq(cFloat.getSize(), size_t(2), "appendCol float - size mismatch");
-	assertEq(cFloat(1), 5.5f, "appendCol float - value mismatch at index 1");
+	for (size_t i = 0; i < col2.getSize(); ++i)
+		assertEq(col2[i], appendData[i], "Wrong value");
 
-	DataFrame dfString(DataColumn<std::string>("names", { "Alice" }));
-	DataColumn<std::string> col2String("more_names", { "Charlie" });
-	dfString.appendCol(col2String);
+	DataColumn<T> col3(appendData);
+	DataColumn<T> col4(appendData);
+	col3.append(std::move(col4));
+	size_t a = appendData.size();
 
-	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("more_names");
-	assertEq(cString.getSize(), size_t(1), "appendCol string - size mismatch");
-	assertEq(cString(0), "Charlie", "appendCol string - value mismatch at index 0");
+	for (size_t i = 0; i < a; ++i)
+		assertEq(col3[i], appendData[i], "Wrong Value");
+
+
+	for (size_t i = a; i < col3.getSize(); ++i)
+		assertEq(col3[i], appendData[i - a], "Wrong Value");
 }
 
-static void testDataFrameGetCol()
+template <>
+void testDataColumnAppendValues<DateTime>()
 {
-	DataFrame dfInt(DataColumn<int>("ints", { 1,2 }));
-	DataFrame dfFloat(DataColumn<float>("floats", { 1.1f,2.2f }));
-	DataFrame dfString(DataColumn<std::string>("names", { "Alice","Bob" }));
+	DataColumn<DateTime> col(3);
+	DateTime testVal = ColumnTraits<DateTime>::test();
+	col.append(testVal);
 
-	const DataColumn<int>& cInt = dfInt.getColumn<int>("ints");
-	assertEq(cInt.getSize(), static_cast<size_t>(2), "getColumn int - size mismatch");
-	assertEq(cInt(1), 2, "getColumn int - value mismatch");
+	assertEq(std::format("{:%F %T}", col[3]),
+		std::format("{:%F %T}", testVal),
+		"Wrong value");
 
-	const DataColumn<float>& cFloat = dfFloat.getColumn<float>("floats");
-	assertEq(cFloat.getSize(), static_cast<size_t>(2), "getColumn float - size mismatch");
-	assertEq(cFloat(0), 1.1f, "getColumn float - value mismatch");
+	DataColumn<DateTime> col2(0);
+	std::vector<DateTime> appendData = ColumnTraits<DateTime>::testVec();
+	col2.append(appendData);
 
-	const DataColumn<std::string>& cString = dfString.getColumn<std::string>("names");
-	assertEq(cString.getSize(), static_cast<size_t>(2), "getColumn string - size mismatch");
-	assertEq(cString(0), "Alice", "getColumn string - value mismatch");
+	for (size_t i = 0; i < col2.getSize(); ++i)
+		assertEq(std::format("{:%F %T}", col2[i]),
+			std::format("{:%F %T}", appendData[i]),
+			"Wrong value");
+
+	DataColumn<DateTime> col3(appendData);
+	DataColumn<DateTime> col4(appendData);
+	col3.append(std::move(col4));
+	size_t a = appendData.size();
+
+	for (size_t i = 0; i < a; ++i)
+		assertEq(std::format("{:%F %T}", col3[i]),
+			std::format("{:%F %T}", appendData[i]),
+			"Wrong value");
+
+	for (size_t i = a; i < col3.getSize(); ++i)
+		assertEq(std::format("{:%F %T}", col3[i]),
+			std::format("{:%F %T}", appendData[i - a]),
+			"Wrong value");
 }
 
-REGISTER_TEST(testDataColumnConstructorAndBasicAccess);
+static void testDataColumnAppendValuesWrapper()
+{
+	testDataColumnAppendValues<int64_t>();
+	testDataColumnAppendValues<float>();
+	testDataColumnAppendValues<double>();
+	testDataColumnAppendValues<std::string>();
+	testDataColumnAppendValues<DateTime>();
+}
+
+REGISTER_TEST(testDataColumnConstructAccessWrapper);
 REGISTER_TEST(testDataColumnOutOfRange);
-REGISTER_TEST(testDataColumnAppendValue);
-REGISTER_TEST(testDataColumnReplaceValuesAllTypes);
-REGISTER_TEST(testDataColumnGetDataAllTypes);
-REGISTER_TEST(testDataColumnToStringAllTypes);
-REGISTER_TEST(testDataColumnGetTypeAllTypes);
-REGISTER_TEST(testDataFrameConstructor);
-REGISTER_TEST(testDataFrameAppendCol);
-REGISTER_TEST(testDataFrameGetCol);
+REGISTER_TEST(testDataColumnSetValuesWrapper);
+REGISTER_TEST(testDataColumnAppendValuesWrapper);
