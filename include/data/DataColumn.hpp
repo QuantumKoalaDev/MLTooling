@@ -1,8 +1,8 @@
+#pragma once
+
 #include "data/dataUtils.hpp"
 #include "data/IDataColumn.hpp"
 
-#include <cstddef>
-#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace mlt::data
 		DataColumn(std::vector<T> data);
 		DataColumn(size_t size);
 		DataColumn();
-		~DataColumn() = default;
+		~DataColumn() override = default;
 
 
 		T operator[](size_t row) const;

@@ -11,10 +11,6 @@
 
 namespace mlt::data
 {
-
-
-
-
 	class DataFrame
 	{
 		core::Shape m_shape;
@@ -42,8 +38,8 @@ namespace mlt::data
 
 
 // struct ColumnEntry => name, DataType, Index
-// map für indexing => name: string, index: size_t
-// data => vector<IColumn> (Columns können nur int, long, float, double, datetime, string, (object)
+// map fuer indexing => name: string, index: size_t
+// data => vector<IColumn> (Columns koennen nur int, long, float, double, datetime, string, (object)
 // struct ColumnHandle => DataFrame*, std::string colName, dataType
 
 // class Column => ptr auf IColumn, Dtype, name, 
