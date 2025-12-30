@@ -4,7 +4,6 @@
 
 namespace mlt::data
 {
-
 	/// @class IDataColumn
 	/// @brief Base class for all DataFrame columns.
 	/// 

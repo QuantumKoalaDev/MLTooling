@@ -19,6 +19,18 @@ struct AssertionFailed : std::runtime_error
 	using std::runtime_error::runtime_error;
 };
 
+static std::string toString(const std::vector<float>& v)
+{
+	std::string s = "[";
+	for (size_t i = 0; i < v.size(); ++i)
+	{
+		if (i) s += ", ";
+		s += std::to_string(v[i]);
+	}
+	s += "]";
+	return s;
+}
+
 template <typename T>
 void assertEq(const T& actual, const T& expected, const std::string msg)
 {
@@ -48,7 +60,13 @@ inline void assertEq(
 )
 {
 	if (actual.size() != expected.size())
-		throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
+		throw AssertionFailed(
+			msg + std::format(
+			" (expected: {}, got: {})",
+			toString(expected),
+			toString(actual)
+			)
+);
 
 	for (size_t i{}; i < actual.size(); ++i)
 	{

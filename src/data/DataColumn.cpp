@@ -7,15 +7,15 @@ using namespace mlt::data;
 using namespace mlt::core;
 
 template <typename T>
-DataColumn<T>::DataColumn<T>(std::vector<T> data) : m_data(std::move(data))
+DataColumn<T>::DataColumn(std::vector<T> data) : m_data(std::move(data))
 {}
 
 template <typename T>
-DataColumn<T>::DataColumn<T>(size_t size) : m_data(size)
+DataColumn<T>::DataColumn(size_t size) : m_data(size)
 {}
 
 template <typename T>
-DataColumn<T>::DataColumn<T>() : DataColumn(0)
+DataColumn<T>::DataColumn() : DataColumn(0)
 {}
 
 template <typename T>

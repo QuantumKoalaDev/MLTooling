@@ -4,7 +4,6 @@
 #include "dataUtils.hpp"
 #include "IDataColumn.hpp"
 
-#include <cstddef>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -14,7 +13,7 @@ namespace mlt::data
 	class DataFrame
 	{
 		core::Shape m_shape;
-		std::unordered_map<std::string, size_t> m_indizes;
+		std::unordered_map<std::string, size_t> m_indices;
 		std::vector<ColumnEntry> m_entries;
 		std::vector<IDataColumn> m_data;
 
