@@ -1,8 +1,8 @@
 #pragma once
 
+#include "IDataColumn.hpp"
 #include "core/Shape.hpp"
 #include "dataUtils.hpp"
-#include "IDataColumn.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -10,40 +10,37 @@
 
 namespace mlt::data
 {
-	class DataFrame
-	{
-		core::Shape m_shape;
-		std::unordered_map<std::string, size_t> m_indices;
-		std::vector<ColumnEntry> m_entries;
-		std::vector<IDataColumn> m_data;
+    class DataFrame
+    {
+        core::Shape m_shape;
+        std::unordered_map<std::string, size_t> m_indices;
+        std::vector<ColumnEntry> m_entries;
+        std::vector<IDataColumn> m_data;
 
-	public:
-		DataFrame() = default;
-		~DataFrame() = default;
+      public:
+        DataFrame() = default;
+        ~DataFrame() = default;
 
-		DataFrame Clone();
-		bool isEqual(DataFrame& other) const;
+        DataFrame Clone();
+        bool isEqual(DataFrame& other) const;
 
+        core::Shape getShape();
+    };
 
-		core::Shape getShape();
-	};
-
-	struct ColumnHandle
-	{
-		std::string name;
-		DataFrame* dataFrame;
-	};
-}
-
+    struct ColumnHandle
+    {
+        std::string name;
+        DataFrame* dataFrame;
+    };
+} // namespace mlt::data
 
 // struct ColumnEntry => name, DataType, Index
 // map fuer indexing => name: string, index: size_t
 // data => vector<IColumn> (Columns koennen nur int, long, float, double, datetime, string, (object)
 // struct ColumnHandle => DataFrame*, std::string colName, dataType
 
-// class Column => ptr auf IColumn, Dtype, name, 
+// class Column => ptr auf IColumn, Dtype, name,
 
-
-//auto* base = m_data[colIndex].get();
-//assert(base->kind() == ColumnKindOf<T>);
-//return static_cast<const DataColumn<T>&>(*base);
+// auto* base = m_data[colIndex].get();
+// assert(base->kind() == ColumnKindOf<T>);
+// return static_cast<const DataColumn<T>&>(*base);
