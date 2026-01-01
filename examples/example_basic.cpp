@@ -1,48 +1,47 @@
-#include <iostream>
 #include <format>
-#include <string>
-#include <sstream>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include <MLTooling.h>
 
-template<typename T>
-std::string toString(const std::vector<T>& v)
+template <typename T> std::string toString(const std::vector<T>& v)
 {
-	std::ostringstream oss;
-	oss << "[";
-	
-	for (size_t i = 0; i < v.size(); ++i) 
-	{
-		oss << v[i];
-		if (i + 1 < v.size()) oss << ", ";
-	}
+    std::ostringstream oss;
+    oss << "[";
 
-	oss << "]";
-	return oss.str();
+    for (size_t i = 0; i < v.size(); ++i)
+    {
+        oss << v[i];
+        if (i + 1 < v.size())
+            oss << ", ";
+    }
+
+    oss << "]";
+    return oss.str();
 }
 
 static void LinearRegressionExample1()
 {
-	//y = 7x - 14
-	const std::vector<float> xData = { 0.f, 1.f, 2.f, 3.f, 4.f };
-	const std::vector<float> y_data = { -14.f, -7.f, 0.f, 7.f, 14 };
+    // y = 7x - 14
+    const std::vector<float> xData = {0.f, 1.f, 2.f, 3.f, 4.f};
+    const std::vector<float> y_data = {-14.f, -7.f, 0.f, 7.f, 14};
 
-	Models::LinearRegressionModel model = Models::LinearRegressionModel();
+    Models::LinearRegressionModel model = Models::LinearRegressionModel();
 
-	const Container::Mat mat = Container::Mat(5, 1, xData);
+    const Container::Mat mat = Container::Mat(5, 1, xData);
 
-	constexpr float lr = 0.1f;
-	constexpr unsigned int epochs = 500;
+    constexpr float lr = 0.1f;
+    constexpr unsigned int epochs = 500;
 
-	model.fit(mat, y_data, lr, epochs);
+    model.fit(mat, y_data, lr, epochs);
 
-	// Output: ~126
-	std::cout << std::fixed << std::setprecision(8)
-		<< model.predict({ 20 }) << std::endl;
+    // Output: ~126
+    std::cout << std::fixed << std::setprecision(8) << model.predict({20}) << std::endl;
 }
 
 int main()
 {
-	LinearRegressionExample1();
+    LinearRegressionExample1();
 }

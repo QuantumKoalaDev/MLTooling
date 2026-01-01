@@ -12,10 +12,7 @@
 #define REGISTER_TEST(func)                                                                                            \
     struct func##_registrar                                                                                            \
     {                                                                                                                  \
-        func##_registrar()                                                                                             \
-        {                                                                                                              \
-            TestRunner::instance().registerTest(#func, func);                                                          \
-        }                                                                                                              \
+        func##_registrar() { TestRunner::instance().registerTest(#func, func); }                                       \
     } func##_instance;
 
 struct AssertionFailed : std::runtime_error
@@ -28,7 +25,8 @@ static std::string toString(const std::vector<float>& v)
     std::string s = "[";
     for (size_t i = 0; i < v.size(); ++i)
     {
-        if (i) s += ", ";
+        if (i)
+            s += ", ";
         s += std::to_string(v[i]);
     }
     s += "]";
@@ -61,12 +59,16 @@ assertEq(const std::vector<float>& actual, const std::vector<float> expected, st
     if (actual.size() != expected.size())
         throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", toString(expected), toString(actual)));
 
-    for (size_t i{}; i < actual.size(); ++i) { assertEq(actual[i], expected[i], msg, epsilon); }
+    for (size_t i{}; i < actual.size(); ++i)
+    {
+        assertEq(actual[i], expected[i], msg, epsilon);
+    }
 }
 
 inline void assertEq(std::string actual, std::string expected, std::string msg)
 {
-    if (actual != expected) throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
+    if (actual != expected)
+        throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected, actual));
 }
 
 inline void assertEq(std::type_index actual, std::type_index expected, std::string msg)
