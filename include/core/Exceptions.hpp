@@ -1,3 +1,6 @@
+#pragma once
+
+#include <filesystem>
 #include <stdexcept>
 
 namespace mlt::core

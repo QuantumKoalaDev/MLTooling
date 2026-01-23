@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DataColumn.hpp"
 #include "IDataColumn.hpp"
 #include "core/Shape.hpp"
 #include "dataUtils.hpp"
@@ -13,34 +14,32 @@ namespace mlt::data
     class DataFrame
     {
         core::Shape m_shape;
-        std::unordered_map<std::string, size_t> m_indices;
-        std::vector<ColumnEntry> m_entries;
-        std::vector<IDataColumn> m_data;
+        std::unordered_map<std::string, size_t> m_labelMap;
+        std::vector<std::unique_ptr<IDataColumn>> m_data;
 
       public:
         DataFrame() = default;
         ~DataFrame() = default;
 
-        DataFrame Clone();
-        bool isEqual(DataFrame& other) const;
+        core::Shape getShape() const;
 
-        core::Shape getShape();
-    };
+        void append(const std::string& name, std::unique_ptr<IDataColumn> column);
 
-    struct ColumnHandle
-    {
-        std::string name;
-        DataFrame* dataFrame;
+        template <typename T> DataColumn<T>* get(const std::string& name)
+        {
+            const size_t position = m_labelMap.at(name);
+
+            if (const IDataColumn* column = m_data[position].get(); DTypeOf<T>::value != column->getType())
+                throw std::runtime_error("DataFrame::get(): column type mismatch");
+
+            DataColumn<T>* result = dynamic_cast<DataColumn<T>*>(m_data[position].get());
+
+            if (result == nullptr)
+                throw std::bad_cast();
+
+            return result;
+        }
+
+        void drop(const std::string& name);
     };
 } // namespace mlt::data
-
-// struct ColumnEntry => name, DataType, Index
-// map fuer indexing => name: string, index: size_t
-// data => vector<IColumn> (Columns koennen nur int, long, float, double, datetime, string, (object)
-// struct ColumnHandle => DataFrame*, std::string colName, dataType
-
-// class Column => ptr auf IColumn, Dtype, name,
-
-// auto* base = m_data[colIndex].get();
-// assert(base->kind() == ColumnKindOf<T>);
-// return static_cast<const DataColumn<T>&>(*base);

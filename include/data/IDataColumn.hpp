@@ -12,7 +12,7 @@ namespace mlt::data
     {
       public:
         virtual ~IDataColumn() = default;
-        virtual DType getType() const noexcept = 0;
-        virtual size_t getSize() const noexcept = 0;
+        [[nodiscard]] virtual DType getType() const noexcept = 0;
+        [[nodiscard]] virtual size_t getSize() const noexcept = 0;
     };
 } // namespace mlt::data

@@ -7,9 +7,25 @@
 using namespace mlt::data;
 using namespace mlt::core;
 
-template <typename T> DataColumn<T>::DataColumn(std::vector<T> data) : m_data(std::move(data)) {}
+template <typename T> DataColumn<T>::DataColumn(std::vector<T> data, std::vector<bool> validityMask) : m_data(std::move(data))
+{
+    if (!validityMask.empty() && m_data.size() != validityMask.size())
+        throw std::invalid_argument("Validity mask must be the same size as the data.");
 
-template <typename T> DataColumn<T>::DataColumn(size_t size) : m_data(size) {}
+    if (validityMask.empty())
+    {
+        m_validityMask = std::vector<bool>(validityMask.size(), true);
+    }
+    else
+    {
+        m_validityMask = std::move(validityMask);
+    }
+}
+
+template <typename T> DataColumn<T>::DataColumn(size_t size) : m_data(size)
+{
+    m_validityMask = std::vector<bool>(size, true);
+}
 
 template <typename T> DataColumn<T>::DataColumn() : DataColumn(0) {}
 
@@ -45,19 +61,59 @@ template <typename T> size_t DataColumn<T>::getSize() const noexcept
     return m_data.size();
 }
 
+template <typename T> DataColumnInfo DataColumn<T>::getInfo() const noexcept
+{
+    DataColumnInfo info {};
+    info.dtype = getType();
+    info.size = getSize();
+    info.invalidRows = countNa();
+
+    return info;
+}
+
+template <typename T> std::optional<T> DataColumn<T>::get(size_t row) const
+{
+    if (size_t dataSize = m_data.size(); row >= dataSize)
+        throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
+
+    if (!m_validityMask[row])
+        return std::nullopt;
+
+    return m_data[row];
+}
+
+template <typename T> void DataColumn<T>::set(size_t row, T value, const bool validity)
+{
+    if (size_t dataSize = m_data.size(); row >= dataSize)
+        throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
+
+    m_data[row] = std::move(value);
+    m_validityMask[row] = validity;
+}
+
+template <typename T> void DataColumn<T>::set(size_t row, const bool valid)
+{
+    if (size_t dataSize = m_data.size(); row >= dataSize)
+        throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
+    m_validityMask[row] = valid;
+
+}
+
 template <typename T> void DataColumn<T>::append(T data, const bool valid)
 {
     m_data.push_back(data);
     m_validityMask.push_back(valid);
 }
 
-template <typename T> void DataColumn<T>::append(std::vector<T> data)
+template <typename T> void DataColumn<T>::append(std::vector<T> data, const std::vector<bool>& validityMask)
 {
+    if (validityMask.empty() == 0 && data.size() != validityMask.size())
+        throw std::invalid_argument("Validity mask must be the same size as the appended data.");
+
     m_data.reserve(m_data.size() + data.size());
+    m_validityMask.reserve(m_validityMask.size() + data.size());
 
     m_data.insert(m_data.end(), std::make_move_iterator(data.begin()), std::make_move_iterator(data.end()));
-
-    m_validityMask.reserve(m_validityMask.size() + data.size());
 
     for (size_t i = 0; i < data.size(); ++i)
         m_validityMask.emplace_back(true);
@@ -91,7 +147,7 @@ template <typename T> void DataColumn<T>::remove(size_t row)
     m_validityMask.erase(m_validityMask.begin() + rowDiff);
 }
 
-template <typename T> size_t DataColumn<T>::countNa()
+template <typename T> size_t DataColumn<T>::countNa() const
 {
     return std::count(m_validityMask.begin(), m_validityMask.end(), false);
 }

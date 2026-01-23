@@ -10,7 +10,15 @@ namespace mlt::data
     // Alias for a high-resolution timestamp using system_clock with nanosecond precision.
     using DateTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
-    /// @enum
+    /// @enum Validity
+    ///  @brief Represents the validity of a datapoint in a DataFrame or DataColumn
+    enum class Validity
+    {
+        NaN,
+        VALID
+    };
+
+    /// @enum DType
     /// @brief Enumeration of all supported data types in the DataFrame.
     enum class DType : uint8_t
     {

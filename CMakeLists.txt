@@ -9,6 +9,8 @@ add_library(MLTooling
     "src/Container/Mat.cpp" 
     "src/Models/LinearRegressionModel.cpp"
     "src/data/DataColumn.cpp"
+    "test/data/DataFrame.cpp"
+
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -21,7 +23,8 @@ target_include_directories(MLTooling
 install(TARGETS MLTooling DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include)
 
-add_executable(example_basic examples/example_basic.cpp)
+add_executable(example_basic examples/example_basic.cpp
+)
 target_link_libraries(example_basic PRIVATE MLTooling)
 
 add_executable(tests
