@@ -7,7 +7,8 @@
 using namespace mlt::data;
 using namespace mlt::core;
 
-template <typename T> DataColumn<T>::DataColumn(std::vector<T> data, std::vector<bool> validityMask) : m_data(std::move(data))
+template <typename T>
+DataColumn<T>::DataColumn(std::vector<T> data, std::vector<bool> validityMask) : m_data(std::move(data))
 {
     if (!validityMask.empty() && m_data.size() != validityMask.size())
         throw std::invalid_argument("Validity mask must be the same size as the data.");
@@ -63,7 +64,7 @@ template <typename T> size_t DataColumn<T>::getSize() const noexcept
 
 template <typename T> DataColumnInfo DataColumn<T>::getInfo() const noexcept
 {
-    DataColumnInfo info {};
+    DataColumnInfo info{};
     info.dtype = getType();
     info.size = getSize();
     info.invalidRows = countNa();
@@ -96,7 +97,6 @@ template <typename T> void DataColumn<T>::set(size_t row, const bool valid)
     if (size_t dataSize = m_data.size(); row >= dataSize)
         throw std::out_of_range(std::format("DataColumn size: {}, got {}.", dataSize, row));
     m_validityMask[row] = valid;
-
 }
 
 template <typename T> void DataColumn<T>::append(T data, const bool valid)

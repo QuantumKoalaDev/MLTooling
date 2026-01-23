@@ -56,4 +56,3 @@ namespace mlt::data
     extern template class DataColumn<DateTime>;
     extern template class DataColumn<std::string>;
 } // namespace mlt::data
-
