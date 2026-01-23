@@ -6,20 +6,20 @@
 
 namespace Models
 {
-	class LinearRegressionModel
-	{
-	private:
-		std::vector<float> m_weights;
-		float m_bias;
+    class LinearRegressionModel
+    {
+      private:
+        std::vector<float> m_weights;
+        float m_bias;
 
-		void updateWeights(const std::vector<float>& weightGradients, float learningRate);
-		void updateBias(float biasGradient, float learningRate);
+        void updateWeights(const std::vector<float>& weightGradients, float learningRate);
+        void updateBias(float biasGradient, float learningRate);
 
-	public:
-		LinearRegressionModel();
-		~LinearRegressionModel() = default;
+      public:
+        LinearRegressionModel();
+        ~LinearRegressionModel() = default;
 
-		float predict(const std::vector<float>& xFeatures) const;
-		void fit(const Container::Mat& xData, const std::vector<float>& yData, float learningRate, unsigned int epochs);
-	};
-}
+        float predict(const std::vector<float>& xFeatures) const;
+        void fit(const Container::Mat& xData, const std::vector<float>& yData, float learningRate, unsigned int epochs);
+    };
+} // namespace Models
