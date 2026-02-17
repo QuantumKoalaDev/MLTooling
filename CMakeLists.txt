@@ -10,6 +10,7 @@ add_library(MLTooling
     "src/Models/LinearRegressionModel.cpp"
     "src/data/DataColumn.cpp"
     "test/data/DataFrame.cpp"
+        src/math/opt/GradientDescent.cpp
 
 )
 
