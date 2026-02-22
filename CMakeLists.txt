@@ -10,8 +10,7 @@ add_library(MLTooling
     "src/Models/LinearRegressionModel.cpp"
     "src/data/DataColumn.cpp"
     "test/data/DataFrame.cpp"
-        src/math/opt/GradientDescent.cpp
-
+    "src/math/datastructures/matrix.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -30,8 +29,8 @@ target_link_libraries(example_basic PRIVATE MLTooling)
 
 add_executable(tests
     "test/test.cpp"
-    "test/math/tensor/MatrixTest.cpp"
     "test/data/DataFrameTest.cpp"
+    "test/math/datastructures/MatrixFloatTest.cpp"
 )
 target_link_libraries(tests PRIVATE MLTooling)
 
