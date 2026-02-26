@@ -12,6 +12,7 @@ add_library(MLTooling
     "test/data/DataFrame.cpp"
     "src/math/datastructures/matrix.cpp"
     "src/math/datastructures/Matrix.cpp"
+    "src/math/kernels/matrixkernels.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -33,6 +34,7 @@ add_executable(tests
     "test/data/DataFrameTest.cpp"
     "test/math/datastructures/MatrixFloatTest.cpp"
     "test/math/datastructures/MatrixTest.cpp"
+    "test/math/kernels/matrixkernelTest.cpp"
 )
 target_link_libraries(tests PRIVATE MLTooling)
 

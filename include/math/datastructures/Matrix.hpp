@@ -32,8 +32,12 @@ namespace mlt::math::datastructures
 
         ~Matrix();
 
+        Matrix(Matrix&& other) noexcept : mData(std::move(other.mData)), mView(other.mView) {}
+
         const T operator[](size_t row, size_t col) const;
         T& operator[](size_t row, size_t col);
+
+        Matrix operator+(const Matrix& other);
     };
 
     extern template class Matrix<float>;

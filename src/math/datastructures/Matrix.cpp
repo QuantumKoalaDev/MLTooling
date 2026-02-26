@@ -1,7 +1,9 @@
+#include "math/datastructures/matrixview.hpp"
 #include "math/mathstatus.hpp"
 #include <math/Exceptions.hpp>
 #include <math/datastructures/Matrix.hpp>
 #include <math/datastructures/matrix.hpp>
+#include <math/kernels/matrixkernels.hpp>
 
 #include <memory>
 #include <mutex>
@@ -9,11 +11,38 @@
 #include <type_traits>
 
 using namespace mlt::math::datastructures;
+using namespace mlt::math::kernels;
 
 #define MATRIX_COMPUTE_INDEX(row, col)                                                                                 \
     ((col >= mView.cols || row >= mView.rows) ? throw OutOfBoundsException(row, col, mView.rows, mView.cols)           \
                                               : (row * mView.strideRow + col * mView.strideCol +                       \
                                                  mView.startRow * mView.strideRow + mView.startCol * mView.strideCol))
+
+inline MatrixFloatView toInternalView(float* const data, const MatrixView& view)
+{
+    MatrixFloatView internalView = {
+        .data = data + view.startCol * view.strideCol + view.startRow * view.strideRow,
+        .rows = view.rows,
+        .cols = view.cols,
+        .colStride = view.strideCol,
+        .rowStride = view.strideRow
+    };
+
+    return internalView;
+}
+
+inline MatrixDoubleView toInternalView(double* const data, const MatrixView& view)
+{
+    MatrixDoubleView internalView = {
+        .data = data + view.startCol * view.strideCol + view.startRow * view.strideRow,
+        .rows = view.rows,
+        .cols = view.cols,
+        .colStride = view.strideCol,
+        .rowStride = view.strideRow
+    };
+
+    return internalView;
+}
 
 template <typename T> Matrix<T>::~Matrix() = default;
 
@@ -127,6 +156,40 @@ template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t co
 
     if constexpr (std::is_same_v<T, double>)
         return static_cast<MatrixDouble*>(mData.get())->data[pos];
+}
+
+template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
+{
+    if (mView.cols != other.mView.cols || mView.rows != other.mView.rows)
+        throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
+
+    Matrix<T> resultMat = Matrix(mView.rows, mView.cols);
+
+    if constexpr (std::is_same_v<T, float>)
+    {
+        MatrixFloatView thisView = toInternalView(static_cast<MatrixFloat*>(mData.get())->data, mView);
+        MatrixFloatView otherView = toInternalView(static_cast<MatrixFloat*>(other.mData.get())->data, other.mView);
+        MatrixFloatView resultView =
+            toInternalView(static_cast<MatrixFloat*>(resultMat.mData.get())->data, resultMat.mView);
+        mathStatus addStat = addMatrixFloat(thisView, otherView, resultView);
+
+        if (addStat == MATH_SHAPE_MISSMATCH)
+            throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
+    }
+
+    if constexpr (std::is_same_v<T, double>)
+    {
+        MatrixDoubleView thisView = toInternalView(static_cast<MatrixDouble*>(mData.get())->data, mView);
+        MatrixDoubleView otherView = toInternalView(static_cast<MatrixDouble*>(other.mData.get())->data, other.mView);
+        MatrixDoubleView resultView =
+            toInternalView(static_cast<MatrixDouble*>(resultMat.mData.get())->data, resultMat.mView);
+        mathStatus addStat = addMatrixDouble(thisView, otherView, resultView);
+
+        if (addStat == MATH_SHAPE_MISSMATCH)
+            throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
+    }
+
+    return resultMat;
 }
 
 namespace mlt::math::datastructures

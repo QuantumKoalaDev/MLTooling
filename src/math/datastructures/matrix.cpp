@@ -179,13 +179,8 @@ namespace mlt::math::datastructures
 
     MatrixFloatView getMatrixFloatView(const MatrixFloat& mat)
     {
-        MatrixFloatView view;
-
-        view.data = mat.data;
-        view.cols = mat.cols;
-        view.rows = mat.rows;
-        view.colStride = mat.stride;
-        view.rowStride = 0;
+        MatrixFloatView
+            view{.data = mat.data, .rows = mat.rows, .cols = mat.cols, .colStride = mat.stride, .rowStride = 1};
 
         return view;
     }
@@ -356,13 +351,8 @@ namespace mlt::math::datastructures
 
     MatrixDoubleView getMatrixFloatView(const MatrixDouble& mat)
     {
-        MatrixDoubleView view;
-
-        view.data = mat.data;
-        view.cols = mat.cols;
-        view.rows = mat.rows;
-        view.colStride = mat.stride;
-        view.rowStride = 0;
+        MatrixDoubleView
+            view{.data = mat.data, .rows = mat.rows, .cols = mat.cols, .colStride = mat.stride, .rowStride = 1};
 
         return view;
     }
