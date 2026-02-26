@@ -3,9 +3,19 @@
 
 using namespace mlt::math::datastructures;
 
-std::vector<float> getTestVec(size_t len, int start)
+std::vector<float> getTestVec(size_t len, float start)
 {
     std::vector<float> vec;
+
+    for (size_t i = 0; i < len; ++i)
+        vec.push_back(start + i);
+
+    return vec;
+}
+
+std::vector<double> getTestVec(size_t len, double start)
+{
+    std::vector<double> vec;
 
     for (size_t i = 0; i < len; ++i)
         vec.push_back(start + i);
@@ -36,22 +46,22 @@ static void testConstructorMatrix()
         const float val = mat[1,2];
         assertEq(val, 0.f, "Default Matrix construction failed.");
 
-        std::vector<float> buff = getTestVec(35, 4); 
+        std::vector<float> buff = getTestVec(35, 4.f); 
         Matrix<float> matBuff(5,7, buff);
 
         const float testValOne = matBuff[0, 0];
         assertEq(testValOne, buff[0], "Col major layout broke.");
         assertEq(matBuff[4,6], buff[34], "Col major layout broke.");
-        assertEq(matBuff[3, 6], buff[33], "Col major layout broke.");
-        assertEq(matBuff[1, 0], buff[1], "Col major layout broke.");
+        assertEq(matBuff[3,6], buff[33], "Col major layout broke.");
+        assertEq(matBuff[1,0], buff[1], "Col major layout broke.");
     }
 }
 
-static void testGetSetOperator()
+static void testGetSetOperatorMatrix()
 {
     // Test for 5x7
     {
-        std::vector<float> buff = getTestVec(35, 5);
+        std::vector<float> buff = getTestVec(35, 5.f);
         Matrix<float> mat(5, 7, buff);
 
         mat[2, 4] = 24.f;
@@ -59,5 +69,36 @@ static void testGetSetOperator()
     }
 }
 
+static void testAdditionOperatorMatrix()
+{
+    // Test for 5x7 float
+    {
+        const std::vector<float> buffA = getTestVec(35, 4.f);
+        const std::vector<float> buffB = getTestVec(35, 5.f);
+        Matrix<float> A = Matrix(5, 7, buffA);
+        Matrix<float> B = Matrix(5, 7, buffB);
+        Matrix<float> C = A + B;
+
+        assertEq(C[0,0], buffA[0] + buffB[0], "Addition failed.");
+        assertEq(C[4,6], buffA[34] + buffB[34], "Addition failed.");
+        assertEq(C[3,6], buffA[33] + buffB[33], "Addition failed.");
+    }
+
+    // Test for 5x7 double
+    {
+        const std::vector<double> buffA = getTestVec(35, 4.9);
+        const std::vector<double> buffB = getTestVec(35, 8.4);
+        Matrix<double> A = Matrix(5, 7, buffA);
+        Matrix<double> B = Matrix(5, 7, buffB);
+        Matrix<double> C = A + B;
+
+        assertEq(C[0,0], buffA[0] + buffB[0], "Addition failed.");
+        assertEq(C[4,6], buffA[34] + buffB[34], "Addition failed.");
+        assertEq(C[3,6], buffA[33] + buffB[33], "Addition failed.");
+    }
+
+}
+
 REGISTER_TEST(testConstructorMatrix);
-REGISTER_TEST(testGetSetOperator);
+REGISTER_TEST(testGetSetOperatorMatrix);
+REGISTER_TEST(testAdditionOperatorMatrix);
