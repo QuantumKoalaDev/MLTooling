@@ -18,6 +18,9 @@ namespace mlt::math::kernels
     [[nodiscard]] mathStatus
     addMatrixFloatInPlace(datastructures::MatrixFloatView& target, const datastructures::MatrixFloatView& addend);
 
+    [[nodiscard]] mathStatus
+    addMatrixDoubleInPlace(datastructures::MatrixDoubleView& target, const datastructures::MatrixDoubleView& addend);
+
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);
     // mlt::math::mathStatus getColFloat(MatrixFloatView& matView, size_t col, float* out);

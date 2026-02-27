@@ -37,7 +37,8 @@ namespace mlt::math::datastructures
         const T operator[](size_t row, size_t col) const;
         T& operator[](size_t row, size_t col);
 
-        Matrix operator+(const Matrix& other);
+        Matrix operator+(const Matrix& other) const;
+        Matrix& operator+=(const Matrix& other);
     };
 
     extern template class Matrix<float>;

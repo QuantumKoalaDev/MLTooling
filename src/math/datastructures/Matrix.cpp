@@ -1,9 +1,11 @@
-#include "math/datastructures/matrixview.hpp"
+#include <math/datastructures/matrixview.hpp>
 #include "math/mathstatus.hpp"
 #include <math/Exceptions.hpp>
 #include <math/datastructures/Matrix.hpp>
 #include <math/datastructures/matrix.hpp>
 #include <math/kernels/matrixkernels.hpp>
+
+#include <math/kernels/MatrixKernel.hpp>
 
 #include <memory>
 #include <mutex>
@@ -158,38 +160,47 @@ template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t co
         return static_cast<MatrixDouble*>(mData.get())->data[pos];
 }
 
-template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
+template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const
 {
     if (mView.cols != other.mView.cols || mView.rows != other.mView.rows)
         throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
 
     Matrix<T> resultMat = Matrix(mView.rows, mView.cols);
 
-    if constexpr (std::is_same_v<T, float>)
-    {
-        MatrixFloatView thisView = toInternalView(static_cast<MatrixFloat*>(mData.get())->data, mView);
-        MatrixFloatView otherView = toInternalView(static_cast<MatrixFloat*>(other.mData.get())->data, other.mView);
-        MatrixFloatView resultView =
-            toInternalView(static_cast<MatrixFloat*>(resultMat.mData.get())->data, resultMat.mView);
-        mathStatus addStat = addMatrixFloat(thisView, otherView, resultView);
+    typename MatrixKernel<T>::ViewType thisView =
+        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(mData.get())->data, mView);
 
-        if (addStat == MATH_SHAPE_MISSMATCH)
-            throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
-    }
+    typename MatrixKernel<T>::ViewType otherView =
+        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
 
-    if constexpr (std::is_same_v<T, double>)
-    {
-        MatrixDoubleView thisView = toInternalView(static_cast<MatrixDouble*>(mData.get())->data, mView);
-        MatrixDoubleView otherView = toInternalView(static_cast<MatrixDouble*>(other.mData.get())->data, other.mView);
-        MatrixDoubleView resultView =
-            toInternalView(static_cast<MatrixDouble*>(resultMat.mData.get())->data, resultMat.mView);
-        mathStatus addStat = addMatrixDouble(thisView, otherView, resultView);
+    typename MatrixKernel<T>::ViewType resultView =
+        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
 
-        if (addStat == MATH_SHAPE_MISSMATCH)
-            throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
-    }
+    mathStatus addStat = MatrixKernel<T>::add(thisView, otherView, resultView);
+
+    if (addStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
 
     return resultMat;
+}
+
+template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
+{
+    if (mView.cols != other.mView.cols || mView.rows != other.mView.rows)
+        throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
+
+    typename MatrixKernel<T>::ViewType thisView =
+        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(mData.get())->data, mView);
+
+    typename MatrixKernel<T>::ViewType otherView =
+        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
+
+    mathStatus addStat = MatrixKernel<T>::addInPlace(thisView, otherView);
+
+    if (addStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
+
+    return *this;
 }
 
 namespace mlt::math::datastructures
