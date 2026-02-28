@@ -19,11 +19,16 @@ namespace mlt::math::kernels
         {
             return addMatrixFloat(summandOne, summandTwo, result);
         };
-        
-        [[nodiscard]] static mlt::math::mathStatus
-        addInPlace(ViewType& target, const ViewType& addend)
+
+        [[nodiscard]] static mlt::math::mathStatus addInPlace(ViewType& target, const ViewType& addend)
         {
             return addMatrixFloatInPlace(target, addend);
+        };
+
+        [[nodiscard]] static mlt::math::mathStatus
+        multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)
+        {
+            return multiplyMatrixFloat(multiplicant, multiplier, product);
         };
     };
 
@@ -37,11 +42,16 @@ namespace mlt::math::kernels
         {
             return addMatrixDouble(summandOne, summandTwo, result);
         };
-        
-        [[nodiscard]] static mlt::math::mathStatus
-        addInPlace(ViewType& target, const ViewType& addend)
+
+        [[nodiscard]] static mlt::math::mathStatus addInPlace(ViewType& target, const ViewType& addend)
         {
             return addMatrixDoubleInPlace(target, addend);
+        };
+
+        [[nodiscard]] static mlt::math::mathStatus
+        multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)
+        {
+            return multiplyMatrixDouble(multiplicant, multiplier, product);
         };
     };
 } // namespace mlt::math::kernels

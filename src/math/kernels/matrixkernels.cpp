@@ -112,4 +112,88 @@ namespace mlt::math::kernels
 
         return mlt::math::MATH_SUCCESS;
     }
+
+    mlt::math::mathStatus multiplyMatrixFloat(
+        const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,
+        datastructures::MatrixFloatView& product
+    )
+    {
+        if (multiplicant.cols != multiplier.rows)
+            return mlt::math::MATH_SHAPE_MISSMATCH;
+
+        if (product.rows != multiplicant.rows || product.cols != multiplier.cols)
+            return mlt::math::MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT aData = multiplicant.data;
+        float* RESTRICT bData = multiplier.data;
+        float* RESTRICT cData = product.data;
+
+        for (size_t colC = 0; colC < product.cols; ++colC)
+        {
+            size_t cBase = colC * product.colStride;
+            size_t bBase = colC * multiplier.colStride;
+
+            for (size_t rowC = 0; rowC < product.rows; ++rowC)
+            {
+                size_t posC = cBase + rowC * product.rowStride;
+                size_t aBase = rowC * multiplicant.rowStride;
+
+                float sum = 0.f;
+
+                for (size_t colA = 0; colA < multiplicant.cols; ++colA)
+                {
+                    size_t aPos = aBase + colA * multiplicant.colStride;
+                    size_t bPos = bBase + colA * multiplier.rowStride;
+                    // C[rowC, colC] += A[rowC, colA] * B[colA, colC];
+                    sum += aData[aPos] * bData[bPos];
+                }
+
+                cData[posC] = sum;
+            }
+        }
+
+        return mlt::math::MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyMatrixDouble(
+        const datastructures::MatrixDoubleView& multiplicant, const datastructures::MatrixDoubleView& multiplier,
+        datastructures::MatrixDoubleView& product
+    )
+    {
+        if (multiplicant.cols != multiplier.rows)
+            return mlt::math::MATH_SHAPE_MISSMATCH;
+
+        if (product.rows != multiplicant.rows || product.cols != multiplier.cols)
+            return mlt::math::MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT aData = multiplicant.data;
+        double* RESTRICT bData = multiplier.data;
+        double* RESTRICT cData = product.data;
+
+        for (size_t colC = 0; colC < product.cols; ++colC)
+        {
+            size_t cBase = colC * product.colStride;
+            size_t bBase = colC * multiplier.colStride;
+
+            for (size_t rowC = 0; rowC < product.rows; ++rowC)
+            {
+                size_t posC = cBase + rowC * product.rowStride;
+                size_t aBase = rowC * multiplicant.rowStride;
+
+                double sum = 0.0;
+
+                for (size_t colA = 0; colA < multiplicant.cols; ++colA)
+                {
+                    size_t aPos = aBase + colA * multiplicant.colStride;
+                    size_t bPos = bBase + colA * multiplier.rowStride;
+
+                    sum += aData[aPos] * bData[bPos];
+                }
+
+                cData[posC] = sum;
+            }
+        }
+
+        return mlt::math::MATH_SUCCESS;
+    }
 } // namespace mlt::math::kernels

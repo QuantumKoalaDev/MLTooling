@@ -349,7 +349,7 @@ namespace mlt::math::datastructures
         return MATH_SUCCESS;
     }
 
-    MatrixDoubleView getMatrixFloatView(const MatrixDouble& mat)
+    MatrixDoubleView getMatrixDoubleView(const MatrixDouble& mat)
     {
         MatrixDoubleView
             view{.data = mat.data, .rows = mat.rows, .cols = mat.cols, .colStride = mat.stride, .rowStride = 1};

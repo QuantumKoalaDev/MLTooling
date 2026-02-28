@@ -99,6 +99,40 @@ static void testAdditionOperatorMatrix()
 
 }
 
+static void testMultiplicationOperatorMatrix()
+{
+    {
+        const std::vector<float> buffA = { 1, 4, 2, 5, 3, 6 };
+        const std::vector<float> buffB = { 7, 8, 9, 10, 11, 12 };
+        const std::vector<float> buffC = { 50, 122, 68, 167 };
+
+        Matrix<float> A = Matrix(2, 3, buffA);
+        Matrix<float> B = Matrix(3, 2, buffB);
+        Matrix<float> C = A * B;
+
+        assertEq(C[0,0], buffC[0], "Multiplication failed.");
+        assertEq(C[1,0], buffC[1], "Multiplication failed.");
+        assertEq(C[0,1], buffC[2], "Multiplication failed.");
+        assertEq(C[1,1], buffC[3], "Multiplication failed.");
+    }
+
+    {
+        const std::vector<double> buffA = { 1, 4, 2, 5, 3, 6 };
+        const std::vector<double> buffB = { 7, 8, 9, 10, 11, 12 };
+        const std::vector<double> buffC = { 50, 122, 68, 167 };
+
+        Matrix<double> A = Matrix(2, 3, buffA);
+        Matrix<double> B = Matrix(3, 2, buffB);
+        Matrix<double> C = A * B;
+
+        assertEq(C[0,0], buffC[0], "Multiplication failed.");
+        assertEq(C[1,0], buffC[1], "Multiplication failed.");
+        assertEq(C[0,1], buffC[2], "Multiplication failed.");
+        assertEq(C[1,1], buffC[3], "Multiplication failed.");
+    }
+}
+
 REGISTER_TEST(testConstructorMatrix);
 REGISTER_TEST(testGetSetOperatorMatrix);
 REGISTER_TEST(testAdditionOperatorMatrix);
+REGISTER_TEST(testMultiplicationOperatorMatrix);

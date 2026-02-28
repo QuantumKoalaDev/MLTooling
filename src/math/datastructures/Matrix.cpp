@@ -1,8 +1,8 @@
-#include <math/datastructures/matrixview.hpp>
 #include "math/mathstatus.hpp"
 #include <math/Exceptions.hpp>
 #include <math/datastructures/Matrix.hpp>
 #include <math/datastructures/matrix.hpp>
+#include <math/datastructures/matrixview.hpp>
 #include <math/kernels/matrixkernels.hpp>
 
 #include <math/kernels/MatrixKernel.hpp>
@@ -201,6 +201,30 @@ template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
 
     return *this;
+}
+
+template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) const
+{
+    if (mView.cols != other.mView.rows)
+        throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
+
+    Matrix<T> resultMat = Matrix(mView.rows, other.mView.cols);
+
+    typename MatrixKernel<T>::ViewType thisView =
+        toInternalView(static_cast<MatrixKernel<T>::DataType*>(mData.get())->data, mView);
+
+    typename MatrixKernel<T>::ViewType otherView =
+        toInternalView(static_cast<MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
+
+    typename MatrixKernel<T>::ViewType resultView =
+        toInternalView(static_cast<MatrixKernel<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
+
+    mathStatus multiplyStat = MatrixKernel<T>::multiply(thisView, otherView, resultView);
+
+    if (multiplyStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
+
+    return resultMat;
 }
 
 namespace mlt::math::datastructures

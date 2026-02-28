@@ -21,6 +21,15 @@ namespace mlt::math::kernels
     [[nodiscard]] mathStatus
     addMatrixDoubleInPlace(datastructures::MatrixDoubleView& target, const datastructures::MatrixDoubleView& addend);
 
+    [[nodiscard]] mathStatus multiplyMatrixFloat(
+        const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,
+        datastructures::MatrixFloatView& product
+    );
+
+    [[nodiscard]] mathStatus multiplyMatrixDouble(
+        const datastructures::MatrixDoubleView& multiplicant, const datastructures::MatrixDoubleView& multiplier,
+        datastructures::MatrixDoubleView& product
+    );
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);
     // mlt::math::mathStatus getColFloat(MatrixFloatView& matView, size_t col, float* out);
