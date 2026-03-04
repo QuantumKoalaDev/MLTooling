@@ -196,4 +196,57 @@ namespace mlt::math::kernels
 
         return mlt::math::MATH_SUCCESS;
     }
+
+    mlt::math::mathStatus
+    cloneMatrixFloat(const datastructures::MatrixFloatView& src, datastructures::MatrixFloatView& dist)
+    {
+        if (src.cols != dist.cols || src.rows != dist.rows)
+            return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT srcData = src.data;
+        float* RESTRICT distData = dist.data;
+
+        for (size_t col = 0; col < dist.cols; ++col)
+        {
+            size_t srcBase = col * src.colStride;
+            size_t distBase = col * dist.colStride;
+
+            for (size_t row = 0; row < dist.rows; ++row)
+            {
+                size_t srcPos = srcBase + row * src.rowStride;
+                size_t distPos = distBase + row * dist.rowStride;
+
+                distData[distPos] = srcData[srcPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus
+    cloneMatrixDouble(const datastructures::MatrixDoubleView& src, datastructures::MatrixDoubleView& dist)
+    {
+        if (src.cols != dist.cols || src.rows != dist.rows)
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT srcData = src.data;
+        double* RESTRICT distData = dist.data;
+
+        for (size_t col = 0; col < dist.cols; ++col)
+        {
+            size_t srcBase = col * src.colStride;
+            size_t distBase = col * dist.colStride;
+
+            for (size_t row = 0; row < dist.rows; ++row)
+            {
+                size_t srcPos = srcBase + row * src.rowStride;
+                size_t distPos = distBase + row * dist.rowStride;
+
+                distData[distPos] = srcData[srcPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
 } // namespace mlt::math::kernels

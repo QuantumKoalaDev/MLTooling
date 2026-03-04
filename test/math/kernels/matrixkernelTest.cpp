@@ -4,6 +4,7 @@
 
 #include <math/datastructures/matrix.hpp>
 #include <math/kernels/matrixkernels.hpp>
+#include <sched.h>
 #include <vector>
 
 using namespace mlt::math::datastructures;
@@ -103,6 +104,58 @@ static void matrixKernelMultiplyTest()
     }
 }
 
+static void matrixKernelCloneTest()
+{
+    {
+        FloatVec aData = { 1, 4, 2, 5, 3, 6 };
+        
+        MatrixFloat A;
+        MatrixFloat B;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixFloatFromBuff(2, 3, aData.data(), aData.size(), A);
+        unusedStat = createMatrixFloat(2, 3, B);
+
+        MatrixFloatView aView = getMatrixFloatView(A);
+        MatrixFloatView bView = getMatrixFloatView(B);
+
+        mlt::math::mathStatus cloneStat = cloneMatrixFloat(aView, bView);
+
+        assertEq(cloneStat, mlt::math::MATH_SUCCESS, "Matrix could not be cloned due to shape missmatch (float part).");
+
+        for (size_t i = 0; i < aData.size(); ++i)
+            assertEq(bView.data[i], aData[i], "Wrong value (float part).");
+
+        deleteMatrixFloat(A);
+        deleteMatrixFloat(B);
+    }
+
+    {
+        DoubleVec aData = { 1, 4, 2, 5, 3, 6 };
+
+        MatrixDouble A;
+        MatrixDouble B;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixDoubleFromBuff(2, 3, aData.data(), aData.size(), A);
+        unusedStat = createMatrixDouble(2, 3, B);
+
+        MatrixDoubleView aView = getMatrixDoubleView(A);
+        MatrixDoubleView bView = getMatrixDoubleView(B);
+
+        mlt::math::mathStatus cloneStat = cloneMatrixDouble(aView, bView);
+
+        assertEq(cloneStat, mlt::math::MATH_SUCCESS, "Matrix could not be cloned due to shape missmatch (double part).");
+
+        for (size_t i = 0; i < aData.size(); ++i)
+            assertEq(bView.data[i], aData[i], "Wrong value (double part).");
+
+        deleteMatrixDouble(A);
+        deleteMatrixDouble(B);
+    }
+}
+
 
 REGISTER_TEST(matrixKernelAddTest);
 REGISTER_TEST(matrixKernelMultiplyTest);
+REGISTER_TEST(matrixKernelCloneTest);

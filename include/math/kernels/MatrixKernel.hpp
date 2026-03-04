@@ -12,7 +12,6 @@ namespace mlt::math::kernels
     template <> struct MatrixKernel<float>
     {
         using ViewType = datastructures::MatrixFloatView;
-        using DataType = datastructures::MatrixFloat;
 
         [[nodiscard]] static mlt::math::mathStatus
         add(const ViewType& summandOne, const ViewType& summandTwo, ViewType& result)
@@ -30,12 +29,16 @@ namespace mlt::math::kernels
         {
             return multiplyMatrixFloat(multiplicant, multiplier, product);
         };
+
+        [[nodiscard]] static mlt::math::mathStatus clone(const ViewType& src, ViewType& dist)
+        {
+            return cloneMatrixFloat(src, dist);
+        };
     };
 
     template <> struct MatrixKernel<double>
     {
         using ViewType = datastructures::MatrixDoubleView;
-        using DataType = datastructures::MatrixDouble;
 
         [[nodiscard]] static mlt::math::mathStatus
         add(const ViewType& summandOne, const ViewType& summandTwo, ViewType& result)
@@ -52,6 +55,11 @@ namespace mlt::math::kernels
         multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)
         {
             return multiplyMatrixDouble(multiplicant, multiplier, product);
+        };
+
+        [[nodiscard]] static mlt::math::mathStatus clone(const ViewType& src, ViewType& dist)
+        {
+            return cloneMatrixDouble(src, dist);
         };
     };
 } // namespace mlt::math::kernels

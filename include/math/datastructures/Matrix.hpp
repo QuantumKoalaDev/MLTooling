@@ -1,8 +1,10 @@
 #pragma once
 
+#include <core/Shape.hpp>
+
 #include <memory>
 #include <shared_mutex>
-#include <vector>
+#include <span>
 
 struct MatrixFloat;
 struct MatrixDouble;
@@ -28,10 +30,13 @@ namespace mlt::math::datastructures
 
       public:
         Matrix(size_t rowCount, size_t colCount);
-        Matrix(size_t rowCount, size_t colCount, std::vector<T> buff);
+        explicit Matrix(core::Shape shape) : Matrix(shape.rows, shape.cols) {};
+        Matrix(size_t rowCount, size_t colCount, std::span<const T> buff);
+        Matrix(core::Shape shape, std::span<const T> buff) : Matrix(shape.rows, shape.cols, buff) {};
 
         ~Matrix();
 
+        Matrix(const Matrix& other) noexcept : mData(other.mData), mView(other.mView) {};
         Matrix(Matrix&& other) noexcept : mData(std::move(other.mData)), mView(other.mView) {}
 
         const T operator[](size_t row, size_t col) const;
@@ -41,6 +46,8 @@ namespace mlt::math::datastructures
         Matrix& operator+=(const Matrix& other);
 
         Matrix operator*(const Matrix& other) const;
+
+        Matrix clone() const;
     };
 
     extern template class Matrix<float>;

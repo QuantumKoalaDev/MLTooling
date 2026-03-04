@@ -30,6 +30,12 @@ namespace mlt::math::kernels
         const datastructures::MatrixDoubleView& multiplicant, const datastructures::MatrixDoubleView& multiplier,
         datastructures::MatrixDoubleView& product
     );
+
+    [[nodiscard]] mathStatus
+    cloneMatrixFloat(const datastructures::MatrixFloatView& src, datastructures::MatrixFloatView& dist);
+
+    [[nodiscard]] mathStatus
+    cloneMatrixDouble(const datastructures::MatrixDoubleView& src, datastructures::MatrixDoubleView& dist);
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);
     // mlt::math::mathStatus getColFloat(MatrixFloatView& matView, size_t col, float* out);

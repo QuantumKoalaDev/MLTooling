@@ -75,8 +75,8 @@ static void testAdditionOperatorMatrix()
     {
         const std::vector<float> buffA = getTestVec(35, 4.f);
         const std::vector<float> buffB = getTestVec(35, 5.f);
-        Matrix<float> A = Matrix(5, 7, buffA);
-        Matrix<float> B = Matrix(5, 7, buffB);
+        Matrix<float> A = Matrix(5, 7, std::span<const float>(buffA));
+        Matrix<float> B = Matrix(5, 7, std::span<const float>(buffB));
         Matrix<float> C = A + B;
 
         assertEq(C[0,0], buffA[0] + buffB[0], "Addition failed.");
@@ -88,8 +88,8 @@ static void testAdditionOperatorMatrix()
     {
         const std::vector<double> buffA = getTestVec(35, 4.9);
         const std::vector<double> buffB = getTestVec(35, 8.4);
-        Matrix<double> A = Matrix(5, 7, buffA);
-        Matrix<double> B = Matrix(5, 7, buffB);
+        Matrix<double> A = Matrix(5, 7, std::span<const double>(buffA));
+        Matrix<double> B = Matrix(5, 7, std::span<const double>(buffB));
         Matrix<double> C = A + B;
 
         assertEq(C[0,0], buffA[0] + buffB[0], "Addition failed.");
@@ -106,8 +106,8 @@ static void testMultiplicationOperatorMatrix()
         const std::vector<float> buffB = { 7, 8, 9, 10, 11, 12 };
         const std::vector<float> buffC = { 50, 122, 68, 167 };
 
-        Matrix<float> A = Matrix(2, 3, buffA);
-        Matrix<float> B = Matrix(3, 2, buffB);
+        Matrix<float> A = Matrix(2, 3, std::span<const float>(buffA));
+        Matrix<float> B = Matrix(3, 2, std::span<const float>(buffB));
         Matrix<float> C = A * B;
 
         assertEq(C[0,0], buffC[0], "Multiplication failed.");
@@ -121,8 +121,8 @@ static void testMultiplicationOperatorMatrix()
         const std::vector<double> buffB = { 7, 8, 9, 10, 11, 12 };
         const std::vector<double> buffC = { 50, 122, 68, 167 };
 
-        Matrix<double> A = Matrix(2, 3, buffA);
-        Matrix<double> B = Matrix(3, 2, buffB);
+        Matrix<double> A = Matrix(2, 3, std::span<const double>(buffA));
+        Matrix<double> B = Matrix(3, 2, std::span<const double>(buffB));
         Matrix<double> C = A * B;
 
         assertEq(C[0,0], buffC[0], "Multiplication failed.");
@@ -132,7 +132,35 @@ static void testMultiplicationOperatorMatrix()
     }
 }
 
+static void testCloneMatrix()
+{
+    {
+        const std::vector<float> buffA = { 1, 4, 2, 5, 3, 6 };
+
+        Matrix<float> A = Matrix(2, 3, std::span<const float>(buffA));
+        Matrix<float> B = A.clone();
+
+        assertEq(B[0,0], buffA[0], "Clone failed (float part).");
+        assertEq(B[1,0], buffA[1], "Clone failed (float part).");
+        assertEq(B[0,1], buffA[2], "Clone failed (float part).");
+        assertEq(B[1,1], buffA[3], "Clone failed (float part).");
+    }
+
+    {
+        const std::vector<double> buffA = { 1, 4, 2, 5, 3, 6 };
+
+        Matrix<double> A = Matrix(2, 3, std::span<const double>(buffA));
+        Matrix<double> B = A.clone();
+
+        assertEq(B[0,0], buffA[0], "Clone failed (float part).");
+        assertEq(B[1,0], buffA[1], "Clone failed (float part).");
+        assertEq(B[0,1], buffA[2], "Clone failed (float part).");
+        assertEq(B[1,1], buffA[3], "Clone failed (float part).");
+    }
+}
+
 REGISTER_TEST(testConstructorMatrix);
 REGISTER_TEST(testGetSetOperatorMatrix);
 REGISTER_TEST(testAdditionOperatorMatrix);
 REGISTER_TEST(testMultiplicationOperatorMatrix);
+REGISTER_TEST(testCloneMatrix);

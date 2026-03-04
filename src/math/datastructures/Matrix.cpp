@@ -1,19 +1,15 @@
 #include "math/mathstatus.hpp"
 #include <math/Exceptions.hpp>
 #include <math/datastructures/Matrix.hpp>
-#include <math/datastructures/matrix.hpp>
-#include <math/datastructures/matrixview.hpp>
-#include <math/kernels/matrixkernels.hpp>
-
+#include <math/datastructures/MatrixStorage.hpp>
 #include <math/kernels/MatrixKernel.hpp>
 
 #include <memory>
 #include <mutex>
-#include <shared_mutex>
-#include <type_traits>
 
 using namespace mlt::math::datastructures;
 using namespace mlt::math::kernels;
+using namespace mlt::core;
 
 #define MATRIX_COMPUTE_INDEX(row, col)                                                                                 \
     ((col >= mView.cols || row >= mView.rows) ? throw OutOfBoundsException(row, col, mView.rows, mView.cols)           \
@@ -50,23 +46,13 @@ template <typename T> Matrix<T>::~Matrix() = default;
 
 template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colCount)
 {
-    mlt::math::mathStatus createStat;
+    mData = std::shared_ptr<void>(
+        new MatrixStorage<T>::DataType(),
+        [](void* p) { MatrixStorage<T>::del(*static_cast<MatrixStorage<T>::DataType*>(p)); }
+    );
 
-    if constexpr (std::is_same_v<T, float>)
-    {
-        mData =
-            std::shared_ptr<void>(new MatrixFloat(), [](void* p) { deleteMatrixFloat(*static_cast<MatrixFloat*>(p)); });
-        createStat = createMatrixFloat(rowCount, colCount, *static_cast<MatrixFloat*>(mData.get()));
-    }
-
-    if constexpr (std::is_same_v<T, double>)
-    {
-        mData = std::shared_ptr<void>(
-            new MatrixDouble(),
-            [](void* p) { deleteMatrixDouble(*static_cast<MatrixDouble*>(p)); }
-        );
-        createStat = createMatrixDouble(rowCount, colCount, *static_cast<MatrixDouble*>(mData.get()));
-    }
+    mlt::math::mathStatus createStat =
+        MatrixStorage<T>::create(rowCount, colCount, *static_cast<MatrixStorage<T>::DataType*>(mData.get()));
 
     if (createStat != MATH_SUCCESS)
     {
@@ -85,37 +71,20 @@ template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colC
     mView.strideRow = 1;
 }
 
-template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colCount, std::vector<T> buff)
+template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colCount, std::span<const T> buff)
 {
-    mlt::math::mathStatus createStat;
+    mData = std::shared_ptr<void>(
+        new MatrixStorage<T>::DataType,
+        [](void* p) { MatrixStorage<T>::del(*static_cast<MatrixStorage<T>::DataType*>(p)); }
+    );
 
-    if constexpr (std::is_same_v<T, float>)
-    {
-        mData =
-            std::shared_ptr<void>(new MatrixFloat(), [](void* p) { deleteMatrixFloat(*static_cast<MatrixFloat*>(p)); });
-        createStat = createMatrixFloatFromBuff(
-            rowCount,
-            colCount,
-            buff.data(),
-            buff.size(),
-            *static_cast<MatrixFloat*>(mData.get())
-        );
-    }
-
-    if constexpr (std::is_same_v<T, double>)
-    {
-        mData = std::shared_ptr<void>(
-            new MatrixDouble(),
-            [](void* p) { deleteMatrixDouble(*static_cast<MatrixDouble*>(p)); }
-        );
-        createStat = createMatrixDoubleFromBuff(
-            rowCount,
-            colCount,
-            buff.data(),
-            buff.size(),
-            *static_cast<MatrixDouble*>(mData.get())
-        );
-    }
+    mlt::math::mathStatus createStat = MatrixStorage<T>::createFromBuff(
+        rowCount,
+        colCount,
+        buff.data(),
+        buff.size(),
+        *static_cast<MatrixStorage<T>::DataType*>(mData.get())
+    );
 
     if (createStat != MATH_SUCCESS)
     {
@@ -168,13 +137,13 @@ template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) con
     Matrix<T> resultMat = Matrix(mView.rows, mView.cols);
 
     typename MatrixKernel<T>::ViewType thisView =
-        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(mData.get())->data, mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(mData.get())->data, mView);
 
     typename MatrixKernel<T>::ViewType otherView =
-        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data, other.mView);
 
     typename MatrixKernel<T>::ViewType resultView =
-        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
 
     mathStatus addStat = MatrixKernel<T>::add(thisView, otherView, resultView);
 
@@ -190,10 +159,10 @@ template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
         throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
 
     typename MatrixKernel<T>::ViewType thisView =
-        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(mData.get())->data, mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(mData.get())->data, mView);
 
     typename MatrixKernel<T>::ViewType otherView =
-        toInternalView(static_cast<typename MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data, other.mView);
 
     mathStatus addStat = MatrixKernel<T>::addInPlace(thisView, otherView);
 
@@ -211,13 +180,13 @@ template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) con
     Matrix<T> resultMat = Matrix(mView.rows, other.mView.cols);
 
     typename MatrixKernel<T>::ViewType thisView =
-        toInternalView(static_cast<MatrixKernel<T>::DataType*>(mData.get())->data, mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(mData.get())->data, mView);
 
     typename MatrixKernel<T>::ViewType otherView =
-        toInternalView(static_cast<MatrixKernel<T>::DataType*>(other.mData.get())->data, other.mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data, other.mView);
 
     typename MatrixKernel<T>::ViewType resultView =
-        toInternalView(static_cast<MatrixKernel<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
 
     mathStatus multiplyStat = MatrixKernel<T>::multiply(thisView, otherView, resultView);
 
@@ -225,6 +194,23 @@ template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) con
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
 
     return resultMat;
+}
+
+template <typename T> Matrix<T> Matrix<T>::clone() const
+{
+    Matrix<T> distMat = Matrix<T>(mView.rows, mView.cols);
+
+    typename MatrixKernel<T>::ViewType thisView =
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(mData.get())->data, mView);
+    typename MatrixKernel<T>::ViewType distView =
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(distMat.mData.get())->data, distMat.mView);
+
+    mathStatus cloneStat = MatrixKernel<T>::clone(thisView, distView);
+
+    if (cloneStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, distView.rows, distView.cols);
+
+    return distMat;
 }
 
 namespace mlt::math::datastructures
