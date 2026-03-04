@@ -109,11 +109,7 @@ template <typename T> const T Matrix<T>::operator[](const size_t row, const size
 
     size_t pos = MATRIX_COMPUTE_INDEX(row, col);
 
-    if constexpr (std::is_same_v<T, float>)
-        return static_cast<MatrixFloat*>(mData.get())->data[pos];
-
-    if constexpr (std::is_same_v<T, double>)
-        return static_cast<MatrixDouble*>(mData.get())->data[pos];
+    return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[pos];
 }
 
 template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t col)
@@ -122,11 +118,7 @@ template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t co
 
     size_t pos = MATRIX_COMPUTE_INDEX(row, col);
 
-    if constexpr (std::is_same_v<T, float>)
-        return static_cast<MatrixFloat*>(mData.get())->data[pos];
-
-    if constexpr (std::is_same_v<T, double>)
-        return static_cast<MatrixDouble*>(mData.get())->data[pos];
+    return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[pos];
 }
 
 template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const
