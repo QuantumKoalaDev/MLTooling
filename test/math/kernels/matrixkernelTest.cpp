@@ -20,10 +20,11 @@ static void matrixKernelAddTest()
     MatrixFloat matOne;
     MatrixFloat matTwo;
     MatrixFloat matResult;
-
-    createMatrixFloatFromBuff(2, 3, sumOne.data(), sumOne.size(), matOne);
-    createMatrixFloatFromBuff(2, 3, sumTwo.data(), sumTwo.size(), matTwo);
-    createMatrixFloat(2, 3, matResult);
+    
+    mlt::math::mathStatus unusedStat;
+    unusedStat = createMatrixFloatFromBuff(2, 3, sumOne.data(), sumOne.size(), matOne);
+    unusedStat = createMatrixFloatFromBuff(2, 3, sumTwo.data(), sumTwo.size(), matTwo);
+    unusedStat = createMatrixFloat(2, 3, matResult);
 
     MatrixFloatView oneView = getMatrixFloatView(matOne);
     MatrixFloatView twoView = getMatrixFloatView(matTwo);
@@ -49,10 +50,11 @@ static void matrixKernelMultiplyTest()
         MatrixFloat A;
         MatrixFloat B;
         MatrixFloat C;
-    
-        createMatrixFloatFromBuff(2, 3, aData.data(), aData.size(), A);
-        createMatrixFloatFromBuff(3, 2, bData.data(), bData.size(), B);
-        createMatrixFloat(2, 2, C);
+        
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixFloatFromBuff(2, 3, aData.data(), aData.size(), A);
+        unusedStat = createMatrixFloatFromBuff(3, 2, bData.data(), bData.size(), B);
+        unusedStat = createMatrixFloat(2, 2, C);
 
         MatrixFloatView aView = getMatrixFloatView(A);
         MatrixFloatView bView = getMatrixFloatView(B);
@@ -79,9 +81,10 @@ static void matrixKernelMultiplyTest()
         MatrixDouble B;
         MatrixDouble C;
 
-        createMatrixDoubleFromBuff(2, 3, aData.data(), aData.size(), A);
-        createMatrixDoubleFromBuff(3, 2, bData.data(), bData.size(), B);
-        createMatrixDouble(2, 2, C);
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixDoubleFromBuff(2, 3, aData.data(), aData.size(), A);
+        unusedStat = createMatrixDoubleFromBuff(3, 2, bData.data(), bData.size(), B);
+        unusedStat = createMatrixDouble(2, 2, C);
 
         MatrixDoubleView aView = getMatrixDoubleView(A);
         MatrixDoubleView bView = getMatrixDoubleView(B);
