@@ -159,8 +159,25 @@ static void testCloneMatrix()
     }
 }
 
+static void testSubmatrixMatrix()
+{
+    {
+        const std::vector<float> buffA = { 1, 4, 2, 5, 3, 6 };
+
+        Matrix<float> A = Matrix(2, 3, std::span<const float>(buffA));
+        Matrix<float> B = A.submatrix(0, 1, 2, 2);
+
+        assertEq(B[0,0], buffA[2], "Submatrix failed (float part).");
+        assertEq(B[1,0], buffA[3], "Submatrix failed (float part).");
+        assertEq(B[0,1], buffA[4], "Submatrix failed (float part).");
+        assertEq(B[1,1], buffA[5], "Submatrix failed (float part).");
+    }
+
+}
+
 REGISTER_TEST(testConstructorMatrix);
 REGISTER_TEST(testGetSetOperatorMatrix);
 REGISTER_TEST(testAdditionOperatorMatrix);
 REGISTER_TEST(testMultiplicationOperatorMatrix);
 REGISTER_TEST(testCloneMatrix);
+REGISTER_TEST(testSubmatrixMatrix);

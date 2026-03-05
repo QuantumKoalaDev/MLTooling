@@ -205,6 +205,36 @@ template <typename T> Matrix<T> Matrix<T>::clone() const
     return distMat;
 }
 
+template <typename T>
+Matrix<T>
+Matrix<T>::submatrix(const size_t rowStart, const size_t colStart, const size_t rowCount, const size_t colCount) const
+{
+    // Matrix<float> B = A.submatrix(0, 1, 2, 2);
+    size_t rowEnd = rowStart + rowCount;
+    size_t colEnd = colStart + colCount;
+
+    if (rowStart >= mView.rows || colStart >= mView.cols)
+        throw OutOfBoundsException(rowStart, colStart, mView.rows, mView.cols);
+
+    if (rowEnd > mView.rows || colEnd > mView.cols)
+        throw OutOfBoundsException(rowEnd, colEnd, mView.rows, mView.cols);
+
+    Matrix<T> subMat = Matrix(*this);
+
+    MatrixView subView = {
+        .startCol = colStart,
+        .startRow = rowStart,
+        .cols = colCount,
+        .rows = rowCount,
+        .strideCol = mView.strideCol,
+        .strideRow = mView.strideRow,
+    };
+
+    subMat.mView = subView;
+
+    return subMat;
+}
+
 namespace mlt::math::datastructures
 {
     template class Matrix<float>;
