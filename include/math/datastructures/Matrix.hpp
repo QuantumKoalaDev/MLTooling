@@ -47,6 +47,8 @@ namespace mlt::math::datastructures
 
         Matrix operator*(const Matrix& other) const;
 
+        core::Shape getShape() const;
+
         Matrix clone() const;
         Matrix submatrix(size_t startRow, size_t startCol, size_t rowCount, size_t colCount) const;
     };

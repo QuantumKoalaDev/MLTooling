@@ -188,6 +188,11 @@ template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) con
     return resultMat;
 }
 
+template <typename T> Shape Matrix<T>::getShape() const
+{
+    return Shape(mView.rows, mView.cols);
+}
+
 template <typename T> Matrix<T> Matrix<T>::clone() const
 {
     Matrix<T> distMat = Matrix<T>(mView.rows, mView.cols);
