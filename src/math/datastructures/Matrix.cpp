@@ -214,7 +214,6 @@ template <typename T>
 Matrix<T>
 Matrix<T>::submatrix(const size_t rowStart, const size_t colStart, const size_t rowCount, const size_t colCount) const
 {
-    // Matrix<float> B = A.submatrix(0, 1, 2, 2);
     size_t rowEnd = rowStart + rowCount;
     size_t colEnd = colStart + colCount;
 

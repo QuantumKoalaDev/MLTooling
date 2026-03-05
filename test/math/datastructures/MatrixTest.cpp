@@ -173,6 +173,18 @@ static void testSubmatrixMatrix()
         assertEq(B[1,1], buffA[5], "Submatrix failed (float part).");
     }
 
+    {
+        const std::vector<double> buffA = { 1, 4, 2, 5, 3, 6 };
+
+        Matrix<double> A = Matrix(2, 3, std::span<const double>(buffA));
+        Matrix<double> B = A.submatrix(0, 1, 2, 2);
+
+        assertEq(B[0,0], buffA[2], "Submatrix failed (double part).");
+        assertEq(B[1,0], buffA[3], "Submatrix failed (double part).");
+        assertEq(B[0,1], buffA[4], "Submatrix failed (double part).");
+        assertEq(B[1,1], buffA[5], "Submatrix failed (double part).");
+    }
+
 }
 
 REGISTER_TEST(testConstructorMatrix);
