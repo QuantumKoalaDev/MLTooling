@@ -36,6 +36,7 @@ namespace mlt::math::kernels
 
     [[nodiscard]] mathStatus
     cloneMatrixDouble(const datastructures::MatrixDoubleView& src, datastructures::MatrixDoubleView& dist);
+
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);
     // mlt::math::mathStatus getColFloat(MatrixFloatView& matView, size_t col, float* out);
@@ -47,7 +48,5 @@ namespace mlt::math::kernels
     // mlt::math::mathStatus setIdentity(MatrixFloatView& mat);
     // mlt::math::mathStatus copy(const MatrixFloatView& src, MatrixFloatView& dist);
 
-    // mlt::math::mathStatus submatrix(
-    //  const MatrixFloatView& src, size_t rowStart, size_t rowEnd, size_t colStart, size_t colEnd, MatrixFloatView& out
-    // );
+
 } // namespace mlt::math::kernels
