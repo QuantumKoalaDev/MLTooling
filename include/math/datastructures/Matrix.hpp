@@ -39,6 +39,9 @@ namespace mlt::math::datastructures
         Matrix(const Matrix& other) noexcept : mData(other.mData), mView(other.mView) {};
         Matrix(Matrix&& other) noexcept : mData(std::move(other.mData)), mView(other.mView) {}
 
+        Matrix& operator=(const Matrix& other) noexcept;
+        Matrix& operator=(Matrix&& other) noexcept;
+
         const T operator[](size_t row, size_t col) const;
         T& operator[](size_t row, size_t col);
 

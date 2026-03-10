@@ -103,6 +103,28 @@ template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colC
     mView.strideRow = 1;
 }
 
+template <typename T> Matrix<T>& Matrix<T>::operator=(Matrix<T>&& other) noexcept
+{
+    if (this != &other)
+    {
+        mData = std::move(other.mData);
+        mView = other.mView;
+    }
+
+    return *this;
+}
+
+template <typename T> Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) noexcept
+{
+    if (this != &other)
+    {
+        mData = other.mData;
+        mView = other.mView;
+    }
+
+    return *this;
+}
+
 template <typename T> const T Matrix<T>::operator[](const size_t row, const size_t col) const
 {
     std::shared_lock<std::shared_mutex> lock(mMut);
