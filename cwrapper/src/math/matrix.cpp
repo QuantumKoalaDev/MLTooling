@@ -1,9 +1,7 @@
 #include "math/Exceptions.hpp"
-#include <cstdlib>
 #include <mlt/math/matrix.h>
 
 #include <Math.hpp>
-#include <utility>
 
 #ifdef __cplusplus
 extern "C"
@@ -166,7 +164,7 @@ extern "C"
         }
         catch (mlt::math::ShapeMismatchException)
         {
-            return MLT_STATUS_SHAPE_MISSMATCH;
+            return MLT_STATUS_SHAPE_MISMATCH;
         }
         catch (...)
         {
@@ -187,7 +185,7 @@ extern "C"
         }
         catch (mlt::math::ShapeMismatchException)
         {
-            return MLT_STATUS_SHAPE_MISSMATCH;
+            return MLT_STATUS_SHAPE_MISMATCH;
         }
         catch (...)
         {
@@ -217,7 +215,7 @@ extern "C"
         }
         catch (mlt::math::ShapeMismatchException)
         {
-            return MLT_STATUS_SHAPE_MISSMATCH;
+            return MLT_STATUS_SHAPE_MISMATCH;
         }
         catch (...)
         {
@@ -247,7 +245,7 @@ extern "C"
         }
         catch (mlt::math::ShapeMismatchException)
         {
-            return MLT_STATUS_SHAPE_MISSMATCH;
+            return MLT_STATUS_SHAPE_MISMATCH;
         }
         catch (...)
         {

@@ -14,6 +14,8 @@ target_include_directories(MLToolingCwrapper
 set_target_properties(MLToolingCwrapper PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     CXX_STANDARD 23
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN YES
 )
 
 if (WIN32)
