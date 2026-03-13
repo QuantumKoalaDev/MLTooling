@@ -10,8 +10,9 @@ add_library(MLTooling
     "src/Models/LinearRegressionModel.cpp"
     "src/data/DataColumn.cpp"
     "test/data/DataFrame.cpp"
-        src/math/opt/GradientDescent.cpp
-
+    "src/math/datastructures/matrix.cpp"
+    "src/math/datastructures/Matrix.cpp"
+    "src/math/kernels/matrixkernels.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -30,12 +31,14 @@ target_link_libraries(example_basic PRIVATE MLTooling)
 
 add_executable(tests
     "test/test.cpp"
-    "test/math/tensor/MatrixTest.cpp"
     "test/data/DataFrameTest.cpp"
+    "test/math/datastructures/MatrixFloatTest.cpp"
+    "test/math/datastructures/MatrixTest.cpp"
+    "test/math/kernels/matrixkernelTest.cpp"
 )
 target_link_libraries(tests PRIVATE MLTooling)
 
-add_subdirectory(bindings/c)
+add_subdirectory(cwrapper)
 
 #install(TARGETS MLToolingCapi DESTINATION lib)
 

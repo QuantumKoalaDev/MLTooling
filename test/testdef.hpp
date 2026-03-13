@@ -76,3 +76,9 @@ inline void assertEq(std::type_index actual, std::type_index expected, std::stri
     if (actual != expected)
         throw AssertionFailed(msg + std::format(" (expected: {}, got: {})", expected.name(), actual.name()));
 }
+
+inline void assertTrue(bool check, std::string msg)
+{
+    if (!check)
+        throw AssertionFailed(msg + std::format(" (expected: {}, got: {}", true, check));
+}
