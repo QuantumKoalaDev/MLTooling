@@ -1,5 +1,5 @@
 #include "../../testdef.hpp"
-#include <math/datastructures/Matrix.hpp>
+#include <mlt/math/Matrix.hpp>
 
 using namespace mlt::math::datastructures;
 

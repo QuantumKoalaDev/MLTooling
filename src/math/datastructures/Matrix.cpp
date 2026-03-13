@@ -1,8 +1,9 @@
-#include "math/mathstatus.hpp"
-#include <math/Exceptions.hpp>
-#include <math/datastructures/Matrix.hpp>
-#include <math/datastructures/MatrixStorage.hpp>
-#include <math/kernels/MatrixKernel.hpp>
+#include <mlt/math/Matrix.hpp>
+#include <mlt/math/Exceptions.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
+#include <mlt/internal/math/datastructures/matrix.hpp>
+#include <mlt/internal/math/datastructures/MatrixStorage.hpp>
+#include <mlt/internal/math/kernels/MatrixKernel.hpp>
 
 #include <memory>
 #include <mutex>

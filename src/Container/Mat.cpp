@@ -1,4 +1,4 @@
-#include "../include/Container/Mat.hpp"
+#include <Container/Mat.hpp>
 
 #include <stdexcept>
 

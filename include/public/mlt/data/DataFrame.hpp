@@ -1,9 +1,9 @@
 #pragma once
 
-#include "DataColumn.hpp"
-#include "IDataColumn.hpp"
-#include "core/Shape.hpp"
-#include "dataUtils.hpp"
+#include <mlt/data/DataColumn.hpp>
+#include <mlt/data/IDataColumn.hpp>
+#include <mlt/core/Shape.hpp>
+#include <mlt/data/dataUtils.hpp>
 
 #include <string>
 #include <unordered_map>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "data/IDataColumn.hpp"
-#include "data/dataUtils.hpp"
+#include <mlt/data/IDataColumn.hpp>
+#include <mlt/data/dataUtils.hpp>
 
 #include <string>
 #include <vector>

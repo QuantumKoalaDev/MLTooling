@@ -1,10 +1,9 @@
 #include "../../testdef.hpp"
-#include "math/datastructures/matrixview.hpp"
-#include "math/mathstatus.hpp"
+#include <mlt/internal/math/datastructures/matrixview.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
-#include <math/datastructures/matrix.hpp>
-#include <math/kernels/matrixkernels.hpp>
-#include <sched.h>
+#include <mlt/internal/math/datastructures/matrix.hpp>
+#include <mlt/internal/math/kernels/matrixkernels.hpp>
 #include <vector>
 
 using namespace mlt::math::datastructures;

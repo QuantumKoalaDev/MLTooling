@@ -1,7 +1,7 @@
 #pragma once
 
-#include <math/datastructures/matrixview.hpp>
-#include <math/mathstatus.hpp>
+#include <mlt/internal/math/datastructures/matrixview.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
 #include <cstddef>
 

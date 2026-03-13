@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/mathstatus.hpp"
-#include <math/datastructures/matrix.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
+#include <mlt/internal/math/datastructures/matrix.hpp>
 
 namespace mlt::math::datastructures
 {
