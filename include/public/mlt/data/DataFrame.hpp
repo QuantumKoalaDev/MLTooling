@@ -1,8 +1,8 @@
 #pragma once
 
+#include <mlt/core/Shape.hpp>
 #include <mlt/data/DataColumn.hpp>
 #include <mlt/data/IDataColumn.hpp>
-#include <mlt/core/Shape.hpp>
 #include <mlt/data/dataUtils.hpp>
 
 #include <string>

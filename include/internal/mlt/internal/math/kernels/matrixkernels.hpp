@@ -48,5 +48,4 @@ namespace mlt::math::kernels
     // mlt::math::mathStatus setIdentity(MatrixFloatView& mat);
     // mlt::math::mathStatus copy(const MatrixFloatView& src, MatrixFloatView& dist);
 
-
 } // namespace mlt::math::kernels
