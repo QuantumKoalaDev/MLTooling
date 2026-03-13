@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math/mathstatus.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
 #include <cstddef>
 

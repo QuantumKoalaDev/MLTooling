@@ -1,6 +1,6 @@
 #include <cstdlib>
-#include <math/datastructures/matrix.hpp>
-#include <math/mathstatus.hpp>
+#include <mlt/internal/math/datastructures/matrix.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
 #include <algorithm>
 #include <limits>

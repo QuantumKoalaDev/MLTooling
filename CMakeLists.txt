@@ -19,15 +19,24 @@ target_compile_options(MLTooling PRIVATE -fPIC)
 
 target_include_directories(MLTooling
     PUBLIC
-        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/public
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include/internal
 )
 
 install(TARGETS MLTooling DESTINATION lib)
-install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY include/public DESTINATION include)
 
 add_executable(example_basic examples/example_basic.cpp
 )
 target_link_libraries(example_basic PRIVATE MLTooling)
+
+
+
+add_library(MLTooling_internal INTERFACE)
+target_include_directories(MLTooling_internal INTERFACE
+    ${PROJECT_SOURCE_DIR}/include/internal
+)
 
 add_executable(tests
     "test/test.cpp"
@@ -36,7 +45,8 @@ add_executable(tests
     "test/math/datastructures/MatrixTest.cpp"
     "test/math/kernels/matrixkernelTest.cpp"
 )
-target_link_libraries(tests PRIVATE MLTooling)
+
+target_link_libraries(tests PRIVATE MLTooling MLTooling_internal)
 
 add_subdirectory(cwrapper)
 

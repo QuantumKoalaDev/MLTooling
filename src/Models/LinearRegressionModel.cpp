@@ -1,4 +1,4 @@
-#include "../include/Models/LinearRegressionModel.hpp"
+#include <Models/LinearRegressionModel.hpp>
 
 #include <algorithm>
 #include <stdexcept>

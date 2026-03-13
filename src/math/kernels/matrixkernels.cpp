@@ -1,7 +1,7 @@
-#include <math/criticaldef.hpp>
-#include <math/datastructures/matrixview.hpp>
-#include <math/kernels/matrixkernels.hpp>
-#include <math/mathstatus.hpp>
+#include <mlt/internal/math/criticaldef.hpp>
+#include <mlt/internal/math/datastructures/matrixview.hpp>
+#include <mlt/internal/math/kernels/matrixkernels.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
 using namespace mlt::math::datastructures;
 
