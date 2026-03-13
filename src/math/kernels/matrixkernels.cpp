@@ -94,7 +94,7 @@ namespace mlt::math::kernels
             return mlt::math::MATH_SHAPE_MISSMATCH;
 
         double* RESTRICT aData = addend.data;
-        double* RESTRICT cData = addend.data;
+        double* RESTRICT cData = target.data;
 
         for (size_t col = 0; col < target.cols; ++col)
         {
