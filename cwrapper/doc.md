@@ -41,7 +41,7 @@ All structs are opaque in the public API to keep the ABI stable. No additional t
 **C-Wrapper functions:**
 
 ```
-mltFw<Verb><Class><TypeSuffix>
+mltFw<Class><TypeSuffix><Verb>
 ```
 
 `Fw` prevents collisions with higher-level C-bindings.
@@ -49,16 +49,16 @@ mltFw<Verb><Class><TypeSuffix>
 **Examples:**
 
 ```
-mltFwCreateMatrixF
-mltFwDestroyMatrixF
-mltFwMultiplyMatrixF
+mltFwMatrixFCreate
+mltFwMatrixFDestroy
+mltFwMatrixFMultiply
 ```
 
 **Declarations:**
 
 ```c
-mltStatus mltFwCreateMatrixF(size_t rows, size_t cols, mltMatrixF** out);
-mltStatus mltFwDestroyMatrixF(mltMatrixF* matrix);
+mltStatus mltFwMatrixFCreate(size_t rows, size_t cols, mltMatrixF** out);
+mltStatus mltFwMatrixFDestroy(mltMatrixF* matrix);
 ```
 
 ### Status Codes
@@ -77,13 +77,13 @@ typedef enum {
 Objects are created via output parameters.
 
 ```
-mltFwCreate<Class><TypeSuffix>
+mltFw<Class><TypeSuffix>Create
 ```
 
 ### Destruction Pattern
 
 ```
-mltFwDestroy<Class><TypeSuffix>
+mltFw<Class><TypeSuffix>Destroy
 ```
 
 **Example:**
