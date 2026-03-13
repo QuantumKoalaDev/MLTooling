@@ -18,6 +18,15 @@ extern "C"
         mltMatrixF(Matrix<float>&& mat) : implMat(mat) {}
     };
 
+    struct mltMatrixD
+    {
+        Matrix<double> implMat;
+
+        mltMatrixD(size_t rows, size_t cols) : implMat(rows, cols) {}
+        mltMatrixD(size_t rows, size_t cols, std::span<const double> buff) : implMat(rows, cols, buff) {}
+        mltMatrixD(Matrix<double>&& mat) : implMat(mat) {}
+    };
+
     MLTOOLING_CWRAPPER mltStatus mltFwMatrixFCreate(size_t rows, size_t cols, mltMatrixF** out)
     {
         if (!out)
@@ -146,8 +155,6 @@ extern "C"
     {
         if (!a || !b || !out)
             return MLT_STATUS_ERR_NULL_PTR;
-
-        mltMatrixF* mat = NULL;
 
         try
         {
@@ -292,6 +299,299 @@ extern "C"
         {
             Matrix<float> submatrix = mat->implMat.submatrix(startRow, startCol, rowCount, colCount);
             *out = new mltMatrixF(std::move(submatrix));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (mlt::math::OutOfBoundsException)
+        {
+            return MLT_STATUS_OUT_OF_BOUNDS;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDCreate(size_t rows, size_t cols, mltMatrixD** out)
+    {
+        if (!out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            *out = new mltMatrixD(rows, cols);
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDCreateFromBuff(
+        const size_t rows, const size_t cols, const double* buff, size_t buffSize, mltMatrixD** out
+    )
+    {
+        if (!buff || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            *out = new mltMatrixD(rows, cols, std::span<const double>(buff, buffSize));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDDestroy(mltMatrixD* mat)
+    {
+        if (!mat)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        delete mat;
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDGet(const mltMatrixD* mat, const size_t row, size_t col, double* out)
+    {
+        if (!mat || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            *out = mat->implMat[row, col];
+        }
+        catch (mlt::math::OutOfBoundsException)
+        {
+            return MLT_STATUS_OUT_OF_BOUNDS;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDSet(mltMatrixD* mat, const size_t row, const size_t col, double val)
+    {
+        if (!mat)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            mat->implMat[row, col] = val;
+        }
+        catch (mlt::math::OutOfBoundsException)
+        {
+            return MLT_STATUS_OUT_OF_BOUNDS;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDRowCount(const mltMatrixD* mat, size_t* out)
+    {
+        if (!mat)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        *out = mat->implMat.getShape().rows;
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDColCount(const mltMatrixD* mat, size_t* out)
+    {
+        if (!mat)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        *out = mat->implMat.getShape().cols;
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDAdd(const mltMatrixD* a, const mltMatrixD* b, mltMatrixD** out)
+    {
+        if (!a || !b || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            Matrix<double> C = a->implMat + b->implMat;
+            *out = new mltMatrixD(std::move(C));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (mlt::math::ShapeMismatchException)
+        {
+            return MLT_STATUS_SHAPE_MISMATCH;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDAddInPlace(mltMatrixD* a, const mltMatrixD* b)
+    {
+        if (!a || !b)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            a->implMat += b->implMat;
+        }
+        catch (mlt::math::ShapeMismatchException)
+        {
+            return MLT_STATUS_SHAPE_MISMATCH;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDMultiply(const mltMatrixD* a, const mltMatrixD* b, mltMatrixD** out)
+    {
+        if (!a || !b || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            Matrix<double> C = a->implMat * b->implMat;
+            *out = new mltMatrixD(std::move(C));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (mlt::math::ShapeMismatchException)
+        {
+            return MLT_STATUS_SHAPE_MISMATCH;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDClone(const mltMatrixD* mat, mltMatrixD** out)
+    {
+        if (!mat || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            Matrix<double> clonedMat = mat->implMat.clone();
+            *out = new mltMatrixD(std::move(clonedMat));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (mlt::math::ShapeMismatchException)
+        {
+            return MLT_STATUS_SHAPE_MISMATCH;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDCopy(const mltMatrixD* mat, mltMatrixD** out)
+    {
+        if (!mat || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            Matrix<double> copyMat = Matrix(mat->implMat);
+            *out = new mltMatrixD(std::move(copyMat));
+        }
+        catch (mlt::math::AllocationFailedException)
+        {
+            return MLT_STATUS_ALLOCATION_FAILED;
+        }
+        catch (mlt::math::AllocationTooLargeException)
+        {
+            return MLT_STATUS_ALLOCATION_TOO_LARGE;
+        }
+        catch (...)
+        {
+            return MLT_STATUS_INTERNAL_ERROR;
+        }
+
+        return MLT_STATUS_SUCCESS;
+    }
+
+    MLTOOLING_CWRAPPER mltStatus mltFwMatrixDSubmatrix(
+        const mltMatrixD* mat, size_t startRow, size_t startCol, size_t rowCount, size_t colCount, mltMatrixD** out
+    )
+    {
+        if (!mat || !out)
+            return MLT_STATUS_ERR_NULL_PTR;
+
+        try
+        {
+            Matrix<double> submatrix = mat->implMat.submatrix(startRow, startCol, rowCount, colCount);
+            *out = new mltMatrixD(std::move(submatrix));
         }
         catch (mlt::math::AllocationFailedException)
         {
