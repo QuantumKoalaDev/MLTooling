@@ -5,7 +5,7 @@
 Branches should describe the type of work being done.
 
 Format:
-<type>/<short-description>
+`<type>/<short-description>`
 
 
 ### Branch Types
@@ -23,7 +23,7 @@ Format:
 ## Commit Message Rules
 
 Commits follow a structured format:
-<type>(<scope>): <short description>
+`<type>(<scope>): <short description>`
 
 Example:
 - feat(core): add matrix multiplication
