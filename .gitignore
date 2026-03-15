@@ -87,3 +87,9 @@ build/
 htmlcov/
 
 .cache/
+
+# =====================
+# Rust
+# =====================
+bindigs/rust/mltooling/Cargo.lock
+bindings/rust/mltooling/target
