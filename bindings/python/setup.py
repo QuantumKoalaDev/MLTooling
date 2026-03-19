@@ -7,8 +7,8 @@ wrapper_lib_dir = os.path.abspath("../../build/cwrapper")
 
 extensions = [
     Extension(
-        "MLTooling.matrix",
-        sources=["MLTooling/matrix.pyx"],
+        "MLTooling.math.matrix",
+        sources=["MLTooling/math/matrix.pyx"],
         language="c",
         include_dirs=[wrapper_include],
         library_dirs=[wrapper_lib_dir],

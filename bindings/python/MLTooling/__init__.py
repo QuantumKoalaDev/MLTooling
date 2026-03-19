@@ -1,3 +1,8 @@
-from .matrix import Matrix
+from .core import Shape
+from .core import Dtypes
 
-__all__ = ["Matrix"]
+from .math import Matrix
+
+from .exceptions import *
+
+__all__ = ["Matrix", "Shape", "Dtypes"]
