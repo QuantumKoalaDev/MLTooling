@@ -9,8 +9,14 @@ class TestMat(unittest.TestCase):
         rows = 2
         cols = 3
 
-        mat = Matrix(2,3)
+        mat = Matrix(rows, cols)
         shape = mat.shape()
+
+        self.assertEqual(shape.rows, rows)
+        self.assertEqual(shape.cols, cols)
+
+        mat_double = Matrix(rows, cols)
+        shape = mat_double.shape()
 
         self.assertEqual(shape.rows, rows)
         self.assertEqual(shape.cols, cols)
@@ -28,6 +34,17 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat[0,0], data[0])
         self.assertEqual(mat[0,1], data[2])
         self.assertEqual(mat[1,2], data[5])
+
+        data_double = array("d", [1, 2, 3, 4, 5, 6])
+        mat_double = Matrix.from_buffer(rows, cols, data_double)
+
+        shape = mat_double.shape()
+        self.assertEqual(rows, shape.rows)
+        self.assertEqual(cols, shape.cols)
+
+        self.assertEqual(mat_double[0,0], data_double[0])
+        self.assertEqual(mat_double[0,1], data_double[2])
+        self.assertEqual(mat_double[1,2], data_double[5])
     
     def test_shape(self):
         rows = 3
@@ -38,6 +55,14 @@ class TestMat(unittest.TestCase):
 
         self.assertEqual(shape.rows, rows)
         self.assertEqual(shape.cols, cols)
+
+        mat_double = Matrix(rows, cols)
+
+        shape_double = mat_double.shape()
+
+        self.assertEqual(shape_double.rows, rows)
+        self.assertEqual(shape_double.cols, cols)
+
 
     def test_matrix_addition(self):
         data_one = array("f", [1, 2, 3, 4, 5, 6])

@@ -1,23 +1,16 @@
-from MLTooling import Matrix
+from MLTooling import Dtypes
+from MLTooling.core.dtypes import typecode_to_dtype
 
 from array import array
 
 def main():
-    mat1 = Matrix(1,2)
+    arr_float = array("f", [1])
+    arr_double = array("d", [1])
 
-    data = array("f", [1, 2, 3, 4, 5, 6])
-    mat2 = Matrix.from_buffer(2, 3, data)
-    value = mat2[0,1]
+    print(arr_float.typecode)
+    print(arr_double.typecode)
 
-
-    mat2[0,0] = 5
-    setterValue = mat2[0,0]
-
-    print(value, setterValue)
-
-    shape =  mat2.shape()
-    print(shape)
-
-    mat3 = mat1 + mat2
+    print(typecode_to_dtype(arr_float))
+    
 
 main()

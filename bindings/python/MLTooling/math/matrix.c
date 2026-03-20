@@ -1635,11 +1635,14 @@ struct __pyx_memoryviewslice_obj;
  * from ._matrix cimport mltMatrixF, mltMatrixD
  * 
  * cdef class Matrix:             # <<<<<<<<<<<<<<
- *     cdef mltMatrixF* c_mat_f
+ *     cdef int _type
+ *     cdef mltMatrixF* _c_mat_f
 */
 struct __pyx_obj_9MLTooling_4math_6matrix_Matrix {
   PyObject_HEAD
-  struct mltMatrixF *c_mat_f;
+  int _type;
+  struct mltMatrixF *_c_mat_f;
+  struct mltMatrixD *_c_mat_d;
 };
 
 
@@ -2753,6 +2756,9 @@ static int __Pyx_ValidateAndInit_memviewslice(
 /* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_float(PyObject *, int writable_flag);
 
+/* ObjectToMemviewSlice.proto */
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_double(PyObject *, int writable_flag);
+
 /* MemviewSliceCopy.proto */
 static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -2784,6 +2790,9 @@ static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, P
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyLong_From_int(int value);
 
+/* CIntFromPy.proto */
+static CYTHON_INLINE int __Pyx_PyLong_As_int(PyObject *);
+
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value);
 
@@ -2798,9 +2807,6 @@ static int __Pyx_UpdateUnpickledDict(PyObject *obj, PyObject *state, Py_ssize_t 
 
 /* CheckUnpickleChecksum.proto */
 static CYTHON_INLINE int __Pyx_CheckUnpickleChecksum(long checksum, long checksum1, long checksum2, long checksum3, const char *members);
-
-/* CIntFromPy.proto */
-static CYTHON_INLINE int __Pyx_PyLong_As_int(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyLong_As_long(PyObject *);
@@ -2949,6 +2955,7 @@ static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize
 static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, PyObject *); /*proto*/
 /* #### Code section: typeinfo ### */
 static const __Pyx_TypeInfo __Pyx_TypeInfo_float = { "float", NULL, sizeof(float), { 0 }, 0, 'R', 0, 0 };
+static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 /* #### Code section: before_global_var ### */
 #define __Pyx_MODULE_NAME "MLTooling.math.matrix"
 extern int __pyx_module_is_main_MLTooling__math__matrix;
@@ -3007,8 +3014,8 @@ static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED 
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix___cinit__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self); /* proto */
-static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, size_t __pyx_v_rows, size_t __pyx_v_cols, CYTHON_UNUSED PyObject *__pyx_v_dtype); /* proto */
-static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_4from_buffer(PyTypeObject *__pyx_v_cls, size_t __pyx_v_rows, size_t __pyx_v_cols, __Pyx_memviewslice __pyx_v_data); /* proto */
+static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, size_t __pyx_v_rows, size_t __pyx_v_cols, PyObject *__pyx_v_dtype); /* proto */
+static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_4from_buffer(PyTypeObject *__pyx_v_cls, size_t __pyx_v_rows, size_t __pyx_v_cols, PyObject *__pyx_v_data); /* proto */
 static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_6_from_ptr(CYTHON_UNUSED PyTypeObject *__pyx_v_cls, PyObject *__pyx_v_ptr); /* proto */
 static void __pyx_pf_9MLTooling_4math_6matrix_6Matrix_8__dealloc__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, PyObject *__pyx_v_key); /* proto */
@@ -3064,7 +3071,7 @@ typedef struct {
   PyObject *__pyx_slice[1];
   PyObject *__pyx_tuple[2];
   PyObject *__pyx_codeobj_tab[8];
-  PyObject *__pyx_string_tab[159];
+  PyObject *__pyx_string_tab[169];
   PyObject *__pyx_number_tab[4];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
@@ -3108,27 +3115,27 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
 #define __pyx_kp_u_All_dimensions_preceding_dimensi __pyx_string_tab[1]
-#define __pyx_kp_u_Buffer_size_mismatch __pyx_string_tab[2]
-#define __pyx_kp_u_Buffer_view_does_not_expose_stri __pyx_string_tab[3]
-#define __pyx_kp_u_Can_only_create_a_buffer_that_is __pyx_string_tab[4]
-#define __pyx_kp_u_Cannot_assign_to_read_only_memor __pyx_string_tab[5]
-#define __pyx_kp_u_Cannot_create_writable_memory_vi __pyx_string_tab[6]
-#define __pyx_kp_u_Cannot_index_with_type __pyx_string_tab[7]
-#define __pyx_kp_u_Cannot_transpose_memoryview_with __pyx_string_tab[8]
-#define __pyx_kp_u_Dimension_d_is_not_direct __pyx_string_tab[9]
-#define __pyx_kp_u_Empty_shape_tuple_for_cython_arr __pyx_string_tab[10]
-#define __pyx_kp_u_Index_must_be_a_tuple_row_col __pyx_string_tab[11]
-#define __pyx_kp_u_Index_out_of_bounds_axis_d __pyx_string_tab[12]
-#define __pyx_kp_u_Indirect_dimensions_not_supporte __pyx_string_tab[13]
-#define __pyx_kp_u_Invalid_mode_expected_c_or_fortr __pyx_string_tab[14]
-#define __pyx_kp_u_Invalid_shape_in_axis __pyx_string_tab[15]
-#define __pyx_kp_u_MLTooling_math_matrix_pyx __pyx_string_tab[16]
-#define __pyx_kp_u_MLTooling_mlt_status __pyx_string_tab[17]
-#define __pyx_kp_u_MemoryView_of __pyx_string_tab[18]
-#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[19]
-#define __pyx_kp_u_Out_of_bounds_on_buffer_access_a __pyx_string_tab[20]
-#define __pyx_kp_u_Step_may_not_be_zero_axis_d __pyx_string_tab[21]
-#define __pyx_kp_u_Unable_to_convert_item_to_object __pyx_string_tab[22]
+#define __pyx_kp_u_Buffer_view_does_not_expose_stri __pyx_string_tab[2]
+#define __pyx_kp_u_Can_only_create_a_buffer_that_is __pyx_string_tab[3]
+#define __pyx_kp_u_Cannot_assign_to_read_only_memor __pyx_string_tab[4]
+#define __pyx_kp_u_Cannot_create_writable_memory_vi __pyx_string_tab[5]
+#define __pyx_kp_u_Cannot_index_with_type __pyx_string_tab[6]
+#define __pyx_kp_u_Cannot_transpose_memoryview_with __pyx_string_tab[7]
+#define __pyx_kp_u_Dimension_d_is_not_direct __pyx_string_tab[8]
+#define __pyx_kp_u_Empty_shape_tuple_for_cython_arr __pyx_string_tab[9]
+#define __pyx_kp_u_Index_must_be_a_tuple_row_col __pyx_string_tab[10]
+#define __pyx_kp_u_Index_out_of_bounds_axis_d __pyx_string_tab[11]
+#define __pyx_kp_u_Indirect_dimensions_not_supporte __pyx_string_tab[12]
+#define __pyx_kp_u_Invalid_mode_expected_c_or_fortr __pyx_string_tab[13]
+#define __pyx_kp_u_Invalid_shape_in_axis __pyx_string_tab[14]
+#define __pyx_kp_u_MLTooling_math_matrix_pyx __pyx_string_tab[15]
+#define __pyx_kp_u_MLTooling_mlt_status __pyx_string_tab[16]
+#define __pyx_kp_u_MemoryView_of __pyx_string_tab[17]
+#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[18]
+#define __pyx_kp_u_Out_of_bounds_on_buffer_access_a __pyx_string_tab[19]
+#define __pyx_kp_u_Step_may_not_be_zero_axis_d __pyx_string_tab[20]
+#define __pyx_kp_u_Unable_to_convert_item_to_object __pyx_string_tab[21]
+#define __pyx_kp_u_Unknown_type __pyx_string_tab[22]
 #define __pyx_kp_u_Unsupported_operand_type_for __pyx_string_tab[23]
 #define __pyx_kp_u_Unsupported_operand_type_for_2 __pyx_string_tab[24]
 #define __pyx_kp_u_Unsupported_operand_type_for_3 __pyx_string_tab[25]
@@ -3143,128 +3150,138 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u_collections_abc __pyx_string_tab[34]
 #define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[35]
 #define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[36]
-#define __pyx_kp_u_disable __pyx_string_tab[37]
-#define __pyx_kp_u_enable __pyx_string_tab[38]
-#define __pyx_kp_u_gc __pyx_string_tab[39]
-#define __pyx_kp_u_got __pyx_string_tab[40]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[41]
-#define __pyx_kp_u_isenabled __pyx_string_tab[42]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[43]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[44]
-#define __pyx_kp_u_object __pyx_string_tab[45]
-#define __pyx_kp_u_strided_and_direct __pyx_string_tab[46]
-#define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[47]
-#define __pyx_kp_u_strided_and_indirect __pyx_string_tab[48]
-#define __pyx_kp_u_stringsource __pyx_string_tab[49]
-#define __pyx_kp_u_unable_to_allocate_array_data __pyx_string_tab[50]
-#define __pyx_kp_u_unable_to_allocate_shape_and_str __pyx_string_tab[51]
-#define __pyx_n_u_ASCII __pyx_string_tab[52]
-#define __pyx_n_u_Dtypes __pyx_string_tab[53]
-#define __pyx_n_u_Ellipsis __pyx_string_tab[54]
-#define __pyx_n_u_FLOAT32 __pyx_string_tab[55]
-#define __pyx_n_u_MLTooling_core __pyx_string_tab[56]
-#define __pyx_n_u_MLTooling_math_matrix __pyx_string_tab[57]
-#define __pyx_n_u_Matrix __pyx_string_tab[58]
-#define __pyx_n_u_Matrix___reduce_cython __pyx_string_tab[59]
-#define __pyx_n_u_Matrix___setstate_cython __pyx_string_tab[60]
-#define __pyx_n_u_Matrix__from_ptr __pyx_string_tab[61]
-#define __pyx_n_u_Matrix_clone __pyx_string_tab[62]
-#define __pyx_n_u_Matrix_copy __pyx_string_tab[63]
-#define __pyx_n_u_Matrix_from_buffer __pyx_string_tab[64]
-#define __pyx_n_u_Matrix_shape __pyx_string_tab[65]
-#define __pyx_n_u_Matrix_submatrix __pyx_string_tab[66]
-#define __pyx_n_u_MltStatus __pyx_string_tab[67]
-#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[68]
-#define __pyx_n_u_Sequence __pyx_string_tab[69]
-#define __pyx_n_u_Shape __pyx_string_tab[70]
-#define __pyx_n_u_View_MemoryView __pyx_string_tab[71]
-#define __pyx_n_u_abc __pyx_string_tab[72]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[73]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[74]
-#define __pyx_n_u_base __pyx_string_tab[75]
-#define __pyx_n_u_c __pyx_string_tab[76]
-#define __pyx_n_u_check_status __pyx_string_tab[77]
-#define __pyx_n_u_class __pyx_string_tab[78]
-#define __pyx_n_u_class_getitem __pyx_string_tab[79]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[80]
-#define __pyx_n_u_clone __pyx_string_tab[81]
-#define __pyx_n_u_cls __pyx_string_tab[82]
-#define __pyx_n_u_cols __pyx_string_tab[83]
-#define __pyx_n_u_copy __pyx_string_tab[84]
-#define __pyx_n_u_count __pyx_string_tab[85]
-#define __pyx_n_u_data __pyx_string_tab[86]
-#define __pyx_n_u_dict __pyx_string_tab[87]
-#define __pyx_n_u_dtype __pyx_string_tab[88]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[89]
-#define __pyx_n_u_encode __pyx_string_tab[90]
-#define __pyx_n_u_enumerate __pyx_string_tab[91]
-#define __pyx_n_u_error __pyx_string_tab[92]
-#define __pyx_n_u_flags __pyx_string_tab[93]
-#define __pyx_n_u_format __pyx_string_tab[94]
-#define __pyx_n_u_fortran __pyx_string_tab[95]
-#define __pyx_n_u_from_buffer __pyx_string_tab[96]
-#define __pyx_n_u_from_ptr __pyx_string_tab[97]
-#define __pyx_n_u_func __pyx_string_tab[98]
-#define __pyx_n_u_getstate __pyx_string_tab[99]
-#define __pyx_n_u_id __pyx_string_tab[100]
-#define __pyx_n_u_import __pyx_string_tab[101]
-#define __pyx_n_u_index __pyx_string_tab[102]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[103]
-#define __pyx_n_u_items __pyx_string_tab[104]
-#define __pyx_n_u_itemsize __pyx_string_tab[105]
-#define __pyx_n_u_main __pyx_string_tab[106]
-#define __pyx_n_u_mat __pyx_string_tab[107]
-#define __pyx_n_u_memview __pyx_string_tab[108]
-#define __pyx_n_u_mlt_status __pyx_string_tab[109]
-#define __pyx_n_u_mode __pyx_string_tab[110]
-#define __pyx_n_u_module __pyx_string_tab[111]
-#define __pyx_n_u_name __pyx_string_tab[112]
-#define __pyx_n_u_name_2 __pyx_string_tab[113]
-#define __pyx_n_u_ndim __pyx_string_tab[114]
-#define __pyx_n_u_new __pyx_string_tab[115]
-#define __pyx_n_u_obj __pyx_string_tab[116]
-#define __pyx_n_u_pack __pyx_string_tab[117]
-#define __pyx_n_u_pop __pyx_string_tab[118]
-#define __pyx_n_u_ptr __pyx_string_tab[119]
-#define __pyx_n_u_py_status __pyx_string_tab[120]
-#define __pyx_n_u_pyx_checksum __pyx_string_tab[121]
-#define __pyx_n_u_pyx_state __pyx_string_tab[122]
-#define __pyx_n_u_pyx_type __pyx_string_tab[123]
-#define __pyx_n_u_pyx_unpickle_Enum __pyx_string_tab[124]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[125]
-#define __pyx_n_u_qualname __pyx_string_tab[126]
-#define __pyx_n_u_reduce __pyx_string_tab[127]
-#define __pyx_n_u_reduce_cython __pyx_string_tab[128]
-#define __pyx_n_u_reduce_ex __pyx_string_tab[129]
-#define __pyx_n_u_register __pyx_string_tab[130]
-#define __pyx_n_u_result __pyx_string_tab[131]
-#define __pyx_n_u_rows __pyx_string_tab[132]
-#define __pyx_n_u_self __pyx_string_tab[133]
-#define __pyx_n_u_set_name __pyx_string_tab[134]
-#define __pyx_n_u_setdefault __pyx_string_tab[135]
-#define __pyx_n_u_setstate __pyx_string_tab[136]
-#define __pyx_n_u_setstate_cython __pyx_string_tab[137]
-#define __pyx_n_u_shape __pyx_string_tab[138]
-#define __pyx_n_u_size __pyx_string_tab[139]
-#define __pyx_n_u_start __pyx_string_tab[140]
-#define __pyx_n_u_status __pyx_string_tab[141]
-#define __pyx_n_u_step __pyx_string_tab[142]
-#define __pyx_n_u_stop __pyx_string_tab[143]
-#define __pyx_n_u_struct __pyx_string_tab[144]
-#define __pyx_n_u_submatrix __pyx_string_tab[145]
-#define __pyx_n_u_test __pyx_string_tab[146]
-#define __pyx_n_u_unpack __pyx_string_tab[147]
-#define __pyx_n_u_update __pyx_string_tab[148]
-#define __pyx_n_u_values __pyx_string_tab[149]
-#define __pyx_n_u_x __pyx_string_tab[150]
-#define __pyx_kp_b_iso88591_A_4z_IQa_AQ_vZq __pyx_string_tab[151]
-#define __pyx_kp_b_iso88591_A_Qd_AQ_IQa_AQ_Qd_AQ_IQa_AQ_uAV1 __pyx_string_tab[152]
-#define __pyx_kp_b_iso88591_A_XQa_q_84vQc_E_1_AQ_1_T_aq_Q_IQ __pyx_string_tab[153]
-#define __pyx_kp_b_iso88591_A_fARq_m1_q __pyx_string_tab[154]
-#define __pyx_kp_b_iso88591_A_j_IQa_AQ_vZq __pyx_string_tab[155]
-#define __pyx_kp_b_iso88591_Q __pyx_string_tab[156]
-#define __pyx_kp_b_iso88591_Q_at_U_gURYY_eeffg_IQa_AQ_vZq __pyx_string_tab[157]
-#define __pyx_n_b_O __pyx_string_tab[158]
+#define __pyx_kp_u_data_must_not_be_empty __pyx_string_tab[37]
+#define __pyx_kp_u_disable __pyx_string_tab[38]
+#define __pyx_kp_u_enable __pyx_string_tab[39]
+#define __pyx_kp_u_gc __pyx_string_tab[40]
+#define __pyx_kp_u_got __pyx_string_tab[41]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[42]
+#define __pyx_kp_u_isenabled __pyx_string_tab[43]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[44]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[45]
+#define __pyx_kp_u_object __pyx_string_tab[46]
+#define __pyx_kp_u_strided_and_direct __pyx_string_tab[47]
+#define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[48]
+#define __pyx_kp_u_strided_and_indirect __pyx_string_tab[49]
+#define __pyx_kp_u_stringsource __pyx_string_tab[50]
+#define __pyx_kp_u_unable_to_allocate_array_data __pyx_string_tab[51]
+#define __pyx_kp_u_unable_to_allocate_shape_and_str __pyx_string_tab[52]
+#define __pyx_kp_u_value_must_not_be_None __pyx_string_tab[53]
+#define __pyx_n_u_ASCII __pyx_string_tab[54]
+#define __pyx_n_u_Dtypes __pyx_string_tab[55]
+#define __pyx_n_u_Ellipsis __pyx_string_tab[56]
+#define __pyx_n_u_FLOAT32 __pyx_string_tab[57]
+#define __pyx_n_u_FLOAT64 __pyx_string_tab[58]
+#define __pyx_n_u_MLTooling_core __pyx_string_tab[59]
+#define __pyx_n_u_MLTooling_math_matrix __pyx_string_tab[60]
+#define __pyx_n_u_Matrix __pyx_string_tab[61]
+#define __pyx_n_u_Matrix___reduce_cython __pyx_string_tab[62]
+#define __pyx_n_u_Matrix___setstate_cython __pyx_string_tab[63]
+#define __pyx_n_u_Matrix__from_ptr __pyx_string_tab[64]
+#define __pyx_n_u_Matrix_clone __pyx_string_tab[65]
+#define __pyx_n_u_Matrix_copy __pyx_string_tab[66]
+#define __pyx_n_u_Matrix_from_buffer __pyx_string_tab[67]
+#define __pyx_n_u_Matrix_shape __pyx_string_tab[68]
+#define __pyx_n_u_Matrix_submatrix __pyx_string_tab[69]
+#define __pyx_n_u_MltStatus __pyx_string_tab[70]
+#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[71]
+#define __pyx_n_u_Sequence __pyx_string_tab[72]
+#define __pyx_n_u_Shape __pyx_string_tab[73]
+#define __pyx_n_u_View_MemoryView __pyx_string_tab[74]
+#define __pyx_n_u_abc __pyx_string_tab[75]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[76]
+#define __pyx_n_u_array __pyx_string_tab[77]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[78]
+#define __pyx_n_u_base __pyx_string_tab[79]
+#define __pyx_n_u_c __pyx_string_tab[80]
+#define __pyx_n_u_c_data_double __pyx_string_tab[81]
+#define __pyx_n_u_c_data_float __pyx_string_tab[82]
+#define __pyx_n_u_check_status __pyx_string_tab[83]
+#define __pyx_n_u_class __pyx_string_tab[84]
+#define __pyx_n_u_class_getitem __pyx_string_tab[85]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[86]
+#define __pyx_n_u_clone __pyx_string_tab[87]
+#define __pyx_n_u_cls __pyx_string_tab[88]
+#define __pyx_n_u_cols __pyx_string_tab[89]
+#define __pyx_n_u_copy __pyx_string_tab[90]
+#define __pyx_n_u_count __pyx_string_tab[91]
+#define __pyx_n_u_data __pyx_string_tab[92]
+#define __pyx_n_u_dict __pyx_string_tab[93]
+#define __pyx_n_u_dtype __pyx_string_tab[94]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[95]
+#define __pyx_n_u_encode __pyx_string_tab[96]
+#define __pyx_n_u_enumerate __pyx_string_tab[97]
+#define __pyx_n_u_error __pyx_string_tab[98]
+#define __pyx_n_u_flags __pyx_string_tab[99]
+#define __pyx_n_u_format __pyx_string_tab[100]
+#define __pyx_n_u_fortran __pyx_string_tab[101]
+#define __pyx_n_u_from_buffer __pyx_string_tab[102]
+#define __pyx_n_u_from_ptr __pyx_string_tab[103]
+#define __pyx_n_u_func __pyx_string_tab[104]
+#define __pyx_n_u_getstate __pyx_string_tab[105]
+#define __pyx_n_u_id __pyx_string_tab[106]
+#define __pyx_n_u_import __pyx_string_tab[107]
+#define __pyx_n_u_index __pyx_string_tab[108]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[109]
+#define __pyx_n_u_items __pyx_string_tab[110]
+#define __pyx_n_u_itemsize __pyx_string_tab[111]
+#define __pyx_n_u_main __pyx_string_tab[112]
+#define __pyx_n_u_mat __pyx_string_tab[113]
+#define __pyx_n_u_memview __pyx_string_tab[114]
+#define __pyx_n_u_mlt_status __pyx_string_tab[115]
+#define __pyx_n_u_mode __pyx_string_tab[116]
+#define __pyx_n_u_module __pyx_string_tab[117]
+#define __pyx_n_u_name __pyx_string_tab[118]
+#define __pyx_n_u_name_2 __pyx_string_tab[119]
+#define __pyx_n_u_ndim __pyx_string_tab[120]
+#define __pyx_n_u_new __pyx_string_tab[121]
+#define __pyx_n_u_obj __pyx_string_tab[122]
+#define __pyx_n_u_pack __pyx_string_tab[123]
+#define __pyx_n_u_pop __pyx_string_tab[124]
+#define __pyx_n_u_ptr __pyx_string_tab[125]
+#define __pyx_n_u_ptr_d __pyx_string_tab[126]
+#define __pyx_n_u_ptr_f __pyx_string_tab[127]
+#define __pyx_n_u_py_status __pyx_string_tab[128]
+#define __pyx_n_u_pyx_checksum __pyx_string_tab[129]
+#define __pyx_n_u_pyx_state __pyx_string_tab[130]
+#define __pyx_n_u_pyx_type __pyx_string_tab[131]
+#define __pyx_n_u_pyx_unpickle_Enum __pyx_string_tab[132]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[133]
+#define __pyx_n_u_qualname __pyx_string_tab[134]
+#define __pyx_n_u_reduce __pyx_string_tab[135]
+#define __pyx_n_u_reduce_cython __pyx_string_tab[136]
+#define __pyx_n_u_reduce_ex __pyx_string_tab[137]
+#define __pyx_n_u_register __pyx_string_tab[138]
+#define __pyx_n_u_result __pyx_string_tab[139]
+#define __pyx_n_u_rows __pyx_string_tab[140]
+#define __pyx_n_u_self __pyx_string_tab[141]
+#define __pyx_n_u_set_name __pyx_string_tab[142]
+#define __pyx_n_u_setdefault __pyx_string_tab[143]
+#define __pyx_n_u_setstate __pyx_string_tab[144]
+#define __pyx_n_u_setstate_cython __pyx_string_tab[145]
+#define __pyx_n_u_shape __pyx_string_tab[146]
+#define __pyx_n_u_size __pyx_string_tab[147]
+#define __pyx_n_u_start __pyx_string_tab[148]
+#define __pyx_n_u_status __pyx_string_tab[149]
+#define __pyx_n_u_step __pyx_string_tab[150]
+#define __pyx_n_u_stop __pyx_string_tab[151]
+#define __pyx_n_u_struct __pyx_string_tab[152]
+#define __pyx_n_u_submatrix __pyx_string_tab[153]
+#define __pyx_n_u_test __pyx_string_tab[154]
+#define __pyx_n_u_typecode_to_dtype __pyx_string_tab[155]
+#define __pyx_n_u_unpack __pyx_string_tab[156]
+#define __pyx_n_u_update __pyx_string_tab[157]
+#define __pyx_n_u_value __pyx_string_tab[158]
+#define __pyx_n_u_values __pyx_string_tab[159]
+#define __pyx_n_u_x __pyx_string_tab[160]
+#define __pyx_kp_b_iso88591_A9_XQa_3avS_AQ_6_F_1_q_Qa_F_1_1 __pyx_string_tab[161]
+#define __pyx_kp_b_iso88591_A_4_1_IQa_AQ_vZq __pyx_string_tab[162]
+#define __pyx_kp_b_iso88591_A_4wc_xq_k_k_6_k_k_1A_uAV1 __pyx_string_tab[163]
+#define __pyx_kp_b_iso88591_A_fARq_A_q __pyx_string_tab[164]
+#define __pyx_kp_b_iso88591_A_k_IQa_AQ_vZq __pyx_string_tab[165]
+#define __pyx_kp_b_iso88591_Q __pyx_string_tab[166]
+#define __pyx_kp_b_iso88591_Q_at_e7_weSZZ__ffggh_IQa_AQ_vZq __pyx_string_tab[167]
+#define __pyx_n_b_O __pyx_string_tab[168]
 #define __pyx_int_0 __pyx_number_tab[0]
 #define __pyx_int_neg_1 __pyx_number_tab[1]
 #define __pyx_int_1 __pyx_number_tab[2]
@@ -3297,7 +3314,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<2; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<8; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<159; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<169; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<4; ++i) { Py_CLEAR(clear_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_clear_contents ### */
 /* CommonTypesMetaclass.module_state_clear */
@@ -3335,7 +3352,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<2; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<8; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<159; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<169; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<4; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_traverse_contents ### */
 /* CommonTypesMetaclass.module_state_traverse */
@@ -16617,12 +16634,12 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":9
+/* "MLTooling/math/matrix.pyx":10
  * 
  * cdef class Matrix:
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
- *         self.c_mat_f = NULL
- * 
+ *         self._c_mat_f = NULL
+ *         self._c_mat_d = NULL
 */
 
 /* Python wrapper */
@@ -16653,21 +16670,39 @@ static int __pyx_pw_9MLTooling_4math_6matrix_6Matrix_1__cinit__(PyObject *__pyx_
 static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix___cinit__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self) {
   int __pyx_r;
 
-  /* "MLTooling/math/matrix.pyx":10
+  /* "MLTooling/math/matrix.pyx":11
  * cdef class Matrix:
  *     def __cinit__(self):
- *         self.c_mat_f = NULL             # <<<<<<<<<<<<<<
+ *         self._c_mat_f = NULL             # <<<<<<<<<<<<<<
+ *         self._c_mat_d = NULL
+ *         self._type = -1
+*/
+  __pyx_v_self->_c_mat_f = NULL;
+
+  /* "MLTooling/math/matrix.pyx":12
+ *     def __cinit__(self):
+ *         self._c_mat_f = NULL
+ *         self._c_mat_d = NULL             # <<<<<<<<<<<<<<
+ *         self._type = -1
+ * 
+*/
+  __pyx_v_self->_c_mat_d = NULL;
+
+  /* "MLTooling/math/matrix.pyx":13
+ *         self._c_mat_f = NULL
+ *         self._c_mat_d = NULL
+ *         self._type = -1             # <<<<<<<<<<<<<<
  * 
  * 
 */
-  __pyx_v_self->c_mat_f = NULL;
+  __pyx_v_self->_type = -1;
 
-  /* "MLTooling/math/matrix.pyx":9
+  /* "MLTooling/math/matrix.pyx":10
  * 
  * cdef class Matrix:
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
- *         self.c_mat_f = NULL
- * 
+ *         self._c_mat_f = NULL
+ *         self._c_mat_d = NULL
 */
 
   /* function exit code */
@@ -16675,12 +16710,12 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix___cinit__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":13
+/* "MLTooling/math/matrix.pyx":16
  * 
  * 
  *     def __init__(self, size_t rows, size_t cols, dtype: Dtypes = Dtypes.FLOAT32):             # <<<<<<<<<<<<<<
- *         cdef mltMatrixF* ptr = NULL
- *         cdef int status
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL
 */
 
 /* Python wrapper */
@@ -16688,7 +16723,7 @@ static int __pyx_pw_9MLTooling_4math_6matrix_6Matrix_3__init__(PyObject *__pyx_v
 static int __pyx_pw_9MLTooling_4math_6matrix_6Matrix_3__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   size_t __pyx_v_rows;
   size_t __pyx_v_cols;
-  CYTHON_UNUSED PyObject *__pyx_v_dtype = 0;
+  PyObject *__pyx_v_dtype = 0;
   CYTHON_UNUSED Py_ssize_t __pyx_nargs;
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject* values[3] = {0,0,0};
@@ -16707,53 +16742,53 @@ static int __pyx_pw_9MLTooling_4math_6matrix_6Matrix_3__init__(PyObject *__pyx_v
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_rows,&__pyx_mstate_global->__pyx_n_u_cols,&__pyx_mstate_global->__pyx_n_u_dtype,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_VARARGS(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 13, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 16, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_VARARGS(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 16, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_VARARGS(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 16, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_VARARGS(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 16, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__init__", 0) < (0)) __PYX_ERR(0, 13, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__init__", 0) < (0)) __PYX_ERR(0, 16, __pyx_L3_error)
       if (!values[2]) values[2] = __Pyx_NewRef(__pyx_mstate_global->__pyx_k__6);
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, i); __PYX_ERR(0, 13, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, i); __PYX_ERR(0, 16, __pyx_L3_error) }
       }
     } else {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_VARARGS(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 16, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_VARARGS(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 16, __pyx_L3_error)
         values[0] = __Pyx_ArgRef_VARARGS(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 13, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 16, __pyx_L3_error)
         break;
         default: goto __pyx_L5_argtuple_error;
       }
       if (!values[2]) values[2] = __Pyx_NewRef(__pyx_mstate_global->__pyx_k__6);
     }
-    __pyx_v_rows = __Pyx_PyLong_As_size_t(values[0]); if (unlikely((__pyx_v_rows == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 13, __pyx_L3_error)
-    __pyx_v_cols = __Pyx_PyLong_As_size_t(values[1]); if (unlikely((__pyx_v_cols == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 13, __pyx_L3_error)
+    __pyx_v_rows = __Pyx_PyLong_As_size_t(values[0]); if (unlikely((__pyx_v_rows == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_cols = __Pyx_PyLong_As_size_t(values[1]); if (unlikely((__pyx_v_cols == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L3_error)
     __pyx_v_dtype = values[2];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, __pyx_nargs); __PYX_ERR(0, 13, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, __pyx_nargs); __PYX_ERR(0, 16, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -16774,123 +16809,313 @@ static int __pyx_pw_9MLTooling_4math_6matrix_6Matrix_3__init__(PyObject *__pyx_v
   return __pyx_r;
 }
 
-static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, size_t __pyx_v_rows, size_t __pyx_v_cols, CYTHON_UNUSED PyObject *__pyx_v_dtype) {
-  struct mltMatrixF *__pyx_v_ptr;
+static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, size_t __pyx_v_rows, size_t __pyx_v_cols, PyObject *__pyx_v_dtype) {
+  struct mltMatrixF *__pyx_v_ptr_f;
+  struct mltMatrixD *__pyx_v_ptr_d;
   int __pyx_v_status;
   PyObject *__pyx_v_py_status = NULL;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
+  int __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
-  size_t __pyx_t_5;
+  PyObject *__pyx_t_5 = NULL;
+  size_t __pyx_t_6;
+  int __pyx_t_7;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "MLTooling/math/matrix.pyx":14
+  /* "MLTooling/math/matrix.pyx":17
  * 
  *     def __init__(self, size_t rows, size_t cols, dtype: Dtypes = Dtypes.FLOAT32):
- *         cdef mltMatrixF* ptr = NULL             # <<<<<<<<<<<<<<
+ *         cdef mltMatrixF* ptr_f = NULL             # <<<<<<<<<<<<<<
+ *         cdef mltMatrixD* ptr_d = NULL
  *         cdef int status
- * 
 */
-  __pyx_v_ptr = NULL;
-
-  /* "MLTooling/math/matrix.pyx":17
- *         cdef int status
- * 
- *         status = mltFwMatrixFCreate(rows, cols, &ptr)             # <<<<<<<<<<<<<<
- *         py_status = MltStatus(status)
- *         check_status(py_status)
-*/
-  __pyx_v_status = mltFwMatrixFCreate(__pyx_v_rows, __pyx_v_cols, (&__pyx_v_ptr));
+  __pyx_v_ptr_f = NULL;
 
   /* "MLTooling/math/matrix.pyx":18
- * 
- *         status = mltFwMatrixFCreate(rows, cols, &ptr)
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
+ *     def __init__(self, size_t rows, size_t cols, dtype: Dtypes = Dtypes.FLOAT32):
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL             # <<<<<<<<<<<<<<
+ *         cdef int status
  * 
 */
-  __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 18, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 18, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
-    assert(__pyx_t_2);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
-    __Pyx_INCREF(__pyx_t_2);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_v_py_status = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "MLTooling/math/matrix.pyx":19
- *         status = mltFwMatrixFCreate(rows, cols, &ptr)
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
- * 
- *         self.c_mat_f = <mltMatrixF*>ptr
-*/
-  __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_4);
-    assert(__pyx_t_3);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
-    __Pyx_INCREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_py_status};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_ptr_d = NULL;
 
   /* "MLTooling/math/matrix.pyx":21
- *         check_status(py_status)
+ *         cdef int status
  * 
- *         self.c_mat_f = <mltMatrixF*>ptr             # <<<<<<<<<<<<<<
+ *         if dtype == Dtypes.FLOAT32:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFCreate(rows, cols, &ptr_f)
+ *             py_status = MltStatus(status)
+*/
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_dtype, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_3) {
+
+    /* "MLTooling/math/matrix.pyx":22
+ * 
+ *         if dtype == Dtypes.FLOAT32:
+ *             status = mltFwMatrixFCreate(rows, cols, &ptr_f)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixFCreate(__pyx_v_rows, __pyx_v_cols, (&__pyx_v_ptr_f));
+
+    /* "MLTooling/math/matrix.pyx":23
+ *         if dtype == Dtypes.FLOAT32:
+ *             status = mltFwMatrixFCreate(rows, cols, &ptr_f)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             self._c_mat_f = ptr_f
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_4);
+      assert(__pyx_t_2);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":24
+ *             status = mltFwMatrixFCreate(rows, cols, &ptr_f)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             self._c_mat_f = ptr_f
+ *         elif dtype == Dtypes.FLOAT64:
+*/
+    __pyx_t_4 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_5))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_5);
+      assert(__pyx_t_4);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_5, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":25
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             self._c_mat_f = ptr_f             # <<<<<<<<<<<<<<
+ *         elif dtype == Dtypes.FLOAT64:
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)
+*/
+    __pyx_v_self->_c_mat_f = __pyx_v_ptr_f;
+
+    /* "MLTooling/math/matrix.pyx":21
+ *         cdef int status
+ * 
+ *         if dtype == Dtypes.FLOAT32:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFCreate(rows, cols, &ptr_f)
+ *             py_status = MltStatus(status)
+*/
+    goto __pyx_L3;
+  }
+
+  /* "MLTooling/math/matrix.pyx":26
+ *             check_status(py_status)
+ *             self._c_mat_f = ptr_f
+ *         elif dtype == Dtypes.FLOAT64:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)
+ *             py_status = MltStatus(status)
+*/
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_dtype, __pyx_t_5, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 26, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (likely(__pyx_t_3)) {
+
+    /* "MLTooling/math/matrix.pyx":27
+ *             self._c_mat_f = ptr_f
+ *         elif dtype == Dtypes.FLOAT64:
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixDCreate(__pyx_v_rows, __pyx_v_cols, (&__pyx_v_ptr_d));
+
+    /* "MLTooling/math/matrix.pyx":28
+ *         elif dtype == Dtypes.FLOAT64:
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             self._c_mat_d = ptr_d
+*/
+    __pyx_t_5 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_4);
+      assert(__pyx_t_5);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":29
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             self._c_mat_d = ptr_d
+ *         else:
+*/
+    __pyx_t_4 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_4);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 29, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":30
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             self._c_mat_d = ptr_d             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise TypeError("Unknown type")
+*/
+    __pyx_v_self->_c_mat_d = __pyx_v_ptr_d;
+
+    /* "MLTooling/math/matrix.pyx":26
+ *             check_status(py_status)
+ *             self._c_mat_f = ptr_f
+ *         elif dtype == Dtypes.FLOAT64:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDCreate(rows, cols, &ptr_d)
+ *             py_status = MltStatus(status)
+*/
+    goto __pyx_L3;
+  }
+
+  /* "MLTooling/math/matrix.pyx":32
+ *             self._c_mat_d = ptr_d
+ *         else:
+ *             raise TypeError("Unknown type")             # <<<<<<<<<<<<<<
+ * 
+ *         self._type = dtype.value
+*/
+  /*else*/ {
+    __pyx_t_2 = NULL;
+    __pyx_t_6 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_mstate_global->__pyx_kp_u_Unknown_type};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 32, __pyx_L1_error)
+  }
+  __pyx_L3:;
+
+  /* "MLTooling/math/matrix.pyx":34
+ *             raise TypeError("Unknown type")
+ * 
+ *         self._type = dtype.value             # <<<<<<<<<<<<<<
  * 
  *     @classmethod
 */
-  __pyx_v_self->c_mat_f = ((struct mltMatrixF *)__pyx_v_ptr);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_dtype, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_7 = __Pyx_PyLong_As_int(__pyx_t_1); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_self->_type = __pyx_t_7;
 
-  /* "MLTooling/math/matrix.pyx":13
+  /* "MLTooling/math/matrix.pyx":16
  * 
  * 
  *     def __init__(self, size_t rows, size_t cols, dtype: Dtypes = Dtypes.FLOAT32):             # <<<<<<<<<<<<<<
- *         cdef mltMatrixF* ptr = NULL
- *         cdef int status
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL
 */
 
   /* function exit code */
@@ -16899,8 +17124,8 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("MLTooling.math.matrix.Matrix.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
@@ -16909,11 +17134,11 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_2__init__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":23
- *         self.c_mat_f = <mltMatrixF*>ptr
+/* "MLTooling/math/matrix.pyx":36
+ *         self._type = dtype.value
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
- *     def from_buffer(cls, size_t rows, size_t cols, float [:] data):
+ *     def from_buffer(cls, size_t rows, size_t cols, data: array):
  *         cdef Matrix mat = cls.__new__(cls)
 */
 
@@ -16935,7 +17160,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ) {
   size_t __pyx_v_rows;
   size_t __pyx_v_cols;
-  __Pyx_memviewslice __pyx_v_data = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_data = 0;
   #if !CYTHON_METH_FASTCALL
   CYTHON_UNUSED Py_ssize_t __pyx_nargs;
   #endif
@@ -16958,53 +17183,52 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_rows,&__pyx_mstate_global->__pyx_n_u_cols,&__pyx_mstate_global->__pyx_n_u_data,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 23, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 36, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 23, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 36, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 23, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 36, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 23, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 36, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "from_buffer", 0) < (0)) __PYX_ERR(0, 23, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "from_buffer", 0) < (0)) __PYX_ERR(0, 36, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("from_buffer", 1, 3, 3, i); __PYX_ERR(0, 23, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("from_buffer", 1, 3, 3, i); __PYX_ERR(0, 36, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 23, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 36, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 23, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 36, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 23, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 36, __pyx_L3_error)
     }
-    __pyx_v_rows = __Pyx_PyLong_As_size_t(values[0]); if (unlikely((__pyx_v_rows == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L3_error)
-    __pyx_v_cols = __Pyx_PyLong_As_size_t(values[1]); if (unlikely((__pyx_v_cols == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L3_error)
-    __pyx_v_data = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_data.memview)) __PYX_ERR(0, 24, __pyx_L3_error)
+    __pyx_v_rows = __Pyx_PyLong_As_size_t(values[0]); if (unlikely((__pyx_v_rows == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+    __pyx_v_cols = __Pyx_PyLong_As_size_t(values[1]); if (unlikely((__pyx_v_cols == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+    __pyx_v_data = values[2];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("from_buffer", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 23, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("from_buffer", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 36, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __PYX_XCLEAR_MEMVIEW(&__pyx_v_data, 1);
   __Pyx_AddTraceback("MLTooling.math.matrix.Matrix.from_buffer", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
@@ -17015,192 +17239,478 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __PYX_XCLEAR_MEMVIEW(&__pyx_v_data, 1);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_4from_buffer(PyTypeObject *__pyx_v_cls, size_t __pyx_v_rows, size_t __pyx_v_cols, __Pyx_memviewslice __pyx_v_data) {
+static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_4from_buffer(PyTypeObject *__pyx_v_cls, size_t __pyx_v_rows, size_t __pyx_v_cols, PyObject *__pyx_v_data) {
   struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_mat = 0;
-  struct mltMatrixF *__pyx_v_ptr;
+  struct mltMatrixF *__pyx_v_ptr_f;
+  struct mltMatrixD *__pyx_v_ptr_d;
   int __pyx_v_status;
+  __Pyx_memviewslice __pyx_v_c_data_float = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_c_data_double = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_dtype = NULL;
   PyObject *__pyx_v_py_status = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  int __pyx_t_2;
+  PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   size_t __pyx_t_4;
   Py_ssize_t __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
+  int __pyx_t_6;
+  __Pyx_memviewslice __pyx_t_7 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_8;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
+  __Pyx_memviewslice __pyx_t_11 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("from_buffer", 0);
 
-  /* "MLTooling/math/matrix.pyx":25
+  /* "MLTooling/math/matrix.pyx":38
  *     @classmethod
- *     def from_buffer(cls, size_t rows, size_t cols, float [:] data):
+ *     def from_buffer(cls, size_t rows, size_t cols, data: array):
  *         cdef Matrix mat = cls.__new__(cls)             # <<<<<<<<<<<<<<
- *         cdef mltMatrixF* ptr = NULL
- *         cdef int status
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL
 */
   if (unlikely(((PyObject *)__pyx_v_cls) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "object.__new__(X): X is not a type object (NoneType)");
-    __PYX_ERR(0, 25, __pyx_L1_error)
+    __PYX_ERR(0, 38, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_tp_new(((PyObject *)__pyx_v_cls), __pyx_mstate_global->__pyx_empty_tuple); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_tp_new(((PyObject *)__pyx_v_cls), __pyx_mstate_global->__pyx_empty_tuple); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (!(likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix)))) __PYX_ERR(0, 25, __pyx_L1_error)
+  if (!(likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix)))) __PYX_ERR(0, 38, __pyx_L1_error)
   __pyx_v_mat = ((struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":26
- *     def from_buffer(cls, size_t rows, size_t cols, float [:] data):
+  /* "MLTooling/math/matrix.pyx":39
+ *     def from_buffer(cls, size_t rows, size_t cols, data: array):
  *         cdef Matrix mat = cls.__new__(cls)
- *         cdef mltMatrixF* ptr = NULL             # <<<<<<<<<<<<<<
+ *         cdef mltMatrixF* ptr_f = NULL             # <<<<<<<<<<<<<<
+ *         cdef mltMatrixD* ptr_d = NULL
  *         cdef int status
+*/
+  __pyx_v_ptr_f = NULL;
+
+  /* "MLTooling/math/matrix.pyx":40
+ *         cdef Matrix mat = cls.__new__(cls)
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL             # <<<<<<<<<<<<<<
+ *         cdef int status
+ *         cdef float [:] c_data_float
+*/
+  __pyx_v_ptr_d = NULL;
+
+  /* "MLTooling/math/matrix.pyx":44
+ *         cdef float [:] c_data_float
+ *         cdef double [:] c_data_double
+ *         dtype = typecode_to_dtype(data)             # <<<<<<<<<<<<<<
+ * 
+ *         if len(data) == 0:
+*/
+  __pyx_t_2 = NULL;
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_typecode_to_dtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = 1;
+  #if CYTHON_UNPACK_METHODS
+  if (unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+    assert(__pyx_t_2);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+    __Pyx_INCREF(__pyx_t_2);
+    __Pyx_INCREF(__pyx__function);
+    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+    __pyx_t_4 = 0;
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_v_data};
+    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  }
+  __pyx_v_dtype = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "MLTooling/math/matrix.pyx":46
+ *         dtype = typecode_to_dtype(data)
+ * 
+ *         if len(data) == 0:             # <<<<<<<<<<<<<<
+ *             raise ValueError("data must not be empty")
  * 
 */
-  __pyx_v_ptr = NULL;
+  __pyx_t_5 = PyObject_Length(__pyx_v_data); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_6 = (__pyx_t_5 == 0);
+  if (unlikely(__pyx_t_6)) {
 
-  /* "MLTooling/math/matrix.pyx":29
- *         cdef int status
+    /* "MLTooling/math/matrix.pyx":47
  * 
- *         if <size_t>data.shape[0] != rows * cols:             # <<<<<<<<<<<<<<
- *             raise ValueError("Buffer size mismatch")
+ *         if len(data) == 0:
+ *             raise ValueError("data must not be empty")             # <<<<<<<<<<<<<<
  * 
-*/
-  __pyx_t_2 = (((size_t)(__pyx_v_data.shape[0])) != (__pyx_v_rows * __pyx_v_cols));
-  if (unlikely(__pyx_t_2)) {
-
-    /* "MLTooling/math/matrix.pyx":30
- * 
- *         if <size_t>data.shape[0] != rows * cols:
- *             raise ValueError("Buffer size mismatch")             # <<<<<<<<<<<<<<
- * 
- *         status = mltFwMatrixFCreateFromBuff(
+ *         if dtype == Dtypes.FLOAT32:
 */
     __pyx_t_3 = NULL;
     __pyx_t_4 = 1;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_Buffer_size_mismatch};
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_data_must_not_be_empty};
       __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_ValueError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 30, __pyx_L1_error)
+    __PYX_ERR(0, 47, __pyx_L1_error)
 
-    /* "MLTooling/math/matrix.pyx":29
- *         cdef int status
+    /* "MLTooling/math/matrix.pyx":46
+ *         dtype = typecode_to_dtype(data)
  * 
- *         if <size_t>data.shape[0] != rows * cols:             # <<<<<<<<<<<<<<
- *             raise ValueError("Buffer size mismatch")
+ *         if len(data) == 0:             # <<<<<<<<<<<<<<
+ *             raise ValueError("data must not be empty")
  * 
 */
   }
 
-  /* "MLTooling/math/matrix.pyx":35
- *             rows,
- *             cols,
- *             &data[0],             # <<<<<<<<<<<<<<
- *             data.shape[0],
- *             &ptr
-*/
-  __pyx_t_5 = 0;
-
-  /* "MLTooling/math/matrix.pyx":32
- *             raise ValueError("Buffer size mismatch")
+  /* "MLTooling/math/matrix.pyx":49
+ *             raise ValueError("data must not be empty")
  * 
- *         status = mltFwMatrixFCreateFromBuff(             # <<<<<<<<<<<<<<
- *             rows,
- *             cols,
+ *         if dtype == Dtypes.FLOAT32:             # <<<<<<<<<<<<<<
+ *             c_data_float = data
+ *             status = mltFwMatrixFCreateFromBuff(
 */
-  __pyx_v_status = mltFwMatrixFCreateFromBuff(__pyx_v_rows, __pyx_v_cols, (&(*((float *) ( /* dim=0 */ (__pyx_v_data.data + __pyx_t_5 * __pyx_v_data.strides[0]) )))), (__pyx_v_data.shape[0]), (&__pyx_v_ptr));
-
-  /* "MLTooling/math/matrix.pyx":39
- *             &ptr
- *         )
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
- * 
-*/
-  __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 39, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 39, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_6))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_6);
-    assert(__pyx_t_3);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
-    __Pyx_INCREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
-    __pyx_t_4 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_t_7};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_6, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_v_py_status = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "MLTooling/math/matrix.pyx":40
- *         )
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
- * 
- *         mat.c_mat_f = ptr
-*/
-  __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 40, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
-    assert(__pyx_t_6);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_7);
-    __Pyx_INCREF(__pyx_t_6);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_7, __pyx__function);
-    __pyx_t_4 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_v_py_status};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_7, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_dtype, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_6) {
 
-  /* "MLTooling/math/matrix.pyx":42
- *         check_status(py_status)
+    /* "MLTooling/math/matrix.pyx":50
  * 
- *         mat.c_mat_f = ptr             # <<<<<<<<<<<<<<
+ *         if dtype == Dtypes.FLOAT32:
+ *             c_data_float = data             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFCreateFromBuff(
+ *                 rows,
+*/
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_v_data, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_v_c_data_float = __pyx_t_7;
+    __pyx_t_7.memview = NULL;
+    __pyx_t_7.data = NULL;
+
+    /* "MLTooling/math/matrix.pyx":54
+ *                 rows,
+ *                 cols,
+ *                 &c_data_float[0],             # <<<<<<<<<<<<<<
+ *                 c_data_float.shape[0],
+ *                 &ptr_f
+*/
+    __pyx_t_8 = 0;
+
+    /* "MLTooling/math/matrix.pyx":51
+ *         if dtype == Dtypes.FLOAT32:
+ *             c_data_float = data
+ *             status = mltFwMatrixFCreateFromBuff(             # <<<<<<<<<<<<<<
+ *                 rows,
+ *                 cols,
+*/
+    __pyx_v_status = mltFwMatrixFCreateFromBuff(__pyx_v_rows, __pyx_v_cols, (&(*((float *) ( /* dim=0 */ (__pyx_v_c_data_float.data + __pyx_t_8 * __pyx_v_c_data_float.strides[0]) )))), (__pyx_v_c_data_float.shape[0]), (&__pyx_v_ptr_f));
+
+    /* "MLTooling/math/matrix.pyx":58
+ *                 &ptr_f
+ *             )
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             mat._c_mat_f = ptr_f
+*/
+    __pyx_t_3 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_9 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_3);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_t_9};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":59
+ *             )
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             mat._c_mat_f = ptr_f
+ *             mat._type = Dtypes.FLOAT32.value
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_9))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_9);
+      assert(__pyx_t_2);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_9);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_9, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_9, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":60
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             mat._c_mat_f = ptr_f             # <<<<<<<<<<<<<<
+ *             mat._type = Dtypes.FLOAT32.value
+ *         elif dtype == Dtypes.FLOAT64:
+*/
+    __pyx_v_mat->_c_mat_f = __pyx_v_ptr_f;
+
+    /* "MLTooling/math/matrix.pyx":61
+ *             check_status(py_status)
+ *             mat._c_mat_f = ptr_f
+ *             mat._type = Dtypes.FLOAT32.value             # <<<<<<<<<<<<<<
+ *         elif dtype == Dtypes.FLOAT64:
+ *             c_data_double = data
+*/
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_t_1); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_mat->_type = __pyx_t_10;
+
+    /* "MLTooling/math/matrix.pyx":49
+ *             raise ValueError("data must not be empty")
+ * 
+ *         if dtype == Dtypes.FLOAT32:             # <<<<<<<<<<<<<<
+ *             c_data_float = data
+ *             status = mltFwMatrixFCreateFromBuff(
+*/
+    goto __pyx_L4;
+  }
+
+  /* "MLTooling/math/matrix.pyx":62
+ *             mat._c_mat_f = ptr_f
+ *             mat._type = Dtypes.FLOAT32.value
+ *         elif dtype == Dtypes.FLOAT64:             # <<<<<<<<<<<<<<
+ *             c_data_double = data
+ *             status = mltFwMatrixDCreateFromBuff(
+*/
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_dtype, __pyx_t_9, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (likely(__pyx_t_6)) {
+
+    /* "MLTooling/math/matrix.pyx":63
+ *             mat._type = Dtypes.FLOAT32.value
+ *         elif dtype == Dtypes.FLOAT64:
+ *             c_data_double = data             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDCreateFromBuff(
+ *                 rows,
+*/
+    __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_data, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_v_c_data_double = __pyx_t_11;
+    __pyx_t_11.memview = NULL;
+    __pyx_t_11.data = NULL;
+
+    /* "MLTooling/math/matrix.pyx":67
+ *                 rows,
+ *                 cols,
+ *                 &c_data_double[0],             # <<<<<<<<<<<<<<
+ *                 c_data_double.shape[0],
+ *                 &ptr_d
+*/
+    __pyx_t_8 = 0;
+
+    /* "MLTooling/math/matrix.pyx":64
+ *         elif dtype == Dtypes.FLOAT64:
+ *             c_data_double = data
+ *             status = mltFwMatrixDCreateFromBuff(             # <<<<<<<<<<<<<<
+ *                 rows,
+ *                 cols,
+*/
+    __pyx_v_status = mltFwMatrixDCreateFromBuff(__pyx_v_rows, __pyx_v_cols, (&(*((double *) ( /* dim=0 */ (__pyx_v_c_data_double.data + __pyx_t_8 * __pyx_v_c_data_double.strides[0]) )))), (__pyx_v_c_data_double.shape[0]), (&__pyx_v_ptr_d));
+
+    /* "MLTooling/math/matrix.pyx":71
+ *                 &ptr_d
+ *             )
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             mat._c_mat_d = ptr_d
+*/
+    __pyx_t_9 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_9);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_9);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_3};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":72
+ *             )
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             mat._c_mat_d = ptr_d
+ *             mat._type = Dtypes.FLOAT64.value
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+      assert(__pyx_t_2);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":73
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             mat._c_mat_d = ptr_d             # <<<<<<<<<<<<<<
+ *             mat._type = Dtypes.FLOAT64.value
+ *         else:
+*/
+    __pyx_v_mat->_c_mat_d = __pyx_v_ptr_d;
+
+    /* "MLTooling/math/matrix.pyx":74
+ *             check_status(py_status)
+ *             mat._c_mat_d = ptr_d
+ *             mat._type = Dtypes.FLOAT64.value             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise TypeError("Unknown type")
+*/
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_t_1); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 74, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_mat->_type = __pyx_t_10;
+
+    /* "MLTooling/math/matrix.pyx":62
+ *             mat._c_mat_f = ptr_f
+ *             mat._type = Dtypes.FLOAT32.value
+ *         elif dtype == Dtypes.FLOAT64:             # <<<<<<<<<<<<<<
+ *             c_data_double = data
+ *             status = mltFwMatrixDCreateFromBuff(
+*/
+    goto __pyx_L4;
+  }
+
+  /* "MLTooling/math/matrix.pyx":76
+ *             mat._type = Dtypes.FLOAT64.value
+ *         else:
+ *             raise TypeError("Unknown type")             # <<<<<<<<<<<<<<
  * 
  *         return mat
 */
-  __pyx_v_mat->c_mat_f = __pyx_v_ptr;
+  /*else*/ {
+    __pyx_t_3 = NULL;
+    __pyx_t_4 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_Unknown_type};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 76, __pyx_L1_error)
+  }
+  __pyx_L4:;
 
-  /* "MLTooling/math/matrix.pyx":44
- *         mat.c_mat_f = ptr
+  /* "MLTooling/math/matrix.pyx":78
+ *             raise TypeError("Unknown type")
  * 
  *         return mat             # <<<<<<<<<<<<<<
  * 
@@ -17211,31 +17721,36 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_4from_buffer(PyTypeOb
   __pyx_r = ((PyObject *)__pyx_v_mat);
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":23
- *         self.c_mat_f = <mltMatrixF*>ptr
+  /* "MLTooling/math/matrix.pyx":36
+ *         self._type = dtype.value
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
- *     def from_buffer(cls, size_t rows, size_t cols, float [:] data):
+ *     def from_buffer(cls, size_t rows, size_t cols, data: array):
  *         cdef Matrix mat = cls.__new__(cls)
 */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
+  __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
+  __Pyx_XDECREF(__pyx_t_9);
+  __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
   __Pyx_AddTraceback("MLTooling.math.matrix.Matrix.from_buffer", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_mat);
+  __PYX_XCLEAR_MEMVIEW(&__pyx_v_c_data_float, 1);
+  __PYX_XCLEAR_MEMVIEW(&__pyx_v_c_data_double, 1);
+  __Pyx_XDECREF(__pyx_v_dtype);
   __Pyx_XDECREF(__pyx_v_py_status);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":46
+/* "MLTooling/math/matrix.pyx":80
  *         return mat
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -17282,32 +17797,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_ptr,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 46, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 80, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 46, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 80, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_ptr", 0) < (0)) __PYX_ERR(0, 46, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_ptr", 0) < (0)) __PYX_ERR(0, 80, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_ptr", 1, 1, 1, i); __PYX_ERR(0, 46, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_ptr", 1, 1, 1, i); __PYX_ERR(0, 80, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 46, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 80, __pyx_L3_error)
     }
     __pyx_v_ptr = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_from_ptr", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 46, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_from_ptr", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 80, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -17338,29 +17853,29 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_6_from_ptr(CYTHON_UNU
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_from_ptr", 0);
 
-  /* "MLTooling/math/matrix.pyx":48
+  /* "MLTooling/math/matrix.pyx":82
  *     @classmethod
  *     def _from_ptr(cls, ptr):
  *         mat = Matrix(0,0)             # <<<<<<<<<<<<<<
- *         mat.c_mat_f = <mltMatrixF*>ptr
+ *         mat._c_mat_f = <mltMatrixF*>ptr
  * 
 */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix), __pyx_mstate_global->__pyx_tuple[1], NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix), __pyx_mstate_global->__pyx_tuple[1], NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_mat = ((struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":49
+  /* "MLTooling/math/matrix.pyx":83
  *     def _from_ptr(cls, ptr):
  *         mat = Matrix(0,0)
- *         mat.c_mat_f = <mltMatrixF*>ptr             # <<<<<<<<<<<<<<
+ *         mat._c_mat_f = <mltMatrixF*>ptr             # <<<<<<<<<<<<<<
  * 
  *         return mat
 */
-  __pyx_v_mat->c_mat_f = ((struct mltMatrixF *)__pyx_v_ptr);
+  __pyx_v_mat->_c_mat_f = ((struct mltMatrixF *)__pyx_v_ptr);
 
-  /* "MLTooling/math/matrix.pyx":51
- *         mat.c_mat_f = <mltMatrixF*>ptr
+  /* "MLTooling/math/matrix.pyx":85
+ *         mat._c_mat_f = <mltMatrixF*>ptr
  * 
  *         return mat             # <<<<<<<<<<<<<<
  * 
@@ -17371,7 +17886,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_6_from_ptr(CYTHON_UNU
   __pyx_r = ((PyObject *)__pyx_v_mat);
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":46
+  /* "MLTooling/math/matrix.pyx":80
  *         return mat
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -17391,12 +17906,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_6_from_ptr(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":53
+/* "MLTooling/math/matrix.pyx":87
  *         return mat
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         if self.c_mat_f != NULL:
- *             mltFwMatrixFDestroy(self.c_mat_f)
+ *         if self._c_mat_f != NULL:
+ *             mltFwMatrixFDestroy(self._c_mat_f)
 */
 
 /* Python wrapper */
@@ -17415,60 +17930,97 @@ static void __pyx_pw_9MLTooling_4math_6matrix_6Matrix_9__dealloc__(PyObject *__p
 static void __pyx_pf_9MLTooling_4math_6matrix_6Matrix_8__dealloc__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self) {
   int __pyx_t_1;
 
-  /* "MLTooling/math/matrix.pyx":54
+  /* "MLTooling/math/matrix.pyx":88
  * 
  *     def __dealloc__(self):
- *         if self.c_mat_f != NULL:             # <<<<<<<<<<<<<<
- *             mltFwMatrixFDestroy(self.c_mat_f)
- *             self.c_mat_f = NULL
+ *         if self._c_mat_f != NULL:             # <<<<<<<<<<<<<<
+ *             mltFwMatrixFDestroy(self._c_mat_f)
+ *             self._c_mat_f = NULL
 */
-  __pyx_t_1 = (__pyx_v_self->c_mat_f != NULL);
+  __pyx_t_1 = (__pyx_v_self->_c_mat_f != NULL);
   if (__pyx_t_1) {
 
-    /* "MLTooling/math/matrix.pyx":55
+    /* "MLTooling/math/matrix.pyx":89
  *     def __dealloc__(self):
- *         if self.c_mat_f != NULL:
- *             mltFwMatrixFDestroy(self.c_mat_f)             # <<<<<<<<<<<<<<
- *             self.c_mat_f = NULL
+ *         if self._c_mat_f != NULL:
+ *             mltFwMatrixFDestroy(self._c_mat_f)             # <<<<<<<<<<<<<<
+ *             self._c_mat_f = NULL
  * 
 */
-    (void)(mltFwMatrixFDestroy(__pyx_v_self->c_mat_f));
+    (void)(mltFwMatrixFDestroy(__pyx_v_self->_c_mat_f));
 
-    /* "MLTooling/math/matrix.pyx":56
- *         if self.c_mat_f != NULL:
- *             mltFwMatrixFDestroy(self.c_mat_f)
- *             self.c_mat_f = NULL             # <<<<<<<<<<<<<<
+    /* "MLTooling/math/matrix.pyx":90
+ *         if self._c_mat_f != NULL:
+ *             mltFwMatrixFDestroy(self._c_mat_f)
+ *             self._c_mat_f = NULL             # <<<<<<<<<<<<<<
  * 
- *     def __getitem__(self, key):
+ *         if self._c_mat_d != NULL:
 */
-    __pyx_v_self->c_mat_f = NULL;
+    __pyx_v_self->_c_mat_f = NULL;
 
-    /* "MLTooling/math/matrix.pyx":54
+    /* "MLTooling/math/matrix.pyx":88
  * 
  *     def __dealloc__(self):
- *         if self.c_mat_f != NULL:             # <<<<<<<<<<<<<<
- *             mltFwMatrixFDestroy(self.c_mat_f)
- *             self.c_mat_f = NULL
+ *         if self._c_mat_f != NULL:             # <<<<<<<<<<<<<<
+ *             mltFwMatrixFDestroy(self._c_mat_f)
+ *             self._c_mat_f = NULL
 */
   }
 
-  /* "MLTooling/math/matrix.pyx":53
+  /* "MLTooling/math/matrix.pyx":92
+ *             self._c_mat_f = NULL
+ * 
+ *         if self._c_mat_d != NULL:             # <<<<<<<<<<<<<<
+ *             mltFwMatrixDDestroy(self._c_mat_d)
+ *             self._c_mat_d = NULL
+*/
+  __pyx_t_1 = (__pyx_v_self->_c_mat_d != NULL);
+  if (__pyx_t_1) {
+
+    /* "MLTooling/math/matrix.pyx":93
+ * 
+ *         if self._c_mat_d != NULL:
+ *             mltFwMatrixDDestroy(self._c_mat_d)             # <<<<<<<<<<<<<<
+ *             self._c_mat_d = NULL
+ * 
+*/
+    (void)(mltFwMatrixDDestroy(__pyx_v_self->_c_mat_d));
+
+    /* "MLTooling/math/matrix.pyx":94
+ *         if self._c_mat_d != NULL:
+ *             mltFwMatrixDDestroy(self._c_mat_d)
+ *             self._c_mat_d = NULL             # <<<<<<<<<<<<<<
+ * 
+ *     def __getitem__(self, key):
+*/
+    __pyx_v_self->_c_mat_d = NULL;
+
+    /* "MLTooling/math/matrix.pyx":92
+ *             self._c_mat_f = NULL
+ * 
+ *         if self._c_mat_d != NULL:             # <<<<<<<<<<<<<<
+ *             mltFwMatrixDDestroy(self._c_mat_d)
+ *             self._c_mat_d = NULL
+*/
+  }
+
+  /* "MLTooling/math/matrix.pyx":87
  *         return mat
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         if self.c_mat_f != NULL:
- *             mltFwMatrixFDestroy(self.c_mat_f)
+ *         if self._c_mat_f != NULL:
+ *             mltFwMatrixFDestroy(self._c_mat_f)
 */
 
   /* function exit code */
 }
 
-/* "MLTooling/math/matrix.pyx":58
- *             self.c_mat_f = NULL
+/* "MLTooling/math/matrix.pyx":96
+ *             self._c_mat_d = NULL
  * 
  *     def __getitem__(self, key):             # <<<<<<<<<<<<<<
  *         cdef size_t row, col
- *         cdef float val
+ *         cdef float val_float
 */
 
 /* Python wrapper */
@@ -17489,7 +18041,8 @@ static PyObject *__pyx_pw_9MLTooling_4math_6matrix_6Matrix_11__getitem__(PyObjec
 static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, PyObject *__pyx_v_key) {
   size_t __pyx_v_row;
   size_t __pyx_v_col;
-  float __pyx_v_val;
+  float __pyx_v_val_float;
+  double __pyx_v_val_double;
   int __pyx_v_status;
   PyObject *__pyx_v_py_status = NULL;
   PyObject *__pyx_r = NULL;
@@ -17507,7 +18060,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
 
-  /* "MLTooling/math/matrix.pyx":63
+  /* "MLTooling/math/matrix.pyx":102
  *         cdef int status
  * 
  *         if isinstance(key, tuple) and len(key) == 2:             # <<<<<<<<<<<<<<
@@ -17520,39 +18073,39 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct 
     __pyx_t_1 = __pyx_t_2;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_3 = PyObject_Length(__pyx_v_key); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_key); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 102, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_3 == 2);
   __pyx_t_1 = __pyx_t_2;
   __pyx_L4_bool_binop_done:;
   if (likely(__pyx_t_1)) {
 
-    /* "MLTooling/math/matrix.pyx":64
+    /* "MLTooling/math/matrix.pyx":103
  * 
  *         if isinstance(key, tuple) and len(key) == 2:
  *             row = <size_t>key[0]             # <<<<<<<<<<<<<<
  *             col = <size_t>key[1]
  *         else:
 */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 103, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 64, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 103, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_row = ((size_t)__pyx_t_5);
 
-    /* "MLTooling/math/matrix.pyx":65
+    /* "MLTooling/math/matrix.pyx":104
  *         if isinstance(key, tuple) and len(key) == 2:
  *             row = <size_t>key[0]
  *             col = <size_t>key[1]             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError("Index must be a tuple(row, col)")
 */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 104, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 104, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_col = ((size_t)__pyx_t_5);
 
-    /* "MLTooling/math/matrix.pyx":63
+    /* "MLTooling/math/matrix.pyx":102
  *         cdef int status
  * 
  *         if isinstance(key, tuple) and len(key) == 2:             # <<<<<<<<<<<<<<
@@ -17562,12 +18115,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct 
     goto __pyx_L3;
   }
 
-  /* "MLTooling/math/matrix.pyx":67
+  /* "MLTooling/math/matrix.pyx":106
  *             col = <size_t>key[1]
  *         else:
  *             raise TypeError("Index must be a tuple(row, col)")             # <<<<<<<<<<<<<<
  * 
- *         status = mltFwMatrixFGet(self.c_mat_f, row, col, &val)
+ *         if self._type == Dtypes.FLOAT32.value:
 */
   /*else*/ {
     __pyx_t_6 = NULL;
@@ -17576,112 +18129,291 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct 
       PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_mstate_global->__pyx_kp_u_Index_must_be_a_tuple_row_col};
       __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
     }
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __PYX_ERR(0, 67, __pyx_L1_error)
+    __PYX_ERR(0, 106, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "MLTooling/math/matrix.pyx":69
+  /* "MLTooling/math/matrix.pyx":108
  *             raise TypeError("Index must be a tuple(row, col)")
  * 
- *         status = mltFwMatrixFGet(self.c_mat_f, row, col, &val)             # <<<<<<<<<<<<<<
- * 
- *         py_status = MltStatus(status)
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFGet(self._c_mat_f, row, col, &val_float)
+ *             py_status = MltStatus(status)
 */
-  __pyx_v_status = mltFwMatrixFGet(__pyx_v_self->c_mat_f, __pyx_v_row, __pyx_v_col, (&__pyx_v_val));
-
-  /* "MLTooling/math/matrix.pyx":71
- *         status = mltFwMatrixFGet(self.c_mat_f, row, col, &val)
- * 
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
- * 
-*/
-  __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 108, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 71, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
-    assert(__pyx_t_6);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_7);
-    __Pyx_INCREF(__pyx_t_6);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_7, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_8};
-    __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_7, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-  }
-  __pyx_v_py_status = __pyx_t_4;
-  __pyx_t_4 = 0;
-
-  /* "MLTooling/math/matrix.pyx":72
- * 
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
- * 
- *         return val
-*/
-  __pyx_t_7 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 72, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_8))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
-    assert(__pyx_t_7);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_8);
-    __Pyx_INCREF(__pyx_t_7);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_8, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_7, __pyx_v_py_status};
-    __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_8, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-  }
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = PyObject_RichCompare(__pyx_t_4, __pyx_t_6, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 108, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 108, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (__pyx_t_1) {
 
-  /* "MLTooling/math/matrix.pyx":74
- *         check_status(py_status)
+    /* "MLTooling/math/matrix.pyx":109
  * 
- *         return val             # <<<<<<<<<<<<<<
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             status = mltFwMatrixFGet(self._c_mat_f, row, col, &val_float)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixFGet(__pyx_v_self->_c_mat_f, __pyx_v_row, __pyx_v_col, (&__pyx_v_val_float));
+
+    /* "MLTooling/math/matrix.pyx":110
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             status = mltFwMatrixFGet(self._c_mat_f, row, col, &val_float)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             return val_float
+*/
+    __pyx_t_6 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 110, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_8 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 110, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_5 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_4);
+      assert(__pyx_t_6);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
+      __pyx_t_5 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_8};
+      __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 110, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+    }
+    __pyx_v_py_status = __pyx_t_7;
+    __pyx_t_7 = 0;
+
+    /* "MLTooling/math/matrix.pyx":111
+ *             status = mltFwMatrixFGet(self._c_mat_f, row, col, &val_float)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             return val_float
+ *         elif self._type == Dtypes.FLOAT64.value:
+*/
+    __pyx_t_4 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 111, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_5 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_8))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_8);
+      assert(__pyx_t_4);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_8);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_8, __pyx__function);
+      __pyx_t_5 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_py_status};
+      __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_8, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 111, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+    /* "MLTooling/math/matrix.pyx":112
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             return val_float             # <<<<<<<<<<<<<<
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)
+*/
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_7 = PyFloat_FromDouble(__pyx_v_val_float); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 112, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_r = __pyx_t_7;
+    __pyx_t_7 = 0;
+    goto __pyx_L0;
+
+    /* "MLTooling/math/matrix.pyx":108
+ *             raise TypeError("Index must be a tuple(row, col)")
+ * 
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFGet(self._c_mat_f, row, col, &val_float)
+ *             py_status = MltStatus(status)
+*/
+  }
+
+  /* "MLTooling/math/matrix.pyx":113
+ *             check_status(py_status)
+ *             return val_float
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)
+ *             py_status = MltStatus(status)
+*/
+  __pyx_t_7 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_8);
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_8);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = PyObject_RichCompare(__pyx_t_7, __pyx_t_8, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (likely(__pyx_t_1)) {
+
+    /* "MLTooling/math/matrix.pyx":114
+ *             return val_float
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixDGet(__pyx_v_self->_c_mat_d, __pyx_v_row, __pyx_v_col, (&__pyx_v_val_double));
+
+    /* "MLTooling/math/matrix.pyx":115
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *             return val_double
+*/
+    __pyx_t_8 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 115, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_6 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 115, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_7))) {
+      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
+      assert(__pyx_t_8);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_8);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_7, __pyx__function);
+      __pyx_t_5 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_8, __pyx_t_6};
+      __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_7, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+    }
+    __pyx_v_py_status = __pyx_t_4;
+    __pyx_t_4 = 0;
+
+    /* "MLTooling/math/matrix.pyx":116
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *             return val_double
+ *         else:
+*/
+    __pyx_t_7 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 116, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_6);
+      assert(__pyx_t_7);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
+      __pyx_t_5 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_7, __pyx_v_py_status};
+      __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_6, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 116, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+    }
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "MLTooling/math/matrix.pyx":117
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *             return val_double             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise TypeError("Unknown type")
+*/
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_4 = PyFloat_FromDouble(__pyx_v_val_double); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 117, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_r = __pyx_t_4;
+    __pyx_t_4 = 0;
+    goto __pyx_L0;
+
+    /* "MLTooling/math/matrix.pyx":113
+ *             check_status(py_status)
+ *             return val_float
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDGet(self._c_mat_d, row, col, &val_double)
+ *             py_status = MltStatus(status)
+*/
+  }
+
+  /* "MLTooling/math/matrix.pyx":119
+ *             return val_double
+ *         else:
+ *             raise TypeError("Unknown type")             # <<<<<<<<<<<<<<
  * 
  *     def __setitem__(self, key, value):
 */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_val); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
-  goto __pyx_L0;
+  /*else*/ {
+    __pyx_t_6 = NULL;
+    __pyx_t_5 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_mstate_global->__pyx_kp_u_Unknown_type};
+      __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 119, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+    }
+    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __PYX_ERR(0, 119, __pyx_L1_error)
+  }
 
-  /* "MLTooling/math/matrix.pyx":58
- *             self.c_mat_f = NULL
+  /* "MLTooling/math/matrix.pyx":96
+ *             self._c_mat_d = NULL
  * 
  *     def __getitem__(self, key):             # <<<<<<<<<<<<<<
  *         cdef size_t row, col
- *         cdef float val
+ *         cdef float val_float
 */
 
   /* function exit code */
@@ -17699,8 +18431,8 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_10__getitem__(struct 
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":76
- *         return val
+/* "MLTooling/math/matrix.pyx":121
+ *             raise TypeError("Unknown type")
  * 
  *     def __setitem__(self, key, value):             # <<<<<<<<<<<<<<
  *         cdef size_t row, col
@@ -17730,187 +18462,407 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_12__setitem__(struct __pyx_
   PyObject *__pyx_v_py_status = NULL;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
+  PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  PyObject *__pyx_t_4 = NULL;
-  size_t __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
-  float __pyx_t_7;
-  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  size_t __pyx_t_4;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  float __pyx_t_8;
   PyObject *__pyx_t_9 = NULL;
+  double __pyx_t_10;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setitem__", 0);
 
-  /* "MLTooling/math/matrix.pyx":81
+  /* "MLTooling/math/matrix.pyx":126
  *         cdef int status
+ * 
+ *         if value == None:             # <<<<<<<<<<<<<<
+ *             raise TypeError("value must not be None")
+ * 
+*/
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_value, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_2 < 0))) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (unlikely(__pyx_t_2)) {
+
+    /* "MLTooling/math/matrix.pyx":127
+ * 
+ *         if value == None:
+ *             raise TypeError("value must not be None")             # <<<<<<<<<<<<<<
+ * 
+ *         if isinstance(key, tuple) and len(key) == 2:
+*/
+    __pyx_t_3 = NULL;
+    __pyx_t_4 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_value_must_not_be_None};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 127, __pyx_L1_error)
+
+    /* "MLTooling/math/matrix.pyx":126
+ *         cdef int status
+ * 
+ *         if value == None:             # <<<<<<<<<<<<<<
+ *             raise TypeError("value must not be None")
+ * 
+*/
+  }
+
+  /* "MLTooling/math/matrix.pyx":129
+ *             raise TypeError("value must not be None")
  * 
  *         if isinstance(key, tuple) and len(key) == 2:             # <<<<<<<<<<<<<<
  *             row = <size_t>key[0]
  *             col = <size_t>key[1]
 */
-  __pyx_t_2 = PyTuple_Check(__pyx_v_key); 
-  if (__pyx_t_2) {
+  __pyx_t_5 = PyTuple_Check(__pyx_v_key); 
+  if (__pyx_t_5) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
-    goto __pyx_L4_bool_binop_done;
+    __pyx_t_2 = __pyx_t_5;
+    goto __pyx_L5_bool_binop_done;
   }
-  __pyx_t_3 = PyObject_Length(__pyx_v_key); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 81, __pyx_L1_error)
-  __pyx_t_2 = (__pyx_t_3 == 2);
-  __pyx_t_1 = __pyx_t_2;
-  __pyx_L4_bool_binop_done:;
-  if (likely(__pyx_t_1)) {
+  __pyx_t_6 = PyObject_Length(__pyx_v_key); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_5 = (__pyx_t_6 == 2);
+  __pyx_t_2 = __pyx_t_5;
+  __pyx_L5_bool_binop_done:;
+  if (likely(__pyx_t_2)) {
 
-    /* "MLTooling/math/matrix.pyx":82
+    /* "MLTooling/math/matrix.pyx":130
  * 
  *         if isinstance(key, tuple) and len(key) == 2:
  *             row = <size_t>key[0]             # <<<<<<<<<<<<<<
  *             col = <size_t>key[1]
  *         else:
 */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 82, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 82, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_v_row = ((size_t)__pyx_t_5);
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_key, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 130, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_row = ((size_t)__pyx_t_4);
 
-    /* "MLTooling/math/matrix.pyx":83
+    /* "MLTooling/math/matrix.pyx":131
  *         if isinstance(key, tuple) and len(key) == 2:
  *             row = <size_t>key[0]
  *             col = <size_t>key[1]             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError("Index must be a tuple(row, col)")
 */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_key, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 83, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_v_col = ((size_t)__pyx_t_5);
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_key, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_col = ((size_t)__pyx_t_4);
 
-    /* "MLTooling/math/matrix.pyx":81
- *         cdef int status
+    /* "MLTooling/math/matrix.pyx":129
+ *             raise TypeError("value must not be None")
  * 
  *         if isinstance(key, tuple) and len(key) == 2:             # <<<<<<<<<<<<<<
  *             row = <size_t>key[0]
  *             col = <size_t>key[1]
 */
-    goto __pyx_L3;
+    goto __pyx_L4;
   }
 
-  /* "MLTooling/math/matrix.pyx":85
+  /* "MLTooling/math/matrix.pyx":133
  *             col = <size_t>key[1]
  *         else:
  *             raise TypeError("Index must be a tuple(row, col)")             # <<<<<<<<<<<<<<
  * 
- *         val = <float>value
+ *         if self._type == Dtypes.FLOAT32.value:
 */
   /*else*/ {
-    __pyx_t_6 = NULL;
-    __pyx_t_5 = 1;
+    __pyx_t_3 = NULL;
+    __pyx_t_4 = 1;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_mstate_global->__pyx_kp_u_Index_must_be_a_tuple_row_col};
-      __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 85, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_Index_must_be_a_tuple_row_col};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
     }
-    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 133, __pyx_L1_error)
   }
-  __pyx_L3:;
+  __pyx_L4:;
 
-  /* "MLTooling/math/matrix.pyx":87
+  /* "MLTooling/math/matrix.pyx":135
  *             raise TypeError("Index must be a tuple(row, col)")
  * 
- *         val = <float>value             # <<<<<<<<<<<<<<
- * 
- *         status = mltFwMatrixFSet(self.c_mat_f, row, col, val)
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             val = <float>value
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)
 */
-  __pyx_t_7 = __Pyx_PyFloat_AsFloat(__pyx_v_value); if (unlikely((__pyx_t_7 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 87, __pyx_L1_error)
-  __pyx_v_val = ((float)__pyx_t_7);
+  __pyx_t_1 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = PyObject_RichCompare(__pyx_t_1, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_2 < 0))) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (__pyx_t_2) {
 
-  /* "MLTooling/math/matrix.pyx":89
- *         val = <float>value
+    /* "MLTooling/math/matrix.pyx":136
  * 
- *         status = mltFwMatrixFSet(self.c_mat_f, row, col, val)             # <<<<<<<<<<<<<<
- * 
- *         py_status = MltStatus(status)
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             val = <float>value             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)
+ *             py_status = MltStatus(status)
 */
-  __pyx_v_status = mltFwMatrixFSet(__pyx_v_self->c_mat_f, __pyx_v_row, __pyx_v_col, __pyx_v_val);
+    __pyx_t_8 = __Pyx_PyFloat_AsFloat(__pyx_v_value); if (unlikely((__pyx_t_8 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 136, __pyx_L1_error)
+    __pyx_v_val = ((float)__pyx_t_8);
 
-  /* "MLTooling/math/matrix.pyx":91
- *         status = mltFwMatrixFSet(self.c_mat_f, row, col, val)
- * 
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
- * 
+    /* "MLTooling/math/matrix.pyx":137
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             val = <float>value
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
 */
-  __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 91, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __pyx_v_status = mltFwMatrixFSet(__pyx_v_self->_c_mat_f, __pyx_v_row, __pyx_v_col, __pyx_v_val);
+
+    /* "MLTooling/math/matrix.pyx":138
+ *             val = <float>value
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:
+*/
+    __pyx_t_3 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_9 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 138, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_1);
+      assert(__pyx_t_3);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_1, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_t_9};
+      __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_1, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+    }
+    __pyx_v_py_status = __pyx_t_7;
+    __pyx_t_7 = 0;
+
+    /* "MLTooling/math/matrix.pyx":139
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             val = <double>value
+*/
+    __pyx_t_1 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_9))) {
+      __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_9);
+      assert(__pyx_t_1);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_9);
+      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_9, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_1, __pyx_v_py_status};
+      __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_9, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 139, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+    /* "MLTooling/math/matrix.pyx":135
+ *             raise TypeError("Index must be a tuple(row, col)")
+ * 
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             val = <float>value
+ *             status = mltFwMatrixFSet(self._c_mat_f, row, col, val)
+*/
+    goto __pyx_L7;
+  }
+
+  /* "MLTooling/math/matrix.pyx":140
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             val = <double>value
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)
+*/
+  __pyx_t_7 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 140, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_8))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
-    assert(__pyx_t_6);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_8);
-    __Pyx_INCREF(__pyx_t_6);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_8, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_9};
-    __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_8, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-  }
-  __pyx_v_py_status = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_7, __pyx_t_9, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_2 < 0))) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (likely(__pyx_t_2)) {
 
-  /* "MLTooling/math/matrix.pyx":92
- * 
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
+    /* "MLTooling/math/matrix.pyx":141
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             val = <double>value             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)
+ *             py_status = MltStatus(status)
+*/
+    __pyx_t_10 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 141, __pyx_L1_error)
+    __pyx_v_val = ((double)__pyx_t_10);
+
+    /* "MLTooling/math/matrix.pyx":142
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             val = <double>value
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixDSet(__pyx_v_self->_c_mat_d, __pyx_v_row, __pyx_v_col, __pyx_v_val);
+
+    /* "MLTooling/math/matrix.pyx":143
+ *             val = <double>value
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *         else:
+*/
+    __pyx_t_9 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_3 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_7))) {
+      __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_7);
+      assert(__pyx_t_9);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_9);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_7, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_3};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_7, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":144
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise TypeError("Unknown type")
+*/
+    __pyx_t_7 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 144, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_3);
+      assert(__pyx_t_7);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+      __pyx_t_4 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_7, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":140
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             val = <double>value
+ *             status = mltFwMatrixDSet(self._c_mat_d, row, col, val)
+*/
+    goto __pyx_L7;
+  }
+
+  /* "MLTooling/math/matrix.pyx":146
+ *             check_status(py_status)
+ *         else:
+ *             raise TypeError("Unknown type")             # <<<<<<<<<<<<<<
  * 
  *     def __add__(self, other):
 */
-  __pyx_t_8 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_9))) {
-    __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_9);
-    assert(__pyx_t_8);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_9);
-    __Pyx_INCREF(__pyx_t_8);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_9, __pyx__function);
-    __pyx_t_5 = 0;
+  /*else*/ {
+    __pyx_t_3 = NULL;
+    __pyx_t_4 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_Unknown_type};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 146, __pyx_L1_error)
   }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_8, __pyx_v_py_status};
-    __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_9, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-  }
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_L7:;
 
-  /* "MLTooling/math/matrix.pyx":76
- *         return val
+  /* "MLTooling/math/matrix.pyx":121
+ *             raise TypeError("Unknown type")
  * 
  *     def __setitem__(self, key, value):             # <<<<<<<<<<<<<<
  *         cdef size_t row, col
@@ -17921,9 +18873,9 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_12__setitem__(struct __pyx_
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("MLTooling.math.matrix.Matrix.__setitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
@@ -17933,12 +18885,12 @@ static int __pyx_pf_9MLTooling_4math_6matrix_6Matrix_12__setitem__(struct __pyx_
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":94
- *         check_status(py_status)
+/* "MLTooling/math/matrix.pyx":148
+ *             raise TypeError("Unknown type")
  * 
  *     def __add__(self, other):             # <<<<<<<<<<<<<<
  *         cdef int status
- *         cdef mltMatrixF* result = NULL
+ *         cdef mltMatrixF* result_float = NULL
 */
 
 /* Python wrapper */
@@ -17958,7 +18910,7 @@ static PyObject *__pyx_pw_9MLTooling_4math_6matrix_6Matrix_15__add__(PyObject *_
 
 static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_self, PyObject *__pyx_v_other) {
   int __pyx_v_status;
-  struct mltMatrixF *__pyx_v_result;
+  struct mltMatrixF *__pyx_v_result_float;
   struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *__pyx_v_input_other = 0;
   PyObject *__pyx_v_py_status = NULL;
   PyObject *__pyx_r = NULL;
@@ -17974,30 +18926,30 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__add__", 0);
 
-  /* "MLTooling/math/matrix.pyx":96
+  /* "MLTooling/math/matrix.pyx":150
  *     def __add__(self, other):
  *         cdef int status
- *         cdef mltMatrixF* result = NULL             # <<<<<<<<<<<<<<
+ *         cdef mltMatrixF* result_float = NULL             # <<<<<<<<<<<<<<
  *         cdef Matrix input_other
  * 
 */
-  __pyx_v_result = NULL;
+  __pyx_v_result_float = NULL;
 
-  /* "MLTooling/math/matrix.pyx":99
+  /* "MLTooling/math/matrix.pyx":153
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAdd(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)
 */
   __pyx_t_1 = __Pyx_TypeCheck(__pyx_v_other, __pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix); 
   if (likely(__pyx_t_1)) {
 
-    /* "MLTooling/math/matrix.pyx":100
+    /* "MLTooling/math/matrix.pyx":154
  * 
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix> other             # <<<<<<<<<<<<<<
- *             status = mltFwMatrixFAdd(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)
  *         else:
 */
     __pyx_t_2 = __pyx_v_other;
@@ -18005,27 +18957,27 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
     __pyx_v_input_other = ((struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "MLTooling/math/matrix.pyx":101
+    /* "MLTooling/math/matrix.pyx":155
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAdd(self.c_mat_f, input_other.c_mat_f, &result)             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError(f"Unsupported operand type for +: {type(other).__name__}")
 */
-    __pyx_v_status = mltFwMatrixFAdd(__pyx_v_self->c_mat_f, __pyx_v_input_other->c_mat_f, (&__pyx_v_result));
+    __pyx_v_status = mltFwMatrixFAdd(__pyx_v_self->_c_mat_f, __pyx_v_input_other->_c_mat_f, (&__pyx_v_result_float));
 
-    /* "MLTooling/math/matrix.pyx":99
+    /* "MLTooling/math/matrix.pyx":153
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAdd(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)
 */
     goto __pyx_L3;
   }
 
-  /* "MLTooling/math/matrix.pyx":103
- *             status = mltFwMatrixFAdd(self.c_mat_f, input_other.c_mat_f, &result)
+  /* "MLTooling/math/matrix.pyx":157
+ *             status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)
  *         else:
  *             raise TypeError(f"Unsupported operand type for +: {type(other).__name__}")             # <<<<<<<<<<<<<<
  * 
@@ -18033,12 +18985,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
 */
   /*else*/ {
     __pyx_t_3 = NULL;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 103, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 157, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 103, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 157, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 103, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 157, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_6 = 1;
@@ -18047,16 +18999,16 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
       __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 103, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 103, __pyx_L1_error)
+    __PYX_ERR(0, 157, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "MLTooling/math/matrix.pyx":106
+  /* "MLTooling/math/matrix.pyx":160
  * 
  * 
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
@@ -18064,9 +19016,9 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
  * 
 */
   __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18086,21 +19038,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 160, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_v_py_status = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":107
+  /* "MLTooling/math/matrix.pyx":161
  * 
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
  * 
- *         return Matrix._from_ptr(<object>result)
+ *         return Matrix._from_ptr(<object>result_float)
 */
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18119,15 +19071,15 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
     __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 107, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":109
+  /* "MLTooling/math/matrix.pyx":163
  *         check_status(py_status)
  * 
- *         return Matrix._from_ptr(<object>result)             # <<<<<<<<<<<<<<
+ *         return Matrix._from_ptr(<object>result_float)             # <<<<<<<<<<<<<<
  * 
  *     def __iadd__(self, other):
 */
@@ -18136,22 +19088,22 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
   __Pyx_INCREF(__pyx_t_5);
   __pyx_t_6 = 0;
   {
-    PyObject *__pyx_callargs[2] = {__pyx_t_5, ((PyObject *)__pyx_v_result)};
+    PyObject *__pyx_callargs[2] = {__pyx_t_5, ((PyObject *)__pyx_v_result_float)};
     __pyx_t_2 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":94
- *         check_status(py_status)
+  /* "MLTooling/math/matrix.pyx":148
+ *             raise TypeError("Unknown type")
  * 
  *     def __add__(self, other):             # <<<<<<<<<<<<<<
  *         cdef int status
- *         cdef mltMatrixF* result = NULL
+ *         cdef mltMatrixF* result_float = NULL
 */
 
   /* function exit code */
@@ -18170,8 +19122,8 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_14__add__(struct __py
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":111
- *         return Matrix._from_ptr(<object>result)
+/* "MLTooling/math/matrix.pyx":165
+ *         return Matrix._from_ptr(<object>result_float)
  * 
  *     def __iadd__(self, other):             # <<<<<<<<<<<<<<
  *         cdef int status
@@ -18210,21 +19162,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__iadd__", 0);
 
-  /* "MLTooling/math/matrix.pyx":115
+  /* "MLTooling/math/matrix.pyx":169
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAddInPlace(self.c_mat_f, input_other.c_mat_f)
+ *             status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
 */
   __pyx_t_1 = __Pyx_TypeCheck(__pyx_v_other, __pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix); 
   if (likely(__pyx_t_1)) {
 
-    /* "MLTooling/math/matrix.pyx":116
+    /* "MLTooling/math/matrix.pyx":170
  * 
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix> other             # <<<<<<<<<<<<<<
- *             status = mltFwMatrixFAddInPlace(self.c_mat_f, input_other.c_mat_f)
+ *             status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
  *         else:
 */
     __pyx_t_2 = __pyx_v_other;
@@ -18232,27 +19184,27 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
     __pyx_v_input_other = ((struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "MLTooling/math/matrix.pyx":117
+    /* "MLTooling/math/matrix.pyx":171
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAddInPlace(self.c_mat_f, input_other.c_mat_f)             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError(f"Unsupported operand type for +=: {type(other).__name__}")
 */
-    __pyx_v_status = mltFwMatrixFAddInPlace(__pyx_v_self->c_mat_f, __pyx_v_input_other->c_mat_f);
+    __pyx_v_status = mltFwMatrixFAddInPlace(__pyx_v_self->_c_mat_f, __pyx_v_input_other->_c_mat_f);
 
-    /* "MLTooling/math/matrix.pyx":115
+    /* "MLTooling/math/matrix.pyx":169
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix> other
- *             status = mltFwMatrixFAddInPlace(self.c_mat_f, input_other.c_mat_f)
+ *             status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
 */
     goto __pyx_L3;
   }
 
-  /* "MLTooling/math/matrix.pyx":119
- *             status = mltFwMatrixFAddInPlace(self.c_mat_f, input_other.c_mat_f)
+  /* "MLTooling/math/matrix.pyx":173
+ *             status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
  *         else:
  *             raise TypeError(f"Unsupported operand type for +=: {type(other).__name__}")             # <<<<<<<<<<<<<<
  * 
@@ -18260,12 +19212,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
 */
   /*else*/ {
     __pyx_t_3 = NULL;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 119, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for_2, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 119, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for_2, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_6 = 1;
@@ -18274,16 +19226,16 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
       __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 173, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 119, __pyx_L1_error)
+    __PYX_ERR(0, 173, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "MLTooling/math/matrix.pyx":121
+  /* "MLTooling/math/matrix.pyx":175
  *             raise TypeError(f"Unsupported operand type for +=: {type(other).__name__}")
  * 
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
@@ -18291,9 +19243,9 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
  * 
 */
   __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18313,13 +19265,13 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 175, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_v_py_status = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":122
+  /* "MLTooling/math/matrix.pyx":176
  * 
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
@@ -18327,7 +19279,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
  *         return self
 */
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18346,12 +19298,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
     __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 122, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":124
+  /* "MLTooling/math/matrix.pyx":178
  *         check_status(py_status)
  * 
  *         return self             # <<<<<<<<<<<<<<
@@ -18363,8 +19315,8 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":111
- *         return Matrix._from_ptr(<object>result)
+  /* "MLTooling/math/matrix.pyx":165
+ *         return Matrix._from_ptr(<object>result_float)
  * 
  *     def __iadd__(self, other):             # <<<<<<<<<<<<<<
  *         cdef int status
@@ -18387,7 +19339,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_16__iadd__(struct __p
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":126
+/* "MLTooling/math/matrix.pyx":180
  *         return self
  * 
  *     def __mul__(self, other):             # <<<<<<<<<<<<<<
@@ -18428,7 +19380,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__mul__", 0);
 
-  /* "MLTooling/math/matrix.pyx":128
+  /* "MLTooling/math/matrix.pyx":182
  *     def __mul__(self, other):
  *         cdef int status
  *         cdef mltMatrixF* result = NULL             # <<<<<<<<<<<<<<
@@ -18437,21 +19389,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
 */
   __pyx_v_result = NULL;
 
-  /* "MLTooling/math/matrix.pyx":131
+  /* "MLTooling/math/matrix.pyx":185
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix>other
- *             status = mltFwMatrixFMultiply(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)
 */
   __pyx_t_1 = __Pyx_TypeCheck(__pyx_v_other, __pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix); 
   if (likely(__pyx_t_1)) {
 
-    /* "MLTooling/math/matrix.pyx":132
+    /* "MLTooling/math/matrix.pyx":186
  * 
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix>other             # <<<<<<<<<<<<<<
- *             status = mltFwMatrixFMultiply(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)
  *         else:
 */
     __pyx_t_2 = __pyx_v_other;
@@ -18459,27 +19411,27 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
     __pyx_v_input_other = ((struct __pyx_obj_9MLTooling_4math_6matrix_Matrix *)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "MLTooling/math/matrix.pyx":133
+    /* "MLTooling/math/matrix.pyx":187
  *         if isinstance(other, Matrix):
  *             input_other = <Matrix>other
- *             status = mltFwMatrixFMultiply(self.c_mat_f, input_other.c_mat_f, &result)             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)             # <<<<<<<<<<<<<<
  *         else:
  *             raise TypeError(f"Unsupported operand type for *: {type(other).__name__}")
 */
-    __pyx_v_status = mltFwMatrixFMultiply(__pyx_v_self->c_mat_f, __pyx_v_input_other->c_mat_f, (&__pyx_v_result));
+    __pyx_v_status = mltFwMatrixFMultiply(__pyx_v_self->_c_mat_f, __pyx_v_input_other->_c_mat_f, (&__pyx_v_result));
 
-    /* "MLTooling/math/matrix.pyx":131
+    /* "MLTooling/math/matrix.pyx":185
  *         cdef Matrix input_other
  * 
  *         if isinstance(other, Matrix):             # <<<<<<<<<<<<<<
  *             input_other = <Matrix>other
- *             status = mltFwMatrixFMultiply(self.c_mat_f, input_other.c_mat_f, &result)
+ *             status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)
 */
     goto __pyx_L3;
   }
 
-  /* "MLTooling/math/matrix.pyx":135
- *             status = mltFwMatrixFMultiply(self.c_mat_f, input_other.c_mat_f, &result)
+  /* "MLTooling/math/matrix.pyx":189
+ *             status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)
  *         else:
  *             raise TypeError(f"Unsupported operand type for *: {type(other).__name__}")             # <<<<<<<<<<<<<<
  * 
@@ -18487,12 +19439,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
 */
   /*else*/ {
     __pyx_t_3 = NULL;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)Py_TYPE(__pyx_v_other)), __pyx_mstate_global->__pyx_n_u_name_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for_3, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Unsupported_operand_type_for_3, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_6 = 1;
@@ -18501,16 +19453,16 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
       __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 135, __pyx_L1_error)
+    __PYX_ERR(0, 189, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "MLTooling/math/matrix.pyx":137
+  /* "MLTooling/math/matrix.pyx":191
  *             raise TypeError(f"Unsupported operand type for *: {type(other).__name__}")
  * 
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
@@ -18518,9 +19470,9 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
  * 
 */
   __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18540,13 +19492,13 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_v_py_status = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":138
+  /* "MLTooling/math/matrix.pyx":192
  * 
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
@@ -18554,7 +19506,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
  *         return Matrix._from_ptr(<object>result)
 */
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 192, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -18573,12 +19525,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
     __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 138, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "MLTooling/math/matrix.pyx":140
+  /* "MLTooling/math/matrix.pyx":194
  *         check_status(py_status)
  * 
  *         return Matrix._from_ptr(<object>result)             # <<<<<<<<<<<<<<
@@ -18593,14 +19545,14 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
     PyObject *__pyx_callargs[2] = {__pyx_t_5, ((PyObject *)__pyx_v_result)};
     __pyx_t_2 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 194, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":126
+  /* "MLTooling/math/matrix.pyx":180
  *         return self
  * 
  *     def __mul__(self, other):             # <<<<<<<<<<<<<<
@@ -18624,7 +19576,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_18__mul__(struct __py
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":142
+/* "MLTooling/math/matrix.pyx":196
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def shape(self):             # <<<<<<<<<<<<<<
@@ -18684,170 +19636,416 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_20shape(struct __pyx_
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  size_t __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_4;
+  PyObject *__pyx_t_5 = NULL;
+  size_t __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("shape", 0);
 
-  /* "MLTooling/math/matrix.pyx":147
+  /* "MLTooling/math/matrix.pyx":201
  *         cdef int status
  * 
- *         status = mltFwMatrixFRowCount(self.c_mat_f, &rows)             # <<<<<<<<<<<<<<
- * 
- *         py_status = MltStatus(status)
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFRowCount(self._c_mat_f, &rows)
+ *             py_status = MltStatus(status)
 */
-  __pyx_v_status = mltFwMatrixFRowCount(__pyx_v_self->c_mat_f, (&__pyx_v_rows));
-
-  /* "MLTooling/math/matrix.pyx":149
- *         status = mltFwMatrixFRowCount(self.c_mat_f, &rows)
- * 
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
- * 
-*/
-  __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 149, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 149, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
-    assert(__pyx_t_2);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
-    __Pyx_INCREF(__pyx_t_2);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_v_py_status = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "MLTooling/math/matrix.pyx":150
- * 
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
- * 
- *         status = mltFwMatrixFColCount(self.c_mat_f, &cols)
-*/
-  __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 150, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_4);
-    assert(__pyx_t_3);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
-    __Pyx_INCREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_py_status};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 150, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "MLTooling/math/matrix.pyx":152
- *         check_status(py_status)
- * 
- *         status = mltFwMatrixFColCount(self.c_mat_f, &cols)             # <<<<<<<<<<<<<<
- *         py_status = MltStatus(status)
- *         check_status(py_status)
-*/
-  __pyx_v_status = mltFwMatrixFColCount(__pyx_v_self->c_mat_f, (&__pyx_v_cols));
-
-  /* "MLTooling/math/matrix.pyx":153
- * 
- *         status = mltFwMatrixFColCount(self.c_mat_f, &cols)
- *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
- *         check_status(py_status)
- * 
-*/
-  __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 153, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 153, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-    assert(__pyx_t_4);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
-    __Pyx_INCREF(__pyx_t_4);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
-    __pyx_t_5 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_t_2};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __Pyx_DECREF_SET(__pyx_v_py_status, __pyx_t_1);
-  __pyx_t_1 = 0;
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__pyx_t_4) {
 
-  /* "MLTooling/math/matrix.pyx":154
- *         status = mltFwMatrixFColCount(self.c_mat_f, &cols)
- *         py_status = MltStatus(status)
- *         check_status(py_status)             # <<<<<<<<<<<<<<
+    /* "MLTooling/math/matrix.pyx":202
+ * 
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             status = mltFwMatrixFRowCount(self._c_mat_f, &rows)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixFRowCount(__pyx_v_self->_c_mat_f, (&__pyx_v_rows));
+
+    /* "MLTooling/math/matrix.pyx":203
+ *         if self._type == Dtypes.FLOAT32.value:
+ *             status = mltFwMatrixFRowCount(self._c_mat_f, &rows)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ * 
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 203, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_1);
+      assert(__pyx_t_2);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_1, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_5};
+      __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_1, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 203, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+    }
+    __pyx_v_py_status = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "MLTooling/math/matrix.pyx":204
+ *             status = mltFwMatrixFRowCount(self._c_mat_f, &rows)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ * 
+ *             status = mltFwMatrixFColCount(self._c_mat_f, &cols)
+*/
+    __pyx_t_1 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_5))) {
+      __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_5);
+      assert(__pyx_t_1);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_5, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_1, __pyx_v_py_status};
+      __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+    /* "MLTooling/math/matrix.pyx":206
+ *             check_status(py_status)
+ * 
+ *             status = mltFwMatrixFColCount(self._c_mat_f, &cols)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixFColCount(__pyx_v_self->_c_mat_f, (&__pyx_v_cols));
+
+    /* "MLTooling/math/matrix.pyx":207
+ * 
+ *             status = mltFwMatrixFColCount(self._c_mat_f, &cols)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:
+*/
+    __pyx_t_5 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 207, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 207, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_1);
+      assert(__pyx_t_5);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_1, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_2};
+      __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_1, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 207, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+    }
+    __Pyx_DECREF_SET(__pyx_v_py_status, __pyx_t_3);
+    __pyx_t_3 = 0;
+
+    /* "MLTooling/math/matrix.pyx":208
+ *             status = mltFwMatrixFColCount(self._c_mat_f, &cols)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)
+*/
+    __pyx_t_1 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_1);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_1, __pyx_v_py_status};
+      __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 208, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+    /* "MLTooling/math/matrix.pyx":201
+ *         cdef int status
+ * 
+ *         if self._type == Dtypes.FLOAT32.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixFRowCount(self._c_mat_f, &rows)
+ *             py_status = MltStatus(status)
+*/
+    goto __pyx_L3;
+  }
+
+  /* "MLTooling/math/matrix.pyx":209
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)
+ *             py_status = MltStatus(status)
+*/
+  __pyx_t_3 = __Pyx_PyLong_From_int(__pyx_v_self->_type); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_FLOAT64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_3, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (likely(__pyx_t_4)) {
+
+    /* "MLTooling/math/matrix.pyx":210
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixDRowCount(__pyx_v_self->_c_mat_d, (&__pyx_v_rows));
+
+    /* "MLTooling/math/matrix.pyx":211
+ *         elif self._type == Dtypes.FLOAT64.value:
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ * 
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+      assert(__pyx_t_2);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __pyx_v_py_status = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":212
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ * 
+ *             status = mltFwMatrixDColCount(self._c_mat_d, &cols)
+*/
+    __pyx_t_3 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 212, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_5))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_5);
+      assert(__pyx_t_3);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_5, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":214
+ *             check_status(py_status)
+ * 
+ *             status = mltFwMatrixDColCount(self._c_mat_d, &cols)             # <<<<<<<<<<<<<<
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+*/
+    __pyx_v_status = mltFwMatrixDColCount(__pyx_v_self->_c_mat_d, (&__pyx_v_cols));
+
+    /* "MLTooling/math/matrix.pyx":215
+ * 
+ *             status = mltFwMatrixDColCount(self._c_mat_d, &cols)
+ *             py_status = MltStatus(status)             # <<<<<<<<<<<<<<
+ *             check_status(py_status)
+ *         else:
+*/
+    __pyx_t_5 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 215, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_2 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 215, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
+      assert(__pyx_t_5);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF_SET(__pyx_v_py_status, __pyx_t_1);
+    __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":216
+ *             status = mltFwMatrixDColCount(self._c_mat_d, &cols)
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise TypeError("Unknown type")
+*/
+    __pyx_t_3 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 216, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_3);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
+      __pyx_t_6 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_py_status};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "MLTooling/math/matrix.pyx":209
+ *             py_status = MltStatus(status)
+ *             check_status(py_status)
+ *         elif self._type == Dtypes.FLOAT64.value:             # <<<<<<<<<<<<<<
+ *             status = mltFwMatrixDRowCount(self._c_mat_d, &rows)
+ *             py_status = MltStatus(status)
+*/
+    goto __pyx_L3;
+  }
+
+  /* "MLTooling/math/matrix.pyx":218
+ *             check_status(py_status)
+ *         else:
+ *             raise TypeError("Unknown type")             # <<<<<<<<<<<<<<
  * 
  *         return Shape(rows, cols)
 */
-  __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    assert(__pyx_t_3);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
-    __Pyx_INCREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
-    __pyx_t_5 = 0;
+  /*else*/ {
+    __pyx_t_2 = NULL;
+    __pyx_t_6 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_mstate_global->__pyx_kp_u_Unknown_type};
+      __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 218, __pyx_L1_error)
   }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_py_status};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_2, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_L3:;
 
-  /* "MLTooling/math/matrix.pyx":156
- *         check_status(py_status)
+  /* "MLTooling/math/matrix.pyx":220
+ *             raise TypeError("Unknown type")
  * 
  *         return Shape(rows, cols)             # <<<<<<<<<<<<<<
  * 
@@ -18855,13 +20053,13 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_20shape(struct __pyx_
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyLong_FromSize_t(__pyx_v_rows); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyLong_FromSize_t(__pyx_v_cols); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 156, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_5 = 1;
+  __pyx_t_5 = __Pyx_PyLong_FromSize_t(__pyx_v_rows); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_7 = __Pyx_PyLong_FromSize_t(__pyx_v_cols); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_6 = 1;
   #if CYTHON_UNPACK_METHODS
   if (unlikely(PyMethod_Check(__pyx_t_3))) {
     __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
@@ -18870,24 +20068,24 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_20shape(struct __pyx_
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx__function);
     __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
-    __pyx_t_5 = 0;
+    __pyx_t_6 = 0;
   }
   #endif
   {
-    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_t_4, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_t_5, __pyx_t_7};
+    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_6, (3-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":142
+  /* "MLTooling/math/matrix.pyx":196
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def shape(self):             # <<<<<<<<<<<<<<
@@ -18900,8 +20098,8 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_20shape(struct __pyx_
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_AddTraceback("MLTooling.math.matrix.Matrix.shape", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -18911,7 +20109,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_20shape(struct __pyx_
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":158
+/* "MLTooling/math/matrix.pyx":222
  *         return Shape(rows, cols)
  * 
  *     def clone(self):             # <<<<<<<<<<<<<<
@@ -18977,35 +20175,35 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_22clone(struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("clone", 0);
 
-  /* "MLTooling/math/matrix.pyx":160
+  /* "MLTooling/math/matrix.pyx":224
  *     def clone(self):
  *         cdef int status
  *         cdef mltMatrixF* result = NULL             # <<<<<<<<<<<<<<
  * 
- *         status = mltFwMatrixFClone(self.c_mat_f, &result)
+ *         status = mltFwMatrixFClone(self._c_mat_f, &result)
 */
   __pyx_v_result = NULL;
 
-  /* "MLTooling/math/matrix.pyx":162
+  /* "MLTooling/math/matrix.pyx":226
  *         cdef mltMatrixF* result = NULL
  * 
- *         status = mltFwMatrixFClone(self.c_mat_f, &result)             # <<<<<<<<<<<<<<
+ *         status = mltFwMatrixFClone(self._c_mat_f, &result)             # <<<<<<<<<<<<<<
  *         py_status = MltStatus(status)
  *         check_status(py_status)
 */
-  __pyx_v_status = mltFwMatrixFClone(__pyx_v_self->c_mat_f, (&__pyx_v_result));
+  __pyx_v_status = mltFwMatrixFClone(__pyx_v_self->_c_mat_f, (&__pyx_v_result));
 
-  /* "MLTooling/math/matrix.pyx":163
+  /* "MLTooling/math/matrix.pyx":227
  * 
- *         status = mltFwMatrixFClone(self.c_mat_f, &result)
+ *         status = mltFwMatrixFClone(self._c_mat_f, &result)
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
  *         check_status(py_status)
  * 
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 227, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 227, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19025,21 +20223,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_22clone(struct __pyx_
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_v_py_status = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":164
- *         status = mltFwMatrixFClone(self.c_mat_f, &result)
+  /* "MLTooling/math/matrix.pyx":228
+ *         status = mltFwMatrixFClone(self._c_mat_f, &result)
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
  * 
  *         return Matrix._from_ptr(<object>result)
 */
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19058,12 +20256,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_22clone(struct __pyx_
     __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 228, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":166
+  /* "MLTooling/math/matrix.pyx":230
  *         check_status(py_status)
  * 
  *         return Matrix._from_ptr(<object>result)             # <<<<<<<<<<<<<<
@@ -19078,14 +20276,14 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_22clone(struct __pyx_
     PyObject *__pyx_callargs[2] = {__pyx_t_4, ((PyObject *)__pyx_v_result)};
     __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":158
+  /* "MLTooling/math/matrix.pyx":222
  *         return Shape(rows, cols)
  * 
  *     def clone(self):             # <<<<<<<<<<<<<<
@@ -19108,7 +20306,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_22clone(struct __pyx_
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":168
+/* "MLTooling/math/matrix.pyx":232
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def copy(self):             # <<<<<<<<<<<<<<
@@ -19174,35 +20372,35 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_24copy(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy", 0);
 
-  /* "MLTooling/math/matrix.pyx":170
+  /* "MLTooling/math/matrix.pyx":234
  *     def copy(self):
  *         cdef int status
  *         cdef mltMatrixF* result = NULL             # <<<<<<<<<<<<<<
  * 
- *         status = mltFwMatrixFCopy(self.c_mat_f, &result)
+ *         status = mltFwMatrixFCopy(self._c_mat_f, &result)
 */
   __pyx_v_result = NULL;
 
-  /* "MLTooling/math/matrix.pyx":172
+  /* "MLTooling/math/matrix.pyx":236
  *         cdef mltMatrixF* result = NULL
  * 
- *         status = mltFwMatrixFCopy(self.c_mat_f, &result)             # <<<<<<<<<<<<<<
+ *         status = mltFwMatrixFCopy(self._c_mat_f, &result)             # <<<<<<<<<<<<<<
  *         py_status = MltStatus(status)
  *         check_status(py_status)
 */
-  __pyx_v_status = mltFwMatrixFCopy(__pyx_v_self->c_mat_f, (&__pyx_v_result));
+  __pyx_v_status = mltFwMatrixFCopy(__pyx_v_self->_c_mat_f, (&__pyx_v_result));
 
-  /* "MLTooling/math/matrix.pyx":173
+  /* "MLTooling/math/matrix.pyx":237
  * 
- *         status = mltFwMatrixFCopy(self.c_mat_f, &result)
+ *         status = mltFwMatrixFCopy(self._c_mat_f, &result)
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
  *         check_status(py_status)
  * 
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 173, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 237, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 237, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19222,21 +20420,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_24copy(struct __pyx_o
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 237, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_v_py_status = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":174
- *         status = mltFwMatrixFCopy(self.c_mat_f, &result)
+  /* "MLTooling/math/matrix.pyx":238
+ *         status = mltFwMatrixFCopy(self._c_mat_f, &result)
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
  * 
  *         return Matrix._from_ptr(<object>result)
 */
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19255,12 +20453,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_24copy(struct __pyx_o
     __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":176
+  /* "MLTooling/math/matrix.pyx":240
  *         check_status(py_status)
  * 
  *         return Matrix._from_ptr(<object>result)             # <<<<<<<<<<<<<<
@@ -19275,14 +20473,14 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_24copy(struct __pyx_o
     PyObject *__pyx_callargs[2] = {__pyx_t_4, ((PyObject *)__pyx_v_result)};
     __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":168
+  /* "MLTooling/math/matrix.pyx":232
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def copy(self):             # <<<<<<<<<<<<<<
@@ -19305,7 +20503,7 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_24copy(struct __pyx_o
   return __pyx_r;
 }
 
-/* "MLTooling/math/matrix.pyx":178
+/* "MLTooling/math/matrix.pyx":242
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def submatrix(self, start: Shape, count: Shape):             # <<<<<<<<<<<<<<
@@ -19353,39 +20551,39 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_start,&__pyx_mstate_global->__pyx_n_u_count,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 178, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 242, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 178, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 242, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 178, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 242, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "submatrix", 0) < (0)) __PYX_ERR(0, 178, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "submatrix", 0) < (0)) __PYX_ERR(0, 242, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("submatrix", 1, 2, 2, i); __PYX_ERR(0, 178, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("submatrix", 1, 2, 2, i); __PYX_ERR(0, 242, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 178, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 242, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 178, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 242, __pyx_L3_error)
     }
     __pyx_v_start = values[0];
     __pyx_v_count = values[1];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("submatrix", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 178, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("submatrix", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 242, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -19425,51 +20623,51 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_26submatrix(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("submatrix", 0);
 
-  /* "MLTooling/math/matrix.pyx":180
+  /* "MLTooling/math/matrix.pyx":244
  *     def submatrix(self, start: Shape, count: Shape):
  *         cdef int status
  *         cdef mltMatrixF* result = NULL             # <<<<<<<<<<<<<<
  * 
- *         status = mltFwMatrixFSubmatrix(self.c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
+ *         status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
 */
   __pyx_v_result = NULL;
 
-  /* "MLTooling/math/matrix.pyx":182
+  /* "MLTooling/math/matrix.pyx":246
  *         cdef mltMatrixF* result = NULL
  * 
- *         status = mltFwMatrixFSubmatrix(self.c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)             # <<<<<<<<<<<<<<
+ *         status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)             # <<<<<<<<<<<<<<
  *         py_status = MltStatus(status)
  *         check_status(py_status)
 */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_start, __pyx_mstate_global->__pyx_n_u_rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_start, __pyx_mstate_global->__pyx_n_u_rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_2 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_2 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_start, __pyx_mstate_global->__pyx_n_u_cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_start, __pyx_mstate_global->__pyx_n_u_cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_3 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_3 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_count, __pyx_mstate_global->__pyx_n_u_rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_count, __pyx_mstate_global->__pyx_n_u_rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_count, __pyx_mstate_global->__pyx_n_u_cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_count, __pyx_mstate_global->__pyx_n_u_cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyLong_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_status = mltFwMatrixFSubmatrix(__pyx_v_self->c_mat_f, __pyx_t_2, __pyx_t_3, __pyx_t_4, __pyx_t_5, (&__pyx_v_result));
+  __pyx_v_status = mltFwMatrixFSubmatrix(__pyx_v_self->_c_mat_f, __pyx_t_2, __pyx_t_3, __pyx_t_4, __pyx_t_5, (&__pyx_v_result));
 
-  /* "MLTooling/math/matrix.pyx":183
+  /* "MLTooling/math/matrix.pyx":247
  * 
- *         status = mltFwMatrixFSubmatrix(self.c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
+ *         status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
  *         py_status = MltStatus(status)             # <<<<<<<<<<<<<<
  *         check_status(py_status)
  * 
 */
   __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_MltStatus); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 247, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyLong_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 247, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19489,21 +20687,21 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_26submatrix(struct __
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 247, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_v_py_status = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":184
- *         status = mltFwMatrixFSubmatrix(self.c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
+  /* "MLTooling/math/matrix.pyx":248
+ *         status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
  *         py_status = MltStatus(status)
  *         check_status(py_status)             # <<<<<<<<<<<<<<
  * 
  *         return Matrix._from_ptr(<object>result)
 */
   __pyx_t_7 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_check_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -19522,12 +20720,12 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_26submatrix(struct __
     __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_8, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 184, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "MLTooling/math/matrix.pyx":186
+  /* "MLTooling/math/matrix.pyx":250
  *         check_status(py_status)
  * 
  *         return Matrix._from_ptr(<object>result)             # <<<<<<<<<<<<<<
@@ -19540,14 +20738,14 @@ static PyObject *__pyx_pf_9MLTooling_4math_6matrix_6Matrix_26submatrix(struct __
     PyObject *__pyx_callargs[2] = {__pyx_t_8, ((PyObject *)__pyx_v_result)};
     __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "MLTooling/math/matrix.pyx":178
+  /* "MLTooling/math/matrix.pyx":242
  *         return Matrix._from_ptr(<object>result)
  * 
  *     def submatrix(self, start: Shape, count: Shape):             # <<<<<<<<<<<<<<
@@ -20987,15 +22185,15 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9MLTooling_4math_6matrix_Matrix_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix)) __PYX_ERR(0, 8, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9MLTooling_4math_6matrix_Matrix_spec, __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9MLTooling_4math_6matrix_Matrix_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix)) __PYX_ERR(0, 9, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9MLTooling_4math_6matrix_Matrix_spec, __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
   #else
   __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix = &__pyx_type_9MLTooling_4math_6matrix_Matrix;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 8, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix);
@@ -21005,8 +22203,8 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
     __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_Matrix, (PyObject *) __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 8, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 8, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_Matrix, (PyObject *) __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9MLTooling_4math_6matrix_Matrix) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
   #if CYTHON_USE_TYPE_SPECS
@@ -21932,45 +23130,45 @@ __Pyx_RefNannySetupContext("PyInit_matrix", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "MLTooling/math/matrix.pyx":5
+  /* "MLTooling/math/matrix.pyx":4
+ * from ._matrix cimport *
  * 
+ * from array import array             # <<<<<<<<<<<<<<
  * 
- * from ..mlt_status import MltStatus, check_status             # <<<<<<<<<<<<<<
- * from MLTooling.core import Shape, Dtypes
- * 
+ * from ..mlt_status import MltStatus, check_status
 */
   {
-    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MltStatus,__pyx_mstate_global->__pyx_n_u_check_status};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_mlt_status, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_MLTooling_mlt_status, 2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_array};
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_array, __pyx_imported_names, 1, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
   {
-    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MltStatus,__pyx_mstate_global->__pyx_n_u_check_status};
-    for (__pyx_t_9=0; __pyx_t_9 < 2; __pyx_t_9++) {
-      __pyx_t_5 = __Pyx_ImportFrom(__pyx_t_4, __pyx_imported_names[__pyx_t_9]); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 5, __pyx_L1_error)
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_array};
+    __pyx_t_9 = 0; {
+      __pyx_t_5 = __Pyx_ImportFrom(__pyx_t_4, __pyx_imported_names[__pyx_t_9]); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_imported_names[__pyx_t_9], __pyx_t_5) < (0)) __PYX_ERR(0, 5, __pyx_L1_error)
+      if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_imported_names[__pyx_t_9], __pyx_t_5) < (0)) __PYX_ERR(0, 4, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
   /* "MLTooling/math/matrix.pyx":6
+ * from array import array
  * 
- * from ..mlt_status import MltStatus, check_status
- * from MLTooling.core import Shape, Dtypes             # <<<<<<<<<<<<<<
+ * from ..mlt_status import MltStatus, check_status             # <<<<<<<<<<<<<<
+ * from MLTooling.core import Shape, Dtypes, typecode_to_dtype
  * 
- * cdef class Matrix:
 */
   {
-    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Shape,__pyx_mstate_global->__pyx_n_u_Dtypes};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_MLTooling_core, __pyx_imported_names, 2, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MltStatus,__pyx_mstate_global->__pyx_n_u_check_status};
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_mlt_status, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_MLTooling_mlt_status, 2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
   {
-    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Shape,__pyx_mstate_global->__pyx_n_u_Dtypes};
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MltStatus,__pyx_mstate_global->__pyx_n_u_check_status};
     for (__pyx_t_9=0; __pyx_t_9 < 2; __pyx_t_9++) {
       __pyx_t_5 = __Pyx_ImportFrom(__pyx_t_4, __pyx_imported_names[__pyx_t_9]); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 6, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
@@ -21980,144 +23178,173 @@ __Pyx_RefNannySetupContext("PyInit_matrix", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "MLTooling/math/matrix.pyx":13
+  /* "MLTooling/math/matrix.pyx":7
+ * 
+ * from ..mlt_status import MltStatus, check_status
+ * from MLTooling.core import Shape, Dtypes, typecode_to_dtype             # <<<<<<<<<<<<<<
+ * 
+ * cdef class Matrix:
+*/
+  {
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Shape,__pyx_mstate_global->__pyx_n_u_Dtypes,__pyx_mstate_global->__pyx_n_u_typecode_to_dtype};
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_MLTooling_core, __pyx_imported_names, 3, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  }
+  __pyx_t_4 = __pyx_t_1;
+  __Pyx_GOTREF(__pyx_t_4);
+  {
+    PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Shape,__pyx_mstate_global->__pyx_n_u_Dtypes,__pyx_mstate_global->__pyx_n_u_typecode_to_dtype};
+    for (__pyx_t_9=0; __pyx_t_9 < 3; __pyx_t_9++) {
+      __pyx_t_5 = __Pyx_ImportFrom(__pyx_t_4, __pyx_imported_names[__pyx_t_9]); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 7, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_imported_names[__pyx_t_9], __pyx_t_5) < (0)) __PYX_ERR(0, 7, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    }
+  }
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "MLTooling/math/matrix.pyx":16
  * 
  * 
  *     def __init__(self, size_t rows, size_t cols, dtype: Dtypes = Dtypes.FLOAT32):             # <<<<<<<<<<<<<<
- *         cdef mltMatrixF* ptr = NULL
- *         cdef int status
+ *         cdef mltMatrixF* ptr_f = NULL
+ *         cdef mltMatrixD* ptr_d = NULL
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dtypes); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_FLOAT32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_mstate_global->__pyx_k__6 = __pyx_t_5;
   __Pyx_GIVEREF(__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "MLTooling/math/matrix.pyx":23
- *         self.c_mat_f = <mltMatrixF*>ptr
+  /* "MLTooling/math/matrix.pyx":36
+ *         self._type = dtype.value
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
- *     def from_buffer(cls, size_t rows, size_t cols, float [:] data):
+ *     def from_buffer(cls, size_t rows, size_t cols, data: array):
  *         cdef Matrix mat = cls.__new__(cls)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_5from_buffer, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_from_buffer, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
-  #endif
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer, __pyx_t_5) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_GetNameInClass(__pyx_t_5, (PyObject*)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer, __pyx_t_4) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-  /* "MLTooling/math/matrix.pyx":46
- *         return mat
- * 
- *     @classmethod             # <<<<<<<<<<<<<<
- *     def _from_ptr(cls, ptr):
- *         mat = Matrix(0,0)
-*/
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_7_from_ptr, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix__from_ptr, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
-  #endif
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_t_4) < (0)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_GetNameInClass(__pyx_t_4, (PyObject*)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_Method_ClassMethod(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_t_5) < (0)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-  /* "MLTooling/math/matrix.pyx":142
- *         return Matrix._from_ptr(<object>result)
- * 
- *     def shape(self):             # <<<<<<<<<<<<<<
- *         cdef size_t rows
- *         cdef size_t cols
-*/
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_21shape, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_shape, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
-  #endif
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_shape, __pyx_t_5) < (0)) __PYX_ERR(0, 142, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-  /* "MLTooling/math/matrix.pyx":158
- *         return Shape(rows, cols)
- * 
- *     def clone(self):             # <<<<<<<<<<<<<<
- *         cdef int status
- *         cdef mltMatrixF* result = NULL
-*/
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_23clone, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_clone, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 158, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
-  #endif
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_clone, __pyx_t_5) < (0)) __PYX_ERR(0, 158, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-  /* "MLTooling/math/matrix.pyx":168
- *         return Matrix._from_ptr(<object>result)
- * 
- *     def copy(self):             # <<<<<<<<<<<<<<
- *         cdef int status
- *         cdef mltMatrixF* result = NULL
-*/
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_25copy, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_copy, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 168, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
-  #endif
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_copy, __pyx_t_5) < (0)) __PYX_ERR(0, 168, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-  /* "MLTooling/math/matrix.pyx":178
- *         return Matrix._from_ptr(<object>result)
- * 
- *     def submatrix(self, start: Shape, count: Shape):             # <<<<<<<<<<<<<<
- *         cdef int status
- *         cdef mltMatrixF* result = NULL
-*/
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 178, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_start, __pyx_mstate_global->__pyx_n_u_Shape) < (0)) __PYX_ERR(0, 178, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_count, __pyx_mstate_global->__pyx_n_u_Shape) < (0)) __PYX_ERR(0, 178, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_27submatrix, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_submatrix, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_data, __pyx_mstate_global->__pyx_n_u_array) < (0)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_5from_buffer, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_from_buffer, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
   #endif
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_submatrix, __pyx_t_4) < (0)) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer, __pyx_t_4) < (0)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_GetNameInClass(__pyx_t_4, (PyObject*)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_Method_ClassMethod(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_buffer, __pyx_t_5) < (0)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+  /* "MLTooling/math/matrix.pyx":80
+ *         return mat
+ * 
+ *     @classmethod             # <<<<<<<<<<<<<<
+ *     def _from_ptr(cls, ptr):
+ *         mat = Matrix(0,0)
+*/
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_7_from_ptr, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix__from_ptr, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
+  #endif
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_t_5) < (0)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_GetNameInClass(__pyx_t_5, (PyObject*)__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_from_ptr, __pyx_t_4) < (0)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "MLTooling/math/matrix.pyx":196
+ *         return Matrix._from_ptr(<object>result)
+ * 
+ *     def shape(self):             # <<<<<<<<<<<<<<
+ *         cdef size_t rows
+ *         cdef size_t cols
+*/
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_21shape, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_shape, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
+  #endif
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_shape, __pyx_t_4) < (0)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "MLTooling/math/matrix.pyx":222
+ *         return Shape(rows, cols)
+ * 
+ *     def clone(self):             # <<<<<<<<<<<<<<
+ *         cdef int status
+ *         cdef mltMatrixF* result = NULL
+*/
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_23clone, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_clone, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
+  #endif
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_clone, __pyx_t_4) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "MLTooling/math/matrix.pyx":232
+ *         return Matrix._from_ptr(<object>result)
+ * 
+ *     def copy(self):             # <<<<<<<<<<<<<<
+ *         cdef int status
+ *         cdef mltMatrixF* result = NULL
+*/
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_25copy, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_copy, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
+  #endif
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_copy, __pyx_t_4) < (0)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "MLTooling/math/matrix.pyx":242
+ *         return Matrix._from_ptr(<object>result)
+ * 
+ *     def submatrix(self, start: Shape, count: Shape):             # <<<<<<<<<<<<<<
+ *         cdef int status
+ *         cdef mltMatrixF* result = NULL
+*/
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_start, __pyx_mstate_global->__pyx_n_u_Shape) < (0)) __PYX_ERR(0, 242, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_count, __pyx_mstate_global->__pyx_n_u_Shape) < (0)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_27submatrix, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix_submatrix, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
+  #endif
+  __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9MLTooling_4math_6matrix_Matrix, __pyx_mstate_global->__pyx_n_u_submatrix, __pyx_t_5) < (0)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  * def __setstate_cython__(self, __pyx_state):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_29__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix___reduce_cython, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_29__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix___reduce_cython, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
   #endif
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_4) < (0)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_5) < (0)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "(tree fragment)":3
  * def __reduce_cython__(self):
@@ -22125,23 +23352,23 @@ __Pyx_RefNannySetupContext("PyInit_matrix", 0);
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_31__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix___setstate_cython, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9MLTooling_4math_6matrix_6Matrix_31__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_Matrix___setstate_cython, NULL, __pyx_mstate_global->__pyx_n_u_MLTooling_math_matrix, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
+  PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
   #endif
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_4) < (0)) __PYX_ERR(1, 3, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_5) < (0)) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "MLTooling/math/matrix.pyx":1
  * from libc.stddef cimport size_t             # <<<<<<<<<<<<<<
  * from ._matrix cimport *
  * 
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_test, __pyx_t_4) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_test, __pyx_t_5) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /*--- Wrapped vars code ---*/
 
@@ -22228,14 +23455,14 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "MLTooling/math/matrix.pyx":48
+  /* "MLTooling/math/matrix.pyx":82
  *     @classmethod
  *     def _from_ptr(cls, ptr):
  *         mat = Matrix(0,0)             # <<<<<<<<<<<<<<
- *         mat.c_mat_f = <mltMatrixF*>ptr
+ *         mat._c_mat_f = <mltMatrixF*>ptr
  * 
 */
-  __pyx_mstate_global->__pyx_tuple[1] = PyTuple_Pack(2, __pyx_mstate_global->__pyx_int_0, __pyx_mstate_global->__pyx_int_0); if (unlikely(!__pyx_mstate_global->__pyx_tuple[1])) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_mstate_global->__pyx_tuple[1] = PyTuple_Pack(2, __pyx_mstate_global->__pyx_int_0, __pyx_mstate_global->__pyx_int_0); if (unlikely(!__pyx_mstate_global->__pyx_tuple[1])) __PYX_ERR(0, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
   #if CYTHON_IMMORTAL_CONSTANTS
@@ -22287,34 +23514,34 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{2},{68},{20},{35},{54},{37},{60},{24},{52},{26},{34},{31},{29},{33},{45},{22},{25},{20},{15},{179},{37},{30},{32},{32},{33},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{7},{6},{2},{6},{35},{9},{30},{50},{8},{20},{32},{22},{14},{30},{37},{5},{6},{8},{7},{14},{21},{6},{24},{26},{16},{12},{11},{18},{12},{16},{9},{20},{8},{5},{15},{3},{15},{18},{4},{1},{12},{9},{17},{18},{5},{3},{4},{4},{5},{4},{8},{5},{15},{6},{9},{5},{5},{6},{7},{11},{9},{8},{12},{2},{10},{5},{13},{5},{8},{8},{3},{7},{10},{4},{10},{4},{8},{4},{7},{3},{4},{3},{3},{9},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{4},{4},{12},{10},{12},{19},{5},{4},{5},{6},{4},{4},{6},{9},{8},{6},{6},{6},{1},{52},{79},{115},{27},{52},{9},{78},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1529 bytes) */
-const char* const cstring = "BZh91AY&SY\3336\244\342\000\000\302\377\377\345\177\376\020\377\377\374_\277'\377q\277\377\377\361@@@@@@@@@@@@@\000@\000P\005\276\256a\200h\320\000\001\030e\002\rM4eO\t\264j1'\246\232\203@z\232h\000\3204\332\200yM\251\351\3524\232\007\222?R\034hh\321\240\321\240h\000\000\000\000d\000\000\000h\014\200\003\010\2312!\244ODz\201\240\365\017P\000\000\320h\000\000\000\000\000\000\307\032\0324h4h\032\000\000\000\000\031\000\000\000\032\003 \000\301\"@\232\004F\215\006\246\215\032\215F\302M=OP\362#@d\000\000\003F\201\262\236\247\251\352J\277\032_2\364\177\237_\257\331\351\366M\202bl\030\332\377\2532\232\354*-\274a$\233Ak\3600\2042\213\254`\006t\006\3758\207(\372\205r\253\221\031T|\036?\303\312K\273i{5\004\324\371i\201\215\310\316\314o\354H\257\217\030Y\021\374\243\337\276>\233fD\247?\222\361\253\325?7\242XM\350\2004\030\210n\002/\n\207\001\314!/V,b\001O\221\370\236\216\003\030\216k\200\302\006*q\300\326\017\273\033\t:k\344\263x\r\026$\265\250\032\215C\216$R<\374\310^\214qd\226\362J\256\037\362\255\000\263f\346*l\002t\001\005\215j\201p\337\t\023\321\250\373\374/\210->\212\357=\\\255\300\221\034\251L\210I\262\2254W\210W\305\237\337\277]\227\365=\263u1@\301\r[v\310\371;\265|\033>\345Ql@\n\333\003p\213\222g\211\267\007F\206\2733^L}YT\353\234\tz\240\244\256\2009\246\003&\246\313\210\204u\327A)]\252\251q\3374\314\231l\022\223T\323\225\000\252\352\265\374R9\233\014k\201t\201\217D\350\362\366o\273\313]>Y(\377\\h,\314\267\300\022\227\224\353\232O\301E7\262~\177.\035U\356\3120a^\376\021!\337\253N\232^w\244\254RZ\253\310 v\316Sd\335\"\021fgH\300hU\247\253\226'\225\034A\2413=b\251\274]4\364\375sa\375\276\r\277\363\326\\\337\366|\023\320=\357\026\314\0200\200\372\0211O\220\335\307\307\264)gc\240\342\335\304<T2\305(\244\374bm5\002\340\177S\027j3\257\301\330'\031\364\365\235\006+\247\341\t\2012a\334O\341\350\347\340\360Xe\262\230\242yS\177#\320\264\353W\016\177\213\"8vW\r\275\356?x\221i<\037\2653\004\215\0066\266\310\250seD4|\226q$\344\341\251\033I\023\352\303w]w\225N\224r.\214\245\r\027""\202\023L\363\312$\021\212\201m\240\020I\374\352\3011\025Z\212\3124B\031MUM6\234\366\320\260\234\362\305\2042\023\346w\245\t\326\"\255\267i\340\022\274hR\021\353`\352\357(\303\025\332\205\273(v\303\004^XW\303\007\206u\253\322\226Z\235\361\250Oe4\343\245\004\344\3177\316!\206\304\351\311\034\224\267/6E\365\036\327\311\205\370\266`\275\266\331N\322Wf+\2038\0373\365\354\017<v\020*\000)\023BH\232E=\230\225z8\317j\212\211B\260&\007GN\363\253;\361@\004\210\244\035\307\nC\003\253\224\352\364v\267\314\335\010\251\352m\215\323\033\256\211]\243\r\312\234r\223h\312e2\316a\032\031*\261\271\324G\266\030)\334\234\273\335|\271O\036k_\310N\242R\016\305W\363\366\013\213ow\236a\272\300\375\330\337hX\231ba\210W\315\036\375\002j\212r\277\270\367\235\270\236\365\235\231J\022\016}7w\277\334\334q\035\031\203G6B\312U\347\214\261\321+n\205A\3716\031\326\033\034O\204\2451Co3\325S~Jr\362<\001{\205\325b\002\245\341\347\005+\010&\241\030S\225\26662\266*\027\025\262S\232\236\257\"\\\273\203\026\032ffj\267\234\357\267@\226 \314Q\201?\034e\002\213\223\370\311\005\203\357\204\327sY\222\353C\214\245\005\021\006\251A\315\242ll^\357?Q\207\016u\236a\315\364q\235/\301\246\014\366\2372d\253\024;8\270\203K\320/\217.\222\3510\274\266>\272#\303o\021\345]\341\330&\323\016\226\333\032cWZ\317Sy\256\301\032h\330\351\205\261\026/\261\211J\\\021I\036:\034\352\252iD\241,\216\356\3706\214\244E\272\035b\225\232\225b\035e6D2]f\003\275(\315v\006\336\334\2274\351\230\267s\225zF:\343jf\271\032\242\221\264\315\214\036w\317/\246\230\342\rk\207\r\025%\232\343\343y\215s\014'\277i9\226p\227\014 \332\355+\332\013\225\360\320W~6\024\323\010\243\033K\034B\013\242Y^\362{\252Tf\250\355\245\232\327aK\352\342\300c\270\313RsK\262\250X\332y_\020\274\\\300V\200\307\244\217\024\274[\277\366\201dd\345\257\265\352m\204\364,m>\247\016\366f\243\356.\327Qp\230@\272\310\370\231\337\314\350\352\207\316u,4\262\357\340\027h\260\334B\301\006\r8\210\206\037\2367\003\ry\244\307\262:\017\212}R\031Yga\037\007pVV\301\241D\272\215\\\033\266\364\243aYr""f\034\"n x\360\343\317\217\356\016\016\302A\371\371@\030O'0\336\273\301\371\365e\335\005\366\350\376\2239\320-\235=.`,m\257L\371\004\360\031\353V\375\037\217\240Kw\271\317\360\373u\252j\213CF<\274\373\325^0\2409\3077\237j\033\266\001m\006\353-\235\261\270\264;\033\212P\013\010B\n\312\030T\305\334\221N\024$6\315\2518\200";
-    PyObject *data = __Pyx_DecompressString(cstring, 1529, 2);
+    const struct { const unsigned int length: 8; } index[] = {{2},{68},{35},{54},{37},{60},{24},{52},{26},{34},{31},{29},{33},{45},{22},{25},{20},{15},{179},{37},{30},{32},{12},{32},{33},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{22},{7},{6},{2},{6},{35},{9},{30},{50},{8},{20},{32},{22},{14},{30},{37},{22},{5},{6},{8},{7},{7},{14},{21},{6},{24},{26},{16},{12},{11},{18},{12},{16},{9},{20},{8},{5},{15},{3},{15},{5},{18},{4},{1},{13},{12},{12},{9},{17},{18},{5},{3},{4},{4},{5},{4},{8},{5},{15},{6},{9},{5},{5},{6},{7},{11},{9},{8},{12},{2},{10},{5},{13},{5},{8},{8},{3},{7},{10},{4},{10},{4},{8},{4},{7},{3},{4},{3},{3},{5},{5},{9},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{4},{4},{12},{10},{12},{19},{5},{4},{5},{6},{4},{4},{6},{9},{8},{17},{6},{6},{5},{6},{1},{246},{52},{180},{27},{52},{9},{78},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1729 bytes) */
+const char* const cstring = "BZh91AY&SYm\210Yl\000\001\010\177\377\355\177\377\336\377\377\375\377\277'\377P\277\377\377\377@@@@@@@@@@@@@\000@\000`\006_\036\363\203\333\275\327r\271\354\367fcKU\301\tH\020\246\214\3112`Sa'\232\246\323D\032b\r4\r\001\220\017SL\232z\201\243\324\364!\223!\352f\240\305M=@\004\237\251\244f\250\375S\324\030\236\240\3104h\r\000\000\000\000\000\000\000\00050\232\025O\323\022\237\2510\206A\211\211\246\t\220\301\000\000\003\0010\004b\014\230!\240\014$\004\324\022\233\320\203\325\000h\323F\206\023M44\000\323@\030\206\0200#\021\243\032\200\034\000\000\000\000\000\000\001\220\320\000\000\000\000\000\000\000\002I\010M\246\246H\322z\236\206\223&\200\006\2004\r\r\032\000\000\000\000\001\240\320\036\246\224O\326K\360\265\005\366c\016\027\032\272\244\030C e\374U\023\nj\352T\005\0030\302\030a\\a\351b\203\204D/\030\314H\n\303\373\204#\0255d\355@2\302BJ/\240U\n\002\236\016\005<\316(\2035~_y\246z\007\351\277\344\336\247\256_\307\373Z\035}\247i\365\361\025\035\272Pep\363U\004\271p)\307\311\221\200\372\357\335\276]\372\346\006\212\2779\035\005C\213\277\305w^w\311\000\363\263\336\263\003?\2553\005\234\310\367\331\n\270\177\031%\207\025\204\204+\010\027-\364\260Q3:\245\255\006.\026\204\3474H\322\001iB4G\010=\3676TNG\020bI\306\203!U4k\231E\241BZ\013+\0079\030\314\260\250\034\257T\261\2651\340%S\2578\347\032`\362\324r\317\202\017\264\004\212\260R\202\nH\347\205\221VZ\362T\264\250\363\033\021\212PJ\024\326\213\365\357\315\310\332\271\262\327\336\\\025\255\350\\\277\322\330\333\216d\373\026\020\225v\r\014\341+\354\252Q\213E\t\251;\262)b\322=\371x\321\226\244e\272\366b\345\364\327u\370\241\203q\262&\2211\364\274_\n\363\363\236T&\223qV\266\323\234\267\237<\027\307_k\211\201\314\211jL\252\013\275\253\247\023\244<\361$3\031\242W\340Q\316&\200\343\250\201\022\022>\000\003\235\246.\204\225\236\306\025D<\03591Er\034H\006\270\211\240)sg\262|\226OH\007\245\016\222\001@J(<W\252\314O\252&(\256\331\030Cbo0D\032O\277\264\345m4\206\307\357\272\242@h\324\350R\314\247\247\357\242H\370hbj~\212K\372[X+a\311""\333\331i\003\003\2039\320\0241\236\327qqn\004\370T\202\322.\300\360\2460!@k\013\226\320\024\2120\003\214z\204\3526GK7d\213\014\322\301\2602H\243\006 A\020d\304\003^\233G#\037\005\351>)\321\271=H|\246\2172q\005f#%\367L\016\326\345\204k\334\325\200\020A\n%l\242.p\234\020\"ut\024\003\315\304\310Dv*\234\025\t\243\003`@\227\213\310\276\254\207\223m\331\261T\242\201\202+\r\021\223\014\242\206\210r\022\020\302\"+\177#\371\333\302RM\237)7\263\252f]Er\262\262\325\016u<\362\212\020c.\231\310V\223\336\025\214\330\210\212\n\321\001a(\316+X#q\000\232\244;\334\353gu\206\253k\021x\265;\314D\346\263J\2078\317\010\330\343\005qR\366`S\220\320\330\300\200\254\246\262\013\032<\031s\211k\013)Y$\257\256C\260I\010\335\025\244\312\204\307\022\026\017\242\345\177\257\001\275\277j\030\t\250\0327\027\352\240\207\344\307kl\314b[\215lD\224\273X\314\223\210f\307\003R\\\224!\n\312Zd\212\0034\311\253<\251\336\361\267\262\033L\212\r\304\220Jy\260u\305\321\026\3313\325\020\221\030\220\2363H\007\244`\321\004\245@G\000\013\031\\J4\354\345\027\333\245\270\242T\004\301\337\232,\346\350\372Y\341\211s7\036p\273H6\361\327\232\206R-\304\265\020\237=\3349\202S)\324\320\216\345\267\0068!/4\306\2030p\030\254\316\3719@\361l\340\"0\314\014\321bl\023RLv@\004\300Z\006&\322\t\306\273\312S\005\244\2607*6\260e\034E`\017\234.h\330\024\027\rfbtd\014\246`\213\323e\024\202A\n\357\256*\006\001\265\314\244\241cH~\262\350T\301[YYX\345x\2766\272`|A\210\242\222\033\267T\341;:$\335\022\001h:\001\005\231d\007\345\241\235'\270\231\016,I\306Ehf\022\006\234YW\tuxM4\231Vf\223\241i\265H\242\2229\253\tA\312$\302\347\274\ne`%\233.\227Z+|\323\206\300\261\306F\326]\021\263:92\007J\004H\243rE \212\010\326\003\341x\264e_\004WZA4\221\314\014\3139\002\\\347\220\316\032\0145\201C\"\\2p6\367\214l\004&\335u\2529\322B\025\023T\211 \332\016\327\211\002\225\231\n\253\002\366\265\307\024-@7\3554\307T\261CA\261\026!\302\360\235\004\002\236\252'\323(( \025E%\324\226u\005\357B\204\221\314\010\010r\341\027\2030\2152|K1\260\255\026\253\027\"\234)\203u""\350\240'\236\316h$NY\000\305\310\212\251\245\355vrq\212\321\230\224\225v\023S[:\200)\215\320ud \226\312t(\326X\276@]\334X\032\206F[\344\237\240\343\307\325\375g\r\t\221\215\016lycq\001\013e\005\303?'6E\333\035\226\260e\021\010\003\205\230\016\322cil\225FS\332\371\224\251\321`*\005\321\024\t\265\037L\215\210\026E6\332\003\236\365\000\200\323\300\336I\005K]#\276\332\214\024\2659\366B\304\023R\260\217\243\360)\010\210H\025U\205\271Z\261\361\363F{\376[j.|\367\022r\223]A\262l)>\211\365\274\226\363\330\304\271\336\r%):\260\353\365\267D\353\356\346\214\022\210\221\371\367\265\256\034\207\337z\357\342\215\221~DT\377\317\022\260\007\001u#\341\375g'\000\234Aj\207\036b\"\221T\\L\345\344\301/\332`\322\307\317\341J\341f\020\356\341\304\017\211\350\302\364\314-\006\006\266\035\355\031\256\017\330\217ezs=\231\366(\2459up6K\005\017\276\266[}\020S\036k\030\016\032\246:\026\002,\260\3450c\377\027rE8P\220m\210Yl";
+    PyObject *data = __Pyx_DecompressString(cstring, 1729, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1368 bytes) */
-const char* const cstring = "x\332\205U;o\033G\020\266\001\303\220\035\347A'i\322x\225\304\241\237\214\235\2500\024Y\001c\313\200\000\277dYF\234\302\213\345\336\034\271\366\335\356i\037\024\351\"p\251\222%K\226*U\246t\231\222\245J\377\004\377\204\314\354\035\037\262\004\005 \357\366\346\261;\363\3157\263\313\254\231e,Q9h\247\214v\254\260 !Q\272=\023\262\313\t\313\203\363\254\005L\351\004z\2200\241\023\246\215g.Sh\376GHS\260\314\251\267\300r\345r\341e\247\222u\025\354\260\304\200\213\346\320+\214\003\346\274U\t\270{B3\243\263>\223\026\204\007&X\253t\362\035\341\231rL\032\355U;\230\340\360`\226Cnl\277\201^\264\225pN\2655\363\206\241sr3\356SZ\320\221\225Q\265\361\216U^\2642\250\014\312\240Rk\362\223|c\252lG\371\016\363\375\002X\275\222{+\264\213i\314\\J3\364P\010\237\237\303\363\376<\210\252\004\2414Z\313\013\337g\256#pk\037\n\014.5\226\311\276\357\030\335\020\326\212\376z\014`\202\274(\255\256X\263s\003\201\311\256\226j\023<3)k\231\240\023\307\256\210\036\036r9!\345\247\241\224\365\nEa\254\207d]wE\246\260\260&\201\033T\0274\306\272\326e\235a\030u\214\205\362\254\337`m\364\232\030\227\321b)\3421\217\036>7&C\252\374\214\005\357\320\303\252^\243\350\367\246\212F\236y\356\274\360\301\255<\212`\275 \2600\336\307\006\313\022\313|/fL\330$\220\251\026X,\030\226\203(\202\021E.h\366t\355\351\315\245;K\221v\026^c\254\016Si\311\014Y\200\324\"\000\202\312<FF\245r\r\266\236\262\276\tL\003\346\204\024)\320n\336\301w@3\007\236\026\254\036\353*<\202\304\321\035\343\256W5R] \357\007\"s\320xr\010i\014\271\"\253\220\022\334\004\372M\017\005\313E?\202\215U{\013\326\314\252\262\245#\013qKdv\027,\222\314CN\337\246EIm\351i}\230)\020\nL7r\217\250q}\231\235\254\277\373?\006\327\226Yc\265~\365w\221$\\\023\376\244eX\202[=\344SF\371\"M\032\242%W\346\032\217\214J4V?\025O\370\276\232(G\211AL\257-\331\025\"M;R\235 \242i\002=\017\332\307>\236\r\026\345J\227\204`\210\323c\345.\273u\244\021\264An\244\"d\236qn!\t\0228gI\210Hj\243o\"W\272Jd\250\225J+\217\312\022\317\325\225r\322$\207\2628*#\312O\2239\244?,\325mg\202\225\260\032\246""\205\024Yfd\034^\024)K\204\027\215c\264e\347\320\216\325\354k47\357\255\257\337\217t]\3132U8\345\036<|\322|\376\353/\263\366\221\306\302\\3a\2275\312.{4\367lL1)1\343|*G\206S\367\035\325\320\354\343\205\267\325\267\314\214\206\311\332\024\375j\031\255J\226W\222\230\306d\035ZU0\231\337\214=\316\371\323~\017\377\367\261s\371c\254\3703H7a;\200\226\260I\236\324\375\215\331 @\246M\000\252\216\021\256\257\2452\2248\0166\245\301\265\204\003); \337T\203\004kLM\314\371d\321\006O\364\241Ot\340\n\233\330\n\t-!\337\304\274d\346\220\336\216\362\222\330\273\236J\304yB1\362\204\360\217\017\256\034/I\203\321\342L\004\035\3628\213\300Zc\323L\264\035\322\022\023\256&\343\0346S49O\203\226\024Y{\002<W\t\376sjI|\323\304\246\203\246\351\225\274\257\310\317y.0z|z\274Y\350Z\231\215O\032\323\2501I\310\360\255E>{b;\341\023v8\305_`\326\205)0\230\242?\005\014G2\217\020\272\220\227_Up\264\214\311\307U\320\205\222op\3775=\261\353\306k\2232\332\016\"+\017\234\265\340\021\342M\005\230&.\333\312\341\004\267\340\260s\361\332\302\311\233\245\221\224U\350\270\252\372z\216\252\374\030\332F\332\021D(\266\276L\013\267.\2347\370\267\001\257\203\t\0319\367h\305)\031\204\"\024Xm\300\313+\200\353\275k~X\370~\264\370a\2416\256\341{\2644z\273_\333_<X\370f\260>\334\030\nZ4\007\033\037\026\276\334\355\016\376\032n\217\026\366N\277k~<\177\352\334\305q\355\362hc\224\354]\333o\356\243\301\247\016\265C\372\3436\014\270x1\274M!|7\374a\370'Z\243\372\322p\373\343\331S\347.\354\336\031,\r\272\350\"G_\217\326\366.\356\335>\270pqpm\330\034\226\233_'\301\347\345o\367\371\2406X<\270\360\325\340\354@\014\266IrLD\237\355\3766\020t\3606\035\371\305n\212\342gh\035\025\371\350\366T5\001dqT\033\3758z\275\177z\277v2 \247\017\316\234\337\275>\330\030\237\2714\374{oc\266\303O#1\362{\313\373[\377\324\337\177\373\276\375\357\326\370\331\313\361\313W\343W0\206t\234\266O\334\366\311\177\340\203\016X";
-    PyObject *data = __Pyx_DecompressString(cstring, 1368, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1530 bytes) */
+const char* const cstring = "x\332\245UKo\024G\020\306\n\212\0141\201\205\220\240\004\224v\002Y\314c\301\301\"\211c\034m\300\226,\3612\006\024qi\365\316\364\354v<\323=\236\356\331\007y\210\343\036\3478\3079\356\321G\216\034s\334\343\034\375\023\370\t\251\352\231}\030#\023)\322nO?\252\273\353\373\352\253\352eR\367}\342\212\200K-\224\324$\214\270\303]!\233\223Ir\311%A\254\rip\"\244\313\273\334%L\272D*C\264/\300\374\327\330\363xD\332\202w\210\253\270\266K\274\033*\315\2116\221p\271\276\313$Q\322\357\021'\342\314p\302H\243\330dZ\314\020\241\211\243\244\021\315X\305\032.!\001\017T\324\253\301.<\212i-\232\222\030E`\263{\335\236SX\340\225\245Qyp'\022\2065|^\032\024Ny\221\n\016\333ka\221\2160-bz!'\325r\336DLj\013c\262\2450\203\035\002\2502S\334\335\233&L\024$\024FkAhzD\267\030\034m\342\020\234\363TD\234\236i)YcQ\304z\033\326\201\021\313\254\260\272\034\251\3165 \306_(\226Ul\210\362HC\305\322\325\3442\353\302%\227\\\\|\327\225\"6q\030\252\310pwC\266\231/ \210\312\345\3270.`\0141\254:U\002nT\301\027\304Y\275F\232\260kd\\x\013\241\260\327<\270\377T)\037dq#`\246\205M$\272\265\260\327\035/\324\002\337Pm\230\211\365\312\003K\326s$\013\374}\250 ,6\314w-b\344\306\345\276h\360\010\002\006\341@\211\200GV\013\222<^{|}\351\307%+\261\210\377\016\276j\200\322p|P\001H\013\t\210\205o\3003\014\225\256\221\r\217\364TL$\007L \221\020\354\2467\230\026\227Ds\203\035R\265qe\006H\242\260\035\374\256\2261\022m\216\273\327\231\257y\355\321>\246\301\345R\254\314q\270\036Q\277exH\002\326\263dC\324^\362HM\242\362LZ\025\302\221\240\3546\217@d\206\0078V\r\004\365LnK\325)@<\223\343X\021\025\002-\000\335\352\020eru\231\034\276~\347\003\006W\226Im\265\272\360\013s]*1\026\270J \0347\273\240-\037\261\203dj\254\341\254L%!\032\025\314\254\276;=\322\376\252\313\014+D[R\300Q\350\256\320\010\235[\002\232\016\271\214\262j\332d@\022\261\266\360\256\341\322\330L\237\224\031\241\213-.\022\245\305KNV\356\220\233\007RE*P\217\307b\337\020J#\356\306\016\247\224\270\261\345Z*y\035\324\324\026\314\207UGHa`\261`|u\245\250E\356>l\007\3470)\306\020\367""\255\357\237\225M\255\342\310\341\253\3618\324\314\367\225c\313\033zJ\220\237\332{V\213\334\302\023\313\352X\203\234\003\000\323T>T\222\327\267\356nl\334\2632_\363}\021j\241\327\357?\252?\275\365\275\375\334^\232d\237\243\">\225\213\220\244\265\"I\037L\265\2651a\005\241\224\216\347!A0y\017\256`\351\244\241\211\312\261\343\203_\243\276\n{e\327Z\025IR\316X\214\243~\334(\235\361\315\226-\021\224>\356u\341\177\017\022\237>\0049<\341\336\026\337\211\271t\370\026\356\304\342Q\233\324\021\020\347\210\275\362\032\3130\323=\351\010\205\350\2418\n\311u\203i\3568\024\231\247\256\212\201\371r\340\371\212\031\247\305\235\355\262J\201<\260BP:\3524\271A\345\341\020N\242\002*D\304\034\336`\316\266E\355\370\032\362E#j\007\n\203\261\307R\027\021P\027\203d\033*4-\364\006X\240\340r\031\007\266\320\361(R\221\347\263\246\006E\003\035e\331\235bn\3145\245^,\035\364\2549\n\013\025.\374\003\314q\370\342s\200\027\215q\027)S\346\r\245\001\003\357\2415\360l\341\2335\251\315\370\006\300\212rc\037\276\222\005\223\0262\021Z\336\241\350\177\010\250C\025\2023\350\217\213\215\027\366\306\324A\345\247\226L\035\007\305\250t\023\273\226\006\333\213e(\234m\270iM\216\354\332\366uFl;1\363\213\253'y|@\240\343\t\000\014\335\246\320\360PD\\C\372\303\353\010\005\336\367\254xK\020\320+\213\303\224\244\351{\344m\345\211d\301td\nXpt\250\215\202\177\024\303\2533\022-\245\006\254\250\205\205\021\245F\025\361\006t\300R\034\202\020\270M`\333\350\356\253z\376\323r>\373e\372m\372[\266\231\261|v>\253\330\346\355\354\221c\225\341)\350e\363{\263\237\364o\365Y\277\235l\2453\371\334\351\344JZO7q\366vr&YO\347\363\271\257\322\305|\356\354\360\354\215\301N~\252R\374\222\363\351f\312\362S\347\323\365l>[\304\231\312\336\334\271\364\030\236\231Cg&\255\344s'\373\177\342\336\223\375^\372q\332\002\027N\234In%^Z\317\347\316c\363\356\241\027R\226\302\360B\372<[\314\352\377\361\320=pz!]L\353{\263'\373;\257\340\363\r\302\252\014+\360\315\226\262?v\347w\027\363\331\317\222\r\3532t\352\311&\332\266\223\027\351N6;\230yU\177{\374\310\261""\271\376R\277\2238\351\347i7\333\261\276-\014*\203\213\203\355\327\225\327\366\366i7\366>\260\236\237\250$_\244\037\245\267\263s\203\312\377=l\037\302\030\334\177\236.\"\316O\373\036\014\236$;9\204k%\371+;H\001\306\370b\266\275[\331\235?\234\202\231\374\350\361\376\325dsx\364\353\364\357\301\346\344\204\3572\226\231\301\317\273\374\365\017o.\275\351\374\303\207[/\206/\350\220zC\2579l\266\016=\366\321\277r\177\212!";
+    PyObject *data = __Pyx_DecompressString(cstring, 1530, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (2697 bytes) */
-const char* const bytes = ": All dimensions preceding dimension %d must be indexed and not slicedBuffer size mismatchBuffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndex must be a tuple(row, col)Index out of bounds (axis %d)Indirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis MLTooling/math/matrix.pyxMLTooling.mlt_status<MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Step may not be zero (axis %d)Unable to convert item to objectUnsupported operand type for +: Unsupported operand type for +=: Unsupported operand type for *: .>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>disableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object><strided and direct><strided and direct or indirect><strided and indirect><stringsource>unable to allocate array data.unable to allocate shape and strides.ASCIIDtypesEllipsisFLOAT32MLTooling.coreMLTooling.math.matrixMatrixMatrix.__reduce_cython__Matrix.__setstate_cython__Matrix._from_ptrMatrix.cloneMatrix.copyMatrix.from_bufferMatrix.shapeMatrix.submatrixMltStatus__Pyx_PyDict_NextRefSequenceShapeView.MemoryViewabcallocate_bufferasyncio.coroutinesbaseccheck_status__class____class_getitem__cline_in_tracebackcloneclscolscopycountdata__dict__dtypedtype_is_objectencodeenumerateerrorflagsformatfortranfrom_buffer_from_ptr__func____getstate__id__import__index_is_coroutineitemsitemsize__main__matmemviewmlt_statusmode__module__name__name__ndim__new__obj""packpopptrpy_status__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerresultrowsself__set_name__setdefault__setstate____setstate_cython__shapesizestartstatusstepstopstructsubmatrix__test__unpackupdatevaluesx\200A\340\010\"\240!\340\010\021\320\021\"\240!\2404\240z\260\021\260!\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001\200A\360\n\000\t\022\320\021%\240Q\240d\250*\260A\260Q\340\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\021\320\021%\240Q\240d\250*\260A\260Q\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210u\220A\220V\2301\200A\340\010\032\230#\230X\240Q\240a\330\010\037\230q\360\006\000\t\014\2108\2204\220v\230Q\230c\240\023\240E\250\022\2501\330\014\022\220*\230A\230Q\340\010\021\320\021+\2501\330\014\r\330\014\r\330\014\r\210T\220\021\220!\330\014\020\220\006\220a\220q\330\014\r\210Q\340\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\013\210;\220a\340\010\017\210q\200A\340\010\016\210f\220A\220R\220q\330\010\013\210;\220m\2401\340\010\017\210q\200A\340\010\"\240!\340\010\021\320\021!\240\021\240$\240j\260\001\260\021\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001\200\001\330\004\n\210+\220Q\320\004\037\230~\250Q\340\010\"\240!\340\010\021\320\021&\240a\240t\250:\260U\270'\300\025\300g\310U\320RY\320Y^\320^e\320ef\320fg\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001O";
+    #else /* compression: none (3034 bytes) */
+const char* const bytes = ": All dimensions preceding dimension %d must be indexed and not slicedBuffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndex must be a tuple(row, col)Index out of bounds (axis %d)Indirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis MLTooling/math/matrix.pyxMLTooling.mlt_status<MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Step may not be zero (axis %d)Unable to convert item to objectUnknown typeUnsupported operand type for +: Unsupported operand type for +=: Unsupported operand type for *: .>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>data must not be emptydisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object><strided and direct><strided and direct or indirect><strided and indirect><stringsource>unable to allocate array data.unable to allocate shape and strides.value must not be NoneASCIIDtypesEllipsisFLOAT32FLOAT64MLTooling.coreMLTooling.math.matrixMatrixMatrix.__reduce_cython__Matrix.__setstate_cython__Matrix._from_ptrMatrix.cloneMatrix.copyMatrix.from_bufferMatrix.shapeMatrix.submatrixMltStatus__Pyx_PyDict_NextRefSequenceShapeView.MemoryViewabcallocate_bufferarrayasyncio.coroutinesbasecc_data_doublec_data_floatcheck_status__class____class_getitem__cline_in_tracebackcloneclscolscopycountdata__dict__dtypedtype_is_objectencodeenumerateerrorflagsformatfortranfrom_buffer_from_ptr__func____getstate__id__import__index_is_coroutineitemsite""msize__main__matmemviewmlt_statusmode__module__name__name__ndim__new__objpackpopptrptr_dptr_fpy_status__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerresultrowsself__set_name__setdefault__setstate____setstate_cython__shapesizestartstatusstepstopstructsubmatrix__test__typecode_to_dtypeunpackupdatevaluevaluesx\200A\3309:\330\010\032\230#\230X\240Q\240a\330\010!\240\021\330\010!\240\021\360\010\000\t\021\320\020!\240\021\240!\340\010\013\2103\210a\210v\220S\230\001\330\014\022\220*\230A\230Q\340\010\013\2106\220\023\220F\230!\330\014\033\2301\330\014\025\320\025/\250q\330\020\021\330\020\021\330\020\021\220\034\230Q\230a\330\020\034\230F\240!\2401\330\020\021\220\021\340\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\330\014\017\210|\2301\330\014\017\210y\230\006\230h\240a\330\r\023\2203\220f\230A\330\014\034\230A\330\014\025\320\025/\250q\330\020\021\330\020\021\330\020\021\220\035\230a\230q\330\020\035\230V\2401\240A\330\020\021\220\021\340\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\330\014\017\210|\2301\330\014\017\210y\230\006\230h\240a\340\014\022\220)\2301\230A\340\010\017\210q\200A\340\010\"\240!\340\010\021\320\021\"\240!\2404\240{\260!\2601\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001\200A\360\n\000\t\014\2104\210w\220c\230\026\230x\240q\330\014\025\320\025)\250\021\250$\250k\270\021\270!\330\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\340\014\025\320\025)\250\021\250$\250k\270\021\270!\330\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\330\r\021\220\027\230\003\2306\240\030\250\021\330\014\025\320\025)\250\021\250$\250k\270\021\270!\330\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\340\014\025\320\025)\250\021\250$\250k\270\021\270!\330\014\030\230\t\240\021\240!\330\014\030\230\001\230\021\340\014\022\220)\2301\230A\340\010\017\210u\220A\220V\2301\200A\340\010\016\210f\220A\220R\220q""\330\010\013\210<\220}\240A\340\010\017\210q\200A\340\010\"\240!\340\010\021\320\021!\240\021\240$\240k\260\021\260!\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001\200\001\330\004\n\210+\220Q\320\004\037\230~\250Q\340\010\"\240!\340\010\021\320\021&\240a\240t\250;\260e\2707\300%\300w\310e\320SZ\320Z_\320_f\320fg\320gh\330\010\024\220I\230Q\230a\330\010\024\220A\220Q\340\010\017\210v\220Z\230q\240\010\250\001O";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
     PyObject **stringtab = __pyx_mstate->__pyx_string_tab;
     Py_ssize_t pos = 0;
-    for (int i = 0; i < 151; i++) {
+    for (int i = 0; i < 161; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyUnicode_DecodeUTF8(bytes + pos, bytes_length, NULL);
-      if (likely(string) && i >= 52) PyUnicode_InternInPlace(&string);
+      if (likely(string) && i >= 54) PyUnicode_InternInPlace(&string);
       if (unlikely(!string)) {
         Py_XDECREF(data);
         __PYX_ERR(0, 1, __pyx_L1_error)
@@ -22322,7 +23549,7 @@ const char* const bytes = ": All dimensions preceding dimension %d must be index
       stringtab[i] = string;
       pos += bytes_length;
     }
-    for (int i = 151; i < 159; i++) {
+    for (int i = 161; i < 169; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyBytes_FromStringAndSize(bytes + pos, bytes_length);
       stringtab[i] = string;
@@ -22333,14 +23560,14 @@ const char* const bytes = ": All dimensions preceding dimension %d must be index
       }
     }
     Py_XDECREF(data);
-    for (Py_ssize_t i = 0; i < 159; i++) {
+    for (Py_ssize_t i = 0; i < 169; i++) {
       if (unlikely(PyObject_Hash(stringtab[i]) == -1)) {
         __PYX_ERR(0, 1, __pyx_L1_error)
       }
     }
     #if CYTHON_IMMORTAL_CONSTANTS
     {
-      PyObject **table = stringtab + 151;
+      PyObject **table = stringtab + 161;
       for (Py_ssize_t i=0; i<8; ++i) {
         #if CYTHON_COMPILING_IN_CPYTHON_FREETHREADING
         #if PY_VERSION_HEX < 0x030E0000
@@ -22414,34 +23641,34 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   PyObject* tuple_dedup_map = PyDict_New();
   if (unlikely(!tuple_dedup_map)) return -1;
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 23};
-    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_data, __pyx_mstate->__pyx_n_u_mat, __pyx_mstate->__pyx_n_u_ptr, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_py_status};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_from_buffer, __pyx_mstate->__pyx_kp_b_iso88591_A_XQa_q_84vQc_E_1_AQ_1_T_aq_Q_IQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 12, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 36};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_data, __pyx_mstate->__pyx_n_u_mat, __pyx_mstate->__pyx_n_u_ptr_f, __pyx_mstate->__pyx_n_u_ptr_d, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_c_data_float, __pyx_mstate->__pyx_n_u_c_data_double, __pyx_mstate->__pyx_n_u_dtype, __pyx_mstate->__pyx_n_u_py_status};
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_from_buffer, __pyx_mstate->__pyx_kp_b_iso88591_A9_XQa_3avS_AQ_6_F_1_q_Qa_F_1_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 46};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 80};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_ptr, __pyx_mstate->__pyx_n_u_mat};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_from_ptr, __pyx_mstate->__pyx_kp_b_iso88591_A_fARq_m1_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_from_ptr, __pyx_mstate->__pyx_kp_b_iso88591_A_fARq_A_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 142};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 196};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_py_status};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_shape, __pyx_mstate->__pyx_kp_b_iso88591_A_Qd_AQ_IQa_AQ_Qd_AQ_IQa_AQ_uAV1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_shape, __pyx_mstate->__pyx_kp_b_iso88591_A_4wc_xq_k_k_6_k_k_1A_uAV1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 158};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 222};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_result, __pyx_mstate->__pyx_n_u_py_status};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_clone, __pyx_mstate->__pyx_kp_b_iso88591_A_4z_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_clone, __pyx_mstate->__pyx_kp_b_iso88591_A_4_1_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 168};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 232};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_result, __pyx_mstate->__pyx_n_u_py_status};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_copy, __pyx_mstate->__pyx_kp_b_iso88591_A_j_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_copy, __pyx_mstate->__pyx_kp_b_iso88591_A_k_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 178};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 242};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_start, __pyx_mstate->__pyx_n_u_count, __pyx_mstate->__pyx_n_u_status, __pyx_mstate->__pyx_n_u_result, __pyx_mstate->__pyx_n_u_py_status};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_submatrix, __pyx_mstate->__pyx_kp_b_iso88591_Q_at_U_gURYY_eeffg_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_MLTooling_math_matrix_pyx, __pyx_mstate->__pyx_n_u_submatrix, __pyx_mstate->__pyx_kp_b_iso88591_Q_at_e7_weSZZ__ffggh_IQa_AQ_vZq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1};
@@ -28788,6 +30015,29 @@ static const char* __Pyx_BufFmt_CheckString(__Pyx_BufFmt_Context* ctx, const cha
       return result;
   }
   
+/* ObjectToMemviewSlice */
+  static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_double(PyObject *obj, int writable_flag) {
+      __Pyx_memviewslice result = __Pyx_MEMSLICE_INIT;
+      __Pyx_BufFmt_StackElem stack[1];
+      int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
+      int retcode;
+      if (obj == Py_None) {
+          result.memview = (struct __pyx_memoryview_obj *) Py_None;
+          return result;
+      }
+      retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
+                                                   PyBUF_RECORDS_RO | writable_flag, 1,
+                                                   &__Pyx_TypeInfo_double, stack,
+                                                   &result, obj);
+      if (unlikely(retcode == -1))
+          goto __pyx_fail;
+      return result;
+  __pyx_fail:
+      result.memview = NULL;
+      result.data = NULL;
+      return result;
+  }
+  
 /* MemviewSliceCopy */
   static __Pyx_memviewslice
   __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -29212,188 +30462,6 @@ static const char* __Pyx_BufFmt_CheckString(__Pyx_BufFmt_Context* ctx, const cha
       }
   }
   
-/* CIntToPy */
-  static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value) {
-  #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wconversion"
-  #endif
-      const long neg_one = (long) -1, const_zero = (long) 0;
-  #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-  #pragma GCC diagnostic pop
-  #endif
-      const int is_unsigned = neg_one > const_zero;
-      if (is_unsigned) {
-          if (sizeof(long) < sizeof(long)) {
-              return PyLong_FromLong((long) value);
-          } else if (sizeof(long) <= sizeof(unsigned long)) {
-              return PyLong_FromUnsignedLong((unsigned long) value);
-  #if !CYTHON_COMPILING_IN_PYPY
-          } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-              return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-  #endif
-          }
-      } else {
-          if (sizeof(long) <= sizeof(long)) {
-              return PyLong_FromLong((long) value);
-          } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-              return PyLong_FromLongLong((PY_LONG_LONG) value);
-          }
-      }
-      {
-          unsigned char *bytes = (unsigned char *)&value;
-  #if !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x030d00A4
-          if (is_unsigned) {
-              return PyLong_FromUnsignedNativeBytes(bytes, sizeof(value), -1);
-          } else {
-              return PyLong_FromNativeBytes(bytes, sizeof(value), -1);
-          }
-  #elif !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX < 0x030d0000
-          int one = 1; int little = (int)*(unsigned char *)&one;
-          return _PyLong_FromByteArray(bytes, sizeof(long),
-                                       little, !is_unsigned);
-  #else
-          int one = 1; int little = (int)*(unsigned char *)&one;
-          PyObject *from_bytes, *result = NULL, *kwds = NULL;
-          PyObject *py_bytes = NULL, *order_str = NULL;
-          from_bytes = PyObject_GetAttrString((PyObject*)&PyLong_Type, "from_bytes");
-          if (!from_bytes) return NULL;
-          py_bytes = PyBytes_FromStringAndSize((char*)bytes, sizeof(long));
-          if (!py_bytes) goto limited_bad;
-          order_str = PyUnicode_FromString(little ? "little" : "big");
-          if (!order_str) goto limited_bad;
-          {
-              PyObject *args[3+(CYTHON_VECTORCALL ? 1 : 0)] = { NULL, py_bytes, order_str };
-              if (!is_unsigned) {
-                  kwds = __Pyx_MakeVectorcallBuilderKwds(1);
-                  if (!kwds) goto limited_bad;
-                  if (__Pyx_VectorcallBuilder_AddArgStr("signed", __Pyx_NewRef(Py_True), kwds, args+3, 0) < 0) goto limited_bad;
-              }
-              result = __Pyx_Object_Vectorcall_CallFromBuilder(from_bytes, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET, kwds);
-          }
-          limited_bad:
-          Py_XDECREF(kwds);
-          Py_XDECREF(order_str);
-          Py_XDECREF(py_bytes);
-          Py_XDECREF(from_bytes);
-          return result;
-  #endif
-      }
-  }
-  
-/* PyObjectCall2Args (used by PyObjectCallMethod1) */
-  static CYTHON_INLINE PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
-      PyObject *args[3] = {NULL, arg1, arg2};
-      return __Pyx_PyObject_FastCall(function, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
-  }
-  
-/* PyObjectCallMethod1 (used by UpdateUnpickledDict) */
-  #if !(CYTHON_VECTORCALL && (__PYX_LIMITED_VERSION_HEX >= 0x030C0000 || (!CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x03090000)))
-  static PyObject* __Pyx__PyObject_CallMethod1(PyObject* method, PyObject* arg) {
-      PyObject *result = __Pyx_PyObject_CallOneArg(method, arg);
-      Py_DECREF(method);
-      return result;
-  }
-  #endif
-  static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg) {
-  #if CYTHON_VECTORCALL && (__PYX_LIMITED_VERSION_HEX >= 0x030C0000 || (!CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x03090000))
-      PyObject *args[2] = {obj, arg};
-      (void) __Pyx_PyObject_CallOneArg;
-      (void) __Pyx_PyObject_Call2Args;
-      return PyObject_VectorcallMethod(method_name, args, 2 | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
-  #else
-      PyObject *method = NULL, *result;
-      int is_method = __Pyx_PyObject_GetMethod(obj, method_name, &method);
-      if (likely(is_method)) {
-          result = __Pyx_PyObject_Call2Args(method, obj, arg);
-          Py_DECREF(method);
-          return result;
-      }
-      if (unlikely(!method)) return NULL;
-      return __Pyx__PyObject_CallMethod1(method, arg);
-  #endif
-  }
-  
-/* UpdateUnpickledDict */
-  static int __Pyx__UpdateUnpickledDict(PyObject *obj, PyObject *state, Py_ssize_t index) {
-      PyObject *state_dict = __Pyx_PySequence_ITEM(state, index);
-      if (unlikely(!state_dict)) {
-          return -1;
-      }
-      int non_empty = PyObject_IsTrue(state_dict);
-      if (non_empty == 0) {
-          Py_DECREF(state_dict);
-          return 0;
-      } else if (unlikely(non_empty == -1)) {
-          return -1;
-      }
-      PyObject *dict;
-      #if CYTHON_COMPILING_IN_LIMITED_API && __PYX_LIMITED_VERSION_HEX < 0x030A0000
-      dict = PyObject_GetAttrString(obj, "__dict__");
-      #else
-      dict = PyObject_GenericGetDict(obj, NULL);
-      #endif
-      if (unlikely(!dict)) {
-          Py_DECREF(state_dict);
-          return -1;
-      }
-      int result;
-      if (likely(PyDict_CheckExact(dict))) {
-          result = PyDict_Update(dict, state_dict);
-      } else {
-          PyObject *obj_result = __Pyx_PyObject_CallMethod1(dict, __pyx_mstate_global->__pyx_n_u_update, state_dict);
-          if (likely(obj_result)) {
-              Py_DECREF(obj_result);
-              result = 0;
-          } else {
-              result = -1;
-          }
-      }
-      Py_DECREF(state_dict);
-      Py_DECREF(dict);
-      return result;
-  }
-  static int __Pyx_UpdateUnpickledDict(PyObject *obj, PyObject *state, Py_ssize_t index) {
-      Py_ssize_t state_size = __Pyx_PyTuple_GET_SIZE(state);
-      #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely(state_size == -1)) return -1;
-      #endif
-      if (state_size <= index) {
-          return 0;
-      }
-      return __Pyx__UpdateUnpickledDict(obj, state, index);
-  }
-  
-/* CheckUnpickleChecksum */
-  static void __Pyx_RaiseUnpickleChecksumError(long checksum, long checksum1, long checksum2, long checksum3, const char *members) {
-      PyObject *pickle_module = PyImport_ImportModule("pickle");
-      if (unlikely(!pickle_module)) return;
-      PyObject *pickle_error = PyObject_GetAttrString(pickle_module, "PickleError");
-      Py_DECREF(pickle_module);
-      if (unlikely(!pickle_error)) return;
-      if (checksum2 == checksum1) {
-          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x) = (%s))",
-              checksum, checksum1, members);
-      } else if (checksum3 == checksum2) {
-          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x, 0x%x) = (%s))",
-              checksum, checksum1, checksum2, members);
-      } else {
-          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x, 0x%x, 0x%x) = (%s))",
-              checksum, checksum1, checksum2, checksum3, members);
-      }
-      Py_DECREF(pickle_error);
-  }
-  static int __Pyx_CheckUnpickleChecksum(long checksum, long checksum1, long checksum2, long checksum3, const char *members) {
-      int found = 0;
-      found |= checksum1 == checksum;
-      found |= checksum2 == checksum;
-      found |= checksum3 == checksum;
-      if (likely(found))
-          return 0;
-      __Pyx_RaiseUnpickleChecksumError(checksum, checksum1, checksum2, checksum3, members);
-      return -1;
-  }
-  
 /* CIntFromPy */
   static CYTHON_INLINE int __Pyx_PyLong_As_int(PyObject *x) {
   #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
@@ -29642,6 +30710,188 @@ static const char* __Pyx_BufFmt_CheckString(__Pyx_BufFmt_Context* ctx, const cha
       PyErr_SetString(PyExc_OverflowError,
           "can't convert negative value to int");
       return (int) -1;
+  }
+  
+/* CIntToPy */
+  static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value) {
+  #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wconversion"
+  #endif
+      const long neg_one = (long) -1, const_zero = (long) 0;
+  #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+  #pragma GCC diagnostic pop
+  #endif
+      const int is_unsigned = neg_one > const_zero;
+      if (is_unsigned) {
+          if (sizeof(long) < sizeof(long)) {
+              return PyLong_FromLong((long) value);
+          } else if (sizeof(long) <= sizeof(unsigned long)) {
+              return PyLong_FromUnsignedLong((unsigned long) value);
+  #if !CYTHON_COMPILING_IN_PYPY
+          } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+              return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+  #endif
+          }
+      } else {
+          if (sizeof(long) <= sizeof(long)) {
+              return PyLong_FromLong((long) value);
+          } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+              return PyLong_FromLongLong((PY_LONG_LONG) value);
+          }
+      }
+      {
+          unsigned char *bytes = (unsigned char *)&value;
+  #if !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x030d00A4
+          if (is_unsigned) {
+              return PyLong_FromUnsignedNativeBytes(bytes, sizeof(value), -1);
+          } else {
+              return PyLong_FromNativeBytes(bytes, sizeof(value), -1);
+          }
+  #elif !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX < 0x030d0000
+          int one = 1; int little = (int)*(unsigned char *)&one;
+          return _PyLong_FromByteArray(bytes, sizeof(long),
+                                       little, !is_unsigned);
+  #else
+          int one = 1; int little = (int)*(unsigned char *)&one;
+          PyObject *from_bytes, *result = NULL, *kwds = NULL;
+          PyObject *py_bytes = NULL, *order_str = NULL;
+          from_bytes = PyObject_GetAttrString((PyObject*)&PyLong_Type, "from_bytes");
+          if (!from_bytes) return NULL;
+          py_bytes = PyBytes_FromStringAndSize((char*)bytes, sizeof(long));
+          if (!py_bytes) goto limited_bad;
+          order_str = PyUnicode_FromString(little ? "little" : "big");
+          if (!order_str) goto limited_bad;
+          {
+              PyObject *args[3+(CYTHON_VECTORCALL ? 1 : 0)] = { NULL, py_bytes, order_str };
+              if (!is_unsigned) {
+                  kwds = __Pyx_MakeVectorcallBuilderKwds(1);
+                  if (!kwds) goto limited_bad;
+                  if (__Pyx_VectorcallBuilder_AddArgStr("signed", __Pyx_NewRef(Py_True), kwds, args+3, 0) < 0) goto limited_bad;
+              }
+              result = __Pyx_Object_Vectorcall_CallFromBuilder(from_bytes, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET, kwds);
+          }
+          limited_bad:
+          Py_XDECREF(kwds);
+          Py_XDECREF(order_str);
+          Py_XDECREF(py_bytes);
+          Py_XDECREF(from_bytes);
+          return result;
+  #endif
+      }
+  }
+  
+/* PyObjectCall2Args (used by PyObjectCallMethod1) */
+  static CYTHON_INLINE PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
+      PyObject *args[3] = {NULL, arg1, arg2};
+      return __Pyx_PyObject_FastCall(function, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
+  }
+  
+/* PyObjectCallMethod1 (used by UpdateUnpickledDict) */
+  #if !(CYTHON_VECTORCALL && (__PYX_LIMITED_VERSION_HEX >= 0x030C0000 || (!CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x03090000)))
+  static PyObject* __Pyx__PyObject_CallMethod1(PyObject* method, PyObject* arg) {
+      PyObject *result = __Pyx_PyObject_CallOneArg(method, arg);
+      Py_DECREF(method);
+      return result;
+  }
+  #endif
+  static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg) {
+  #if CYTHON_VECTORCALL && (__PYX_LIMITED_VERSION_HEX >= 0x030C0000 || (!CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x03090000))
+      PyObject *args[2] = {obj, arg};
+      (void) __Pyx_PyObject_CallOneArg;
+      (void) __Pyx_PyObject_Call2Args;
+      return PyObject_VectorcallMethod(method_name, args, 2 | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
+  #else
+      PyObject *method = NULL, *result;
+      int is_method = __Pyx_PyObject_GetMethod(obj, method_name, &method);
+      if (likely(is_method)) {
+          result = __Pyx_PyObject_Call2Args(method, obj, arg);
+          Py_DECREF(method);
+          return result;
+      }
+      if (unlikely(!method)) return NULL;
+      return __Pyx__PyObject_CallMethod1(method, arg);
+  #endif
+  }
+  
+/* UpdateUnpickledDict */
+  static int __Pyx__UpdateUnpickledDict(PyObject *obj, PyObject *state, Py_ssize_t index) {
+      PyObject *state_dict = __Pyx_PySequence_ITEM(state, index);
+      if (unlikely(!state_dict)) {
+          return -1;
+      }
+      int non_empty = PyObject_IsTrue(state_dict);
+      if (non_empty == 0) {
+          Py_DECREF(state_dict);
+          return 0;
+      } else if (unlikely(non_empty == -1)) {
+          return -1;
+      }
+      PyObject *dict;
+      #if CYTHON_COMPILING_IN_LIMITED_API && __PYX_LIMITED_VERSION_HEX < 0x030A0000
+      dict = PyObject_GetAttrString(obj, "__dict__");
+      #else
+      dict = PyObject_GenericGetDict(obj, NULL);
+      #endif
+      if (unlikely(!dict)) {
+          Py_DECREF(state_dict);
+          return -1;
+      }
+      int result;
+      if (likely(PyDict_CheckExact(dict))) {
+          result = PyDict_Update(dict, state_dict);
+      } else {
+          PyObject *obj_result = __Pyx_PyObject_CallMethod1(dict, __pyx_mstate_global->__pyx_n_u_update, state_dict);
+          if (likely(obj_result)) {
+              Py_DECREF(obj_result);
+              result = 0;
+          } else {
+              result = -1;
+          }
+      }
+      Py_DECREF(state_dict);
+      Py_DECREF(dict);
+      return result;
+  }
+  static int __Pyx_UpdateUnpickledDict(PyObject *obj, PyObject *state, Py_ssize_t index) {
+      Py_ssize_t state_size = __Pyx_PyTuple_GET_SIZE(state);
+      #if !CYTHON_ASSUME_SAFE_SIZE
+      if (unlikely(state_size == -1)) return -1;
+      #endif
+      if (state_size <= index) {
+          return 0;
+      }
+      return __Pyx__UpdateUnpickledDict(obj, state, index);
+  }
+  
+/* CheckUnpickleChecksum */
+  static void __Pyx_RaiseUnpickleChecksumError(long checksum, long checksum1, long checksum2, long checksum3, const char *members) {
+      PyObject *pickle_module = PyImport_ImportModule("pickle");
+      if (unlikely(!pickle_module)) return;
+      PyObject *pickle_error = PyObject_GetAttrString(pickle_module, "PickleError");
+      Py_DECREF(pickle_module);
+      if (unlikely(!pickle_error)) return;
+      if (checksum2 == checksum1) {
+          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x) = (%s))",
+              checksum, checksum1, members);
+      } else if (checksum3 == checksum2) {
+          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x, 0x%x) = (%s))",
+              checksum, checksum1, checksum2, members);
+      } else {
+          PyErr_Format(pickle_error, "Incompatible checksums (0x%x vs (0x%x, 0x%x, 0x%x) = (%s))",
+              checksum, checksum1, checksum2, checksum3, members);
+      }
+      Py_DECREF(pickle_error);
+  }
+  static int __Pyx_CheckUnpickleChecksum(long checksum, long checksum1, long checksum2, long checksum3, const char *members) {
+      int found = 0;
+      found |= checksum1 == checksum;
+      found |= checksum2 == checksum;
+      found |= checksum3 == checksum;
+      if (likely(found))
+          return 0;
+      __Pyx_RaiseUnpickleChecksumError(checksum, checksum1, checksum2, checksum3, members);
+      return -1;
   }
   
 /* CIntFromPy */

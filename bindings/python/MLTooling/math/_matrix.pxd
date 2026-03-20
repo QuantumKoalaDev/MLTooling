@@ -18,3 +18,12 @@ cdef extern from "math/matrix.h":
     int mltFwMatrixFClone(const mltMatrixF* mat, mltMatrixF** out)
     int mltFwMatrixFCopy(const mltMatrixF* mat, mltMatrixF** out)
     int mltFwMatrixFSubmatrix(const mltMatrixF* mat, size_t startRow, size_t startCol, size_t rowCount, size_t colCount, mltMatrixF** out)
+
+    int mltFwMatrixDCreate(size_t rows, size_t cols, mltMatrixD** out)
+    int mltFwMatrixDCreateFromBuff(size_t rows, size_t cols, const double* buff, size_t elemCount, mltMatrixD** out)
+    int mltFwMatrixDDestroy(mltMatrixD* mat)
+    int mltFwMatrixDGet(const mltMatrixD* mat, size_t row, size_t col, double* out)
+    int mltFwMatrixDSet(mltMatrixD* mat, size_t row, size_t col, double newVal)
+    int mltFwMatrixDRowCount(const mltMatrixD* mat, size_t* out)
+    int mltFwMatrixDColCount(const mltMatrixD* mat, size_t* out)
+    int mltFwMatrixDAdd(const mltMatrixD* a, const mltMatrixD* b, mltMatrixD** out)
