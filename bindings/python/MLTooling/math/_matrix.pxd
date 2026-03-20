@@ -27,3 +27,8 @@ cdef extern from "math/matrix.h":
     int mltFwMatrixDRowCount(const mltMatrixD* mat, size_t* out)
     int mltFwMatrixDColCount(const mltMatrixD* mat, size_t* out)
     int mltFwMatrixDAdd(const mltMatrixD* a, const mltMatrixD* b, mltMatrixD** out)
+    int mltFwMatrixDAddInPlace(mltMatrixD* a, const mltMatrixD* b)
+    int mltFwMatrixDMultiply(const mltMatrixD* a, const mltMatrixD* b, mltMatrixD** out)
+    int mltFwMatrixDClone(const mltMatrixD* mat, mltMatrixD** out)
+    int mltFwMatrixDCopy(const mltMatrixD* mat, mltMatrixD** out)
+    int mltFwMatrixDSubmatrix(const mltMatrixD* mat, size_t startRow, size_t startCol, size_t rowCount, size_t colCount, mltMatrixD** out)
