@@ -3,8 +3,8 @@ from ._matrix cimport *
 
 from array import array
 
-from ..mlt_status import MltStatus, check_status
 from MLTooling.core import Shape, Dtypes, typecode_to_dtype
+from MLTooling.mlt_status import MltStatus, check_status
 
 cdef class Matrix:
     def __cinit__(self):
@@ -177,7 +177,7 @@ cdef class Matrix:
 
         return self
 
-    def __mul__(self, other):
+    def __matmul__(self, other):
         cdef int status
         cdef mltMatrixF* result = NULL
         cdef Matrix input_other

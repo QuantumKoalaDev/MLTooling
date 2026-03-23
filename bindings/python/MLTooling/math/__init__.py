@@ -1,3 +1,3 @@
-from .matrix import Matrix
+from .matrix.matrix import Matrix
 
 __all__ = ["Matrix"]

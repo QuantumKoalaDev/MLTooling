@@ -101,7 +101,7 @@ class TestMat(unittest.TestCase):
         mat_one = Matrix.from_buffer(rows, cols, data_one)
         mat_two = Matrix.from_buffer(cols, rows, data_two)
 
-        mat_result = mat_one * mat_two
+        mat_result = mat_one @ mat_two
 
         self.assertEqual(mat_result[0,0], data_result[0])
         self.assertEqual(mat_result[0,1], data_result[1])
