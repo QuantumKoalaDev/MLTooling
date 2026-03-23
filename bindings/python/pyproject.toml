@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "Cython>=3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MLTooling"
+version = "0.1.0"
+description = "Simple ML Library"
+authors = [{name = "QuantumKoalaDev"}]
+requires-python = ">=3.12"
