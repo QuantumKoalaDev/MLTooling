@@ -2,7 +2,7 @@ import unittest
 from array import array
 
 from MLTooling import Matrix
-from MLTooling.core import Shape
+from MLTooling.core import Shape, Dtypes
 
 class TestMat(unittest.TestCase):
     def test_creation(self):
@@ -14,12 +14,14 @@ class TestMat(unittest.TestCase):
 
         self.assertEqual(shape.rows, rows)
         self.assertEqual(shape.cols, cols)
+        self.assertEqual(mat.dtype(), Dtypes.FLOAT32)
 
-        mat_double = Matrix(rows, cols)
+        mat_double = Matrix(rows, cols, Dtypes.FLOAT64)
         shape = mat_double.shape()
 
         self.assertEqual(shape.rows, rows)
         self.assertEqual(shape.cols, cols)
+        self.assertEqual(mat_double.dtype(), Dtypes.FLOAT64)
 
     def test_creation_from_buffer(self):
         rows = 2
@@ -34,6 +36,7 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat[0,0], data[0])
         self.assertEqual(mat[0,1], data[2])
         self.assertEqual(mat[1,2], data[5])
+        self.assertEqual(mat.dtype(), Dtypes.FLOAT32)
 
         data_double = array("d", [1, 2, 3, 4, 5, 6])
         mat_double = Matrix.from_buffer(rows, cols, data_double)
@@ -45,6 +48,7 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat_double[0,0], data_double[0])
         self.assertEqual(mat_double[0,1], data_double[2])
         self.assertEqual(mat_double[1,2], data_double[5])
+        self.assertEqual(mat_double.dtype(), Dtypes.FLOAT64)
     
     def test_shape(self):
         rows = 3
@@ -76,6 +80,20 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat_result[0,0], data_one[0] + data_two[0])
         self.assertEqual(mat_result[0,1], data_one[2] + data_two[2])
         self.assertEqual(mat_result[1,2], data_one[5] + data_two[5])
+        self.assertEqual(mat_result.dtype(), Dtypes.FLOAT32)
+
+        data_one_double = array("d", [1, 2, 3, 4, 5, 6])
+        data_two_double = array("d", [7, 8, 9, 10, 11, 12])
+
+        mat_one_double = Matrix.from_buffer(2, 3, data_one_double)
+        mat_two_double = Matrix.from_buffer(2, 3, data_two_double)
+
+        mat_result_double = mat_one_double + mat_two_double
+
+        self.assertEqual(mat_result_double[0,0], data_one_double[0] + data_two_double[0])
+        self.assertEqual(mat_result_double[0,1], data_one_double[2] + data_two_double[2])
+        self.assertEqual(mat_result_double[1,2], data_one_double[5] + data_two_double[5])
+        self.assertEqual(mat_result_double.dtype(), Dtypes.FLOAT64)
 
     def test_matrix_addtion_in_place(self):
         data_one = array("f", [1, 2, 3, 4, 5, 6])
@@ -89,6 +107,20 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat_one[0,0], data_one[0] + data_two[0])
         self.assertEqual(mat_one[0,1], data_one[2] + data_two[2])
         self.assertEqual(mat_one[1,2], data_one[5] + data_two[5])
+        self.assertEqual(mat_one.dtype(), Dtypes.FLOAT32)
+    
+        data_one_double = array("d", [1, 2, 3, 4, 5, 6])
+        data_two_double = array("d", [7, 8, 9, 10, 11, 12])
+
+        mat_one_double = Matrix.from_buffer(2, 3, data_one_double)
+        mat_two_double = Matrix.from_buffer(2, 3, data_two_double)
+
+        mat_one_double += mat_two_double
+
+        self.assertEqual(mat_one_double[0,0], data_one_double[0] + data_two_double[0])
+        self.assertEqual(mat_one_double[0,1], data_one_double[2] + data_two_double[2])
+        self.assertEqual(mat_one_double[1,2], data_one_double[5] + data_two_double[5])
+        self.assertEqual(mat_one_double.dtype(), Dtypes.FLOAT64)
 
     def test_matrix_multiplication(self):
         rows = 2
@@ -106,6 +138,22 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat_result[0,0], data_result[0])
         self.assertEqual(mat_result[0,1], data_result[1])
         self.assertEqual(mat_result[1,1], data_result[3])
+        self.assertAlmostEqual(mat_result.dtype(), Dtypes.FLOAT32)
+
+
+        data_one_double = array("d", [1, 2, 3, 4, 5, 6])
+        data_two_double = array("d", [7, 8, 9, 10, 11, 12])
+        data_result_double = array("d", [76, 103, 100, 136])
+
+        mat_one_double = Matrix.from_buffer(rows, cols, data_one_double)
+        mat_two_double = Matrix.from_buffer(cols, rows, data_two_double)
+
+        mat_result_double = mat_one_double * mat_two_double
+
+        self.assertEqual(mat_result_double[0,0], data_result_double[0])
+        self.assertEqual(mat_result_double[0,1], data_result_double[1])
+        self.assertEqual(mat_result_double[1,1], data_result_double[3])
+        self.assertEqual(mat_result_double.dtype(), Dtypes.FLOAT64)
 
     def test_matrix_clone(self):
         data = array("f", [1, 2, 3, 4, 5, 6])
@@ -115,10 +163,24 @@ class TestMat(unittest.TestCase):
         self.assertEqual(cloned_mat[0,0], mat[0,0])
         self.assertEqual(cloned_mat[1,1], mat[1,1])
         self.assertEqual(cloned_mat[1,2], mat[1,2])
+        self.assertEqual(cloned_mat.dtype(), Dtypes.FLOAT32)
 
         cloned_mat[0,0] = 333
 
         self.assertNotEqual(cloned_mat[0,0], mat[0,0])
+
+        data_double = array("d", [1, 2, 3, 4, 5, 6])
+        mat_double = Matrix.from_buffer(2, 3, data_double)
+        cloned_mat_double = mat_double.clone()
+
+        self.assertEqual(cloned_mat_double[0,0], mat_double[0,0])
+        self.assertEqual(cloned_mat_double[1,1], mat_double[1,1])
+        self.assertEqual(cloned_mat_double[1,2], mat_double[1,2])
+        self.assertEqual(cloned_mat_double.dtype(), Dtypes.FLOAT64)
+
+        cloned_mat_double[0,0] = 333
+
+        self.assertNotEqual(cloned_mat_double[0,0], mat_double[0,0])
 
     def test_matrix_copy(self):
         data = array("f", [1, 2, 3, 4, 5, 6])
@@ -128,12 +190,28 @@ class TestMat(unittest.TestCase):
         self.assertEqual(copied_mat[0,0], mat[0,0])
         self.assertEqual(copied_mat[1,1], mat[1,1])
         self.assertEqual(copied_mat[1,2], mat[1,2])
+        self.assertEqual(copied_mat.dtype(), Dtypes.FLOAT32)
 
         val = 333
         copied_mat[0,0] = val
 
         self.assertEqual(copied_mat[0,0], val)
         self.assertEqual(copied_mat[0,0], mat[0,0])
+
+        data_double = array("d", [1, 2, 3, 4, 5, 6])
+        mat_double = Matrix.from_buffer(2, 3, data_double)
+        copied_mat_double = mat_double.copy()
+
+        self.assertEqual(copied_mat_double[0,0], mat_double[0,0])
+        self.assertEqual(copied_mat_double[1,1], mat_double[1,1])
+        self.assertEqual(copied_mat_double[1,2], mat_double[1,2])
+        self.assertEqual(copied_mat_double.dtype(), Dtypes.FLOAT64)
+
+        val_double = 333
+        copied_mat_double[0,0] = val
+
+        self.assertEqual(copied_mat_double[0,0], val_double)
+        self.assertEqual(copied_mat_double[0,0], mat_double[0,0])
 
     def test_submatrix(self):
         data = array("f", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
@@ -145,3 +223,15 @@ class TestMat(unittest.TestCase):
         self.assertEqual(sub_mat[0,0], sub_mat_data[0])
         self.assertEqual(sub_mat[1,1], sub_mat_data[4])
         self.assertEqual(sub_mat[2,1], sub_mat_data[5])
+        self.assertEqual(sub_mat.dtype(), Dtypes.FLOAT32)
+
+        data_double = array("d", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        sub_mat_data_double = array("d", [7, 8, 9, 12, 13, 14])
+        
+        mat_double = Matrix.from_buffer(5, 3, data_double)
+        sub_mat_double = mat_double.submatrix(Shape(1,1), Shape(3, 2))
+
+        self.assertEqual(sub_mat_double[0,0], sub_mat_data_double[0])
+        self.assertEqual(sub_mat_double[1,1], sub_mat_data_double[4])
+        self.assertEqual(sub_mat_double[2,1], sub_mat_data_double[5])
+        self.assertEqual(sub_mat_double.dtype(), Dtypes.FLOAT64)

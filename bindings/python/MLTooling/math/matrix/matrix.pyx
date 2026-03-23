@@ -29,7 +29,7 @@ cdef class Matrix:
             check_status(py_status)
             self._c_mat_d = ptr_d
         else:
-            raise TypeError("Unknown type")
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
         
         self._type = dtype.value
 
@@ -73,14 +73,18 @@ cdef class Matrix:
             mat._c_mat_d = ptr_d
             mat._type = Dtypes.FLOAT64.value
         else:
-            raise TypeError("Unknown type")
+            raise TypeError(f"Unsupported type:{Dtypes(dtype)}")
         
         return mat
     
     @classmethod
-    def _from_ptr(cls, ptr):
-        mat = Matrix(0,0)
-        mat._c_mat_f = <mltMatrixF*>ptr
+    def _from_ptr(cls, ptr, dtype: Dtypes):
+        mat = Matrix(0, 0, dtype)
+
+        if dtype == Dtypes.FLOAT32:
+            mat._c_mat_f = <mltMatrixF*>ptr
+        elif dtype == Dtypes.FLOAT64:
+            mat._c_mat_d = <mltMatrixD*>ptr
 
         return mat
 
@@ -116,7 +120,7 @@ cdef class Matrix:
             check_status(py_status)
             return val_double
         else:
-            raise TypeError("Unknown type")
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
     
     def __setitem__(self, key, value):
         cdef size_t row, col
@@ -143,11 +147,12 @@ cdef class Matrix:
             py_status = MltStatus(status)
             check_status(py_status)
         else:
-            raise TypeError("Unknown type")
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
 
     def __add__(self, other):
         cdef int status
         cdef mltMatrixF* result_float = NULL
+        cdef mltMatrixD* result_double = NULL
         cdef Matrix input_other
 
         if isinstance(other, Matrix):
@@ -156,11 +161,22 @@ cdef class Matrix:
         else:
             raise TypeError(f"Unsupported operand type for +: {type(other).__name__}")
 
+        if self._type != input_other._type:
+            raise TypeError(f"Matrices must have the same type: self:{MltStatus(self._type)}; input: {MltStatus(input_other._type)}")
 
-        py_status = MltStatus(status)
-        check_status(py_status)
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFAdd(self._c_mat_f, input_other._c_mat_f, &result_float)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_float, Dtypes.FLOAT32)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDAdd(self._c_mat_d, input_other._c_mat_d, &result_double)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_double, Dtypes.FLOAT64)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
 
-        return Matrix._from_ptr(<object>result_float)
 
     def __iadd__(self, other):
         cdef int status
@@ -168,30 +184,53 @@ cdef class Matrix:
 
         if isinstance(other, Matrix):
             input_other = <Matrix> other
-            status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
         else:
             raise TypeError(f"Unsupported operand type for +=: {type(other).__name__}")
 
-        py_status = MltStatus(status)
-        check_status(py_status)
+        if self._type != input_other._type:
+            raise TypeError(f"Matrices must have the same type: self:{MltStatus(self._type)}; input: {MltStatus(input_other._type)}")
+        
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFAddInPlace(self._c_mat_f, input_other._c_mat_f)
+            py_status = MltStatus(status)
+            check_status(py_status)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDAddInPlace(self._c_mat_d, input_other._c_mat_d)
+            py_status = MltStatus(status)
+            check_status(py_status)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
 
         return self
 
     def __matmul__(self, other):
         cdef int status
-        cdef mltMatrixF* result = NULL
+        cdef mltMatrixF* result_float = NULL
+        cdef mltMatrixD* result_double = NULL
         cdef Matrix input_other
 
         if isinstance(other, Matrix):
             input_other = <Matrix>other
-            status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result)
         else:
             raise TypeError(f"Unsupported operand type for *: {type(other).__name__}")
         
-        py_status = MltStatus(status)
-        check_status(py_status)
 
-        return Matrix._from_ptr(<object>result)
+        if self._type != input_other._type:
+            raise TypeError(f"Matrices must have the same type: self:{MltStatus(self._type)}; input: {MltStatus(input_other._type)}")
+
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFMultiply(self._c_mat_f, input_other._c_mat_f, &result_float)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_float, Dtypes.FLOAT32)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDMultiply(self._c_mat_d, input_other._c_mat_d, &result_double)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_double, Dtypes.FLOAT64)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")
+        
     
     def shape(self):
         cdef size_t rows
@@ -219,32 +258,60 @@ cdef class Matrix:
 
         return Shape(rows, cols)
 
+    def dtype(self):
+        return Dtypes(self._type)
+
     def clone(self):
         cdef int status
-        cdef mltMatrixF* result = NULL
+        cdef mltMatrixF* result_float = NULL
+        cdef mltMatrixD* result_double = NULL
 
-        status = mltFwMatrixFClone(self._c_mat_f, &result)
-        py_status = MltStatus(status)
-        check_status(py_status)
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFClone(self._c_mat_f, &result_float)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_float, Dtypes.FLOAT32)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDClone(self._c_mat_d, &result_double)
+            py_status = MltStatus(status)
+            return Matrix._from_ptr(<object>result_double, Dtypes.FLOAT64)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")       
 
-        return Matrix._from_ptr(<object>result)
 
     def copy(self):
         cdef int status
-        cdef mltMatrixF* result = NULL
+        cdef mltMatrixF* result_float = NULL
+        cdef mltMatrixD* result_double = NULL
 
-        status = mltFwMatrixFCopy(self._c_mat_f, &result)
-        py_status = MltStatus(status)
-        check_status(py_status)
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFCopy(self._c_mat_f, &result_float)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_float, Dtypes.FLOAT32)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDCopy(self._c_mat_d, &result_double)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_double, Dtypes.FLOAT64)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")   
 
-        return Matrix._from_ptr(<object>result)
 
     def submatrix(self, start: Shape, count: Shape):
         cdef int status
-        cdef mltMatrixF* result = NULL
+        cdef mltMatrixF* result_float = NULL
+        cdef mltMatrixD* result_double = NULL
 
-        status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result)
-        py_status = MltStatus(status)
-        check_status(py_status)
-
-        return Matrix._from_ptr(<object>result)
+        if self._type == Dtypes.FLOAT32.value:
+            status = mltFwMatrixFSubmatrix(self._c_mat_f, start.rows, start.cols, count.rows, count.cols, &result_float)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_float, Dtypes.FLOAT32)
+        elif self._type == Dtypes.FLOAT64.value:
+            status = mltFwMatrixDSubmatrix(self._c_mat_d, start.rows, start.cols, count.rows, count.cols, &result_double)
+            py_status = MltStatus(status)
+            check_status(py_status)
+            return Matrix._from_ptr(<object>result_double, Dtypes.FLOAT64)
+        else:
+            raise TypeError(f"Unsupported type:{Dtypes(self._type)}")  
