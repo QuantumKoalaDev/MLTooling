@@ -138,7 +138,7 @@ class TestMat(unittest.TestCase):
         self.assertEqual(mat_result[0,0], data_result[0])
         self.assertEqual(mat_result[0,1], data_result[1])
         self.assertEqual(mat_result[1,1], data_result[3])
-        self.assertAlmostEqual(mat_result.dtype(), Dtypes.FLOAT32)
+        self.assertEqual(mat_result.dtype(), Dtypes.FLOAT32)
 
 
         data_one_double = array("d", [1, 2, 3, 4, 5, 6])
@@ -148,7 +148,7 @@ class TestMat(unittest.TestCase):
         mat_one_double = Matrix.from_buffer(rows, cols, data_one_double)
         mat_two_double = Matrix.from_buffer(cols, rows, data_two_double)
 
-        mat_result_double = mat_one_double * mat_two_double
+        mat_result_double = mat_one_double @ mat_two_double
 
         self.assertEqual(mat_result_double[0,0], data_result_double[0])
         self.assertEqual(mat_result_double[0,1], data_result_double[1])
