@@ -1,7 +1,7 @@
+#include <mlt/Math.hpp>
 #include <mlt/math/Exceptions.hpp>
 #include <mlt/math/Matrix.hpp>
 #include <mlt/math/matrix.h>
-#include <mlt/Math.hpp>
 
 #ifdef __cplusplus
 extern "C"

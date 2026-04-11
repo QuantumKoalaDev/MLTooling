@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-
 set -e
 
-rm -rf build
-mkdir build
+BUILD_TYPE=Debug
 
-echo "[*] Configuring cmake and creating compile commands.json"
-cd build
-cmake -S .. -B . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-make -j
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-echo "Done"
+cmake --build build -j
+
+echo "Done ($BUILD_TYPE)"

@@ -3,6 +3,7 @@
 #include <mlt/internal/math/mathstatus.hpp>
 
 #include <cstddef>
+#include <system_error>
 
 namespace mlt::math::datastructures
 {
@@ -47,7 +48,7 @@ namespace mlt::math::datastructures
         return MATH_SUCCESS;
     }
 
-    inline mathStatus getFlaot(const size_t row, const size_t col, const MatrixFloatView& view, float& out)
+    inline mathStatus getFloat(const size_t row, const size_t col, const MatrixFloatView& view, float& out)
     {
         if (row >= view.rows || col >= view.cols)
             return MATH_MATRIX_OUT_OF_BOUND;
@@ -65,6 +66,28 @@ namespace mlt::math::datastructures
 
         size_t pos = col * view.colStride + row * view.rowStride;
         out = view.data[pos];
+
+        return MATH_SUCCESS;
+    }
+
+    inline mathStatus setFloat(const size_t row, const size_t col, const MatrixFloatView& view, float val)
+    {
+        if (row >= view.rows || col >= view.cols)
+            return MATH_MATRIX_OUT_OF_BOUND;
+
+        const size_t pos = col * view.colStride + row * view.rowStride;
+        view.data[pos] = val;
+
+        return MATH_SUCCESS;
+    }
+
+    inline mathStatus setDouble(const size_t row, const size_t col, const MatrixDoubleView& view, double val)
+    {
+        if (row >= view.rows || col >= view.cols)
+            return MATH_MATRIX_OUT_OF_BOUND;
+
+        const size_t pos = col * view.colStride + row * view.rowStride;
+        view.data[pos] = val;
 
         return MATH_SUCCESS;
     }
