@@ -14,7 +14,7 @@ using namespace mlt::math::kernels;
 
 #define INTERNAL_VIEW(varName, myData, view)                                                                           \
     typename MatrixKernel<T>::ViewType varName = {                                                                     \
-        .data = myData,                                                                                                \
+        .data = myData + view.start,                                                                                                \
         .rows = view.transposed ? 1 : view.length,                                                                     \
         .cols = view.transposed ? view.length : 1,                                                                     \
         .colStride = view.transposed ? view.stride : 1,                                                                \
@@ -32,6 +32,9 @@ template <typename T> T Vector<T>::getImpl(Vector<T>* vec, const std::array<size
     INTERNAL_VIEW(view, data, vec->mView)
     T val = 0;
     const mathStatus stat = MatrixKernel<T>::get(row, col, view, val);
+
+    if (stat == MATH_MATRIX_OUT_OF_BOUND)
+        throw OutOfBoundsException(row, col, view.rows, view.cols);
 
     return val;
 }
@@ -60,7 +63,7 @@ template <typename T> Vector<T>::Vector(const size_t size)
         [](void* p) { MatrixStorage<T>::del(*static_cast<MatrixStorage<T>::DataType*>(p)); }
     );
 
-    mlt::math::mathStatus createStat =
+    const mathStatus createStat =
         MatrixStorage<T>::create(1, size, *static_cast<MatrixStorage<T>::DataType*>(mData.get()));
 
     if (createStat != MATH_SUCCESS)
@@ -75,6 +78,7 @@ template <typename T> Vector<T>::Vector(const size_t size)
     mView.length = size;
     mView.stride = 1;
     mView.transposed = false;
+    mView.start = 0;
 };
 
 template <typename T> Vector<T>::Vector(std::span<const T> buff)
@@ -104,6 +108,7 @@ template <typename T> Vector<T>::Vector(std::span<const T> buff)
     mView.length = buff.size();
     mView.stride = 1;
     mView.transposed = false;
+    mView.start = 0;
 };
 
 template <typename T> Vector<T>& Vector<T>::operator=(const Vector<T>& other) noexcept
@@ -152,7 +157,7 @@ template <typename T> ProxyElement<Vector<T>*, T, 1> Vector<T>::operator[](const
         mMut,
         &Vector<T>::setImpl,
         &Vector<T>::getImpl,
-        std::array<size_t, dim>{position}
+        std::array<size_t, dim>{position + mView.start}
     );
 };
 
@@ -186,7 +191,7 @@ template <typename T> Vector<T> Vector<T>::operator+(const Vector& other) const
     INTERNAL_VIEW(otherView, otherData, other.mView)
     INTERNAL_VIEW(resultView, resultData, resultVec.mView)
 
-    mathStatus addStat = MatrixKernel<T>::add(thisView, otherView, resultView);
+    const mathStatus addStat = MatrixKernel<T>::add(thisView, otherView, resultView);
 
     if (addStat == MATH_SHAPE_MISSMATCH)
     {
@@ -249,6 +254,10 @@ template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
     return *this;
 }
 
+template <typename T> Vector<T> Vector<T>::operator*(const Vector<T>& other) const
+{
+}
+
 
 template <typename T> size_t Vector<T>::getLen() const
 {
@@ -264,6 +273,47 @@ template <typename T> void Vector<T>::transpose()
 {
     mView.transposed = !mView.transposed;
 }
+
+template <typename T> Vector<T> Vector<T>::clone() const
+{
+    Vector<T> distVec = Vector<T>(mView.length);
+
+    T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    T* distData = static_cast<MatrixStorage<T>::DataType*>(distVec.mData.get())->data;
+    INTERNAL_VIEW(thisView, thisData, mView)
+    INTERNAL_VIEW(distView, distData, distVec.mView)
+
+    mathStatus cloneStat = MatrixKernel<T>::clone(thisView, distView);
+
+    if (cloneStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, distView.rows, distView.cols);
+
+    return distVec;
+}
+
+template <typename T> Vector<T> Vector<T>::subvector(const size_t start, const size_t len) const
+{
+    constexpr size_t minRowCol = 1;
+    const bool transposed = mView.transposed;
+    const size_t end = start + len;
+
+    if (start >= mView.length)
+        throw OutOfBoundsException(start, minRowCol, mView.length, minRowCol);
+
+    if (end >= mView.length)
+        throw OutOfBoundsException(end, minRowCol, mView.length, minRowCol);
+
+    Vector<T> subVec = Vector(*this);
+    VectorView subView = {
+        len,
+        mView.stride,
+        mView.start + start,
+        mView.transposed
+    };
+
+    return subVec;
+}
+
 
 namespace mlt::math::datastructures
 {
