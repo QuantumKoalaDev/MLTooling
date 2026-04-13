@@ -67,8 +67,72 @@ static void testConstructorVector()
     }
 }
 
+static void testGetters()
+{
+    constexpr size_t size = 10;
+    constexpr bool expectedTransposed = false;
+
+    {
+        std::vector<float> buffOne = getTestVec(size, 1.f);
+        std::vector<float> buffTwo = getTestVec(size, 10.f);
+        Vector<float> v1 = Vector<float>(std::span<const float>(buffOne));
+        Vector<float> v2 = Vector<float>(std::span<const float>(buffTwo));
+
+        Vector<float> v3 = v1 + v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = v3[i];
+            const float desiredResult = buffOne[i] + buffTwo[i];
+            assertEq(val, desiredResult, "flaot Vector addition went wrong.");
+        }
+
+        v1 += v3;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = v1[i];
+            const float desiredResult = buffOne[i] + v3[i];
+            assertEq(val, desiredResult, "float Vector in place addition went wrong.");
+        }
+
+        assertEq(v1.getLen(), size, "Vector float getter for size produced wrong output.");
+        assertEq(v1.isTransposed(), expectedTransposed, "Vector flaot transposed produced wrong output.");
+    }
+
+    {
+        std::vector<double> buffOne = getTestVec(size, 1.);
+        std::vector<double> buffTwo = getTestVec(size, 10.);
+        Vector<double> v1 = Vector(std::span<const double>(buffOne));
+        Vector<double> v2 = Vector(std::span<const double>(buffTwo));
+
+        Vector<double> v3 = v1 + v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = v3[i];
+            const double desiredResult = buffOne[i] + buffTwo[i];
+            assertEq(val, desiredResult, "double Vector addition went wrong.");
+        }
+
+        v1 += v3;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = v1[i];
+            const double desiredResult = buffOne[i] + v3[i];
+            assertEq(val, desiredResult, "double Vector in place addition went wrong.");
+        }
+
+        assertEq(v1.getLen(), size, "Vector double getter for size produced wrong output.");
+        assertEq(v1.isTransposed(), expectedTransposed, "Vector double transposed produced wrong output.");
+    }
+}
+
 static void testSetter()
 {
+    constexpr bool expectedTransposed = true;
+
     {
         size_t size = 10;
         std::vector<float> dataVec = getTestVec(size, 1.f);
@@ -81,6 +145,9 @@ static void testSetter()
             float val = vec[i];
             assertEq(val, dataVec[i], "Vector float setter failed");
         }
+
+        vec.transpose();
+        assertEq(vec.isTransposed(), expectedTransposed, "Vector flaot transposed() method is broken.");
     }
 
     {
@@ -95,8 +162,88 @@ static void testSetter()
             double val = vec[i];
             assertEq(val, dataVec[i], "Vector float setter failed");
         }
+
+        vec.transpose();
+        assertEq(vec.isTransposed(), expectedTransposed, "Vector double transposed() method is broken.");
+    }
+}
+
+static void testMultiplicationOperator()
+{
+    constexpr size_t size = 10;
+    
+    {
+        constexpr float mulConst = 2.f;
+        
+        std::vector<float> buff = getTestVec(size, 1.f);
+        Vector<float> v = Vector(std::span<const float>(buff));
+
+        Vector<float> vm = v * mulConst;
+        
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = vm[i];
+            const float desiredResult = buff[i] * mulConst;
+            assertEq(val, desiredResult, "double Vector addition went wrong.");
+        }
+    }
+
+    {
+        constexpr double mulConst = 2.;
+        
+        std::vector<double> buff = getTestVec(size, 1.);
+        Vector<double> v = Vector(std::span<const double>(buff));
+
+        Vector<double> vm = v * mulConst;
+        
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = vm[i];
+            const double desiredResult = buff[i] * mulConst;
+            assertEq(val, desiredResult, "double Vector addition went wrong.");
+        }
+    }
+}
+
+static void testMultiplicationEqualOperator()
+{
+    constexpr size_t size = 10;
+    
+    {
+        constexpr float mulConst = 2.f;
+        
+        std::vector<float> buff = getTestVec(size, 1.f);
+        Vector<float> v = Vector(std::span<const float>(buff));
+        
+        v *= mulConst;
+        
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = v[i];
+            const float desiredResult = buff[i] * mulConst;
+            assertEq(val, desiredResult, "double Vector addition went wrong.");
+        }
+    }
+
+    {
+        constexpr double mulConst = 2.;
+        
+        std::vector<double> buff = getTestVec(size, 1.);
+        Vector<double> v = Vector(std::span<const double>(buff));
+
+        v *= mulConst;
+        
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = v[i];
+            const double desiredResult = buff[i] * mulConst;
+            assertEq(val, desiredResult, "double Vector addition went wrong.");
+        }
     }
 }
 
 REGISTER_TEST(testConstructorVector);
 REGISTER_TEST(testSetter);
+REGISTER_TEST(testGetters);
+REGISTER_TEST(testMultiplicationOperator);
+REGISTER_TEST(testMultiplicationEqualOperator);

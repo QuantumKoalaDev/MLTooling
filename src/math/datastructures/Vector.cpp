@@ -254,7 +254,39 @@ template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
     return *this;
 }
 
-template <typename T> Vector<T> Vector<T>::operator*(const Vector<T>& other) const {}
+template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
+{
+    std::shared_lock<std::shared_mutex> lock(mMut);
+
+    Vector<T> resultVec = Vector(mView.length);
+    resultVec.mView.transposed = mView.transposed;
+    
+
+    T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    T* resData = static_cast<MatrixStorage<T>::DataType*>(resultVec.mData.get())->data;
+
+    INTERNAL_VIEW(thisView, thisData, mView)
+    INTERNAL_VIEW(resView, resData, resultVec.mView)
+
+    mathStatus mulStat = MatrixKernel<T>::multiplyScalar(thisView, scalar, resView);
+
+    if (mulStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, resView.rows, resView.cols);
+
+    return resultVec;
+}
+
+template <typename T> Vector<T>& Vector<T>::operator*=(const T scalar)
+{
+    std::shared_lock<std::shared_mutex> lock(mMut);
+    
+    T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    INTERNAL_VIEW(thisView, thisData, mView)
+    
+    mathStatus mulStat = MatrixKernel<T>::multiplyScalarInPlace(thisView, scalar);
+
+    return *this;
+}
 
 template <typename T> size_t Vector<T>::getLen() const
 {

@@ -46,10 +46,8 @@ namespace mlt::math::datastructures
         Vector operator+(const Vector& other) const;
         Vector& operator+=(const Vector& other);
 
-        Vector operator*(const Vector& other) const;
-        Vector& operator*=(const Vector& other);
-        Vector operator*(const Matrix<T>& mat) const;
-        Vector& operator*(const Matrix<T>& mat);
+        Vector operator*(T scalar) const;
+        Vector& operator*=(T scalar);
 
         size_t getLen() const;
         bool isTransposed() const;
