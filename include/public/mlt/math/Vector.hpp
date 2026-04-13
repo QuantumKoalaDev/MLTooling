@@ -54,7 +54,6 @@ namespace mlt::math::datastructures
         size_t getLen() const;
         bool isTransposed() const;
         void transpose();
-        bool isTransposed() const;
 
         Vector clone() const;
         Vector subvector(size_t start, size_t len) const;

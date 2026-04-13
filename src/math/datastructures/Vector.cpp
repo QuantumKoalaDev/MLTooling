@@ -14,7 +14,7 @@ using namespace mlt::math::kernels;
 
 #define INTERNAL_VIEW(varName, myData, view)                                                                           \
     typename MatrixKernel<T>::ViewType varName = {                                                                     \
-        .data = myData + view.start,                                                                                                \
+        .data = myData + view.start,                                                                                   \
         .rows = view.transposed ? 1 : view.length,                                                                     \
         .cols = view.transposed ? view.length : 1,                                                                     \
         .colStride = view.transposed ? view.stride : 1,                                                                \
@@ -227,10 +227,10 @@ template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
         constexpr size_t missmatchCols = 1;
         constexpr size_t missmatchRows = 1;
         if (!mView.transposed)
-            throw  ShapeMismatchException(mView.length, missmatchCols, other.mView.length, missmatchCols);
+            throw ShapeMismatchException(mView.length, missmatchCols, other.mView.length, missmatchCols);
         throw ShapeMismatchException(missmatchRows, mView.length, missmatchRows, other.mView.length);
     }
-    
+
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
     INTERNAL_VIEW(thisView, thisData, mView)
@@ -250,14 +250,11 @@ template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
 
         throw ShapeMismatchException(rows, cols, otherCols, otherRows);
     }
-    
+
     return *this;
 }
 
-template <typename T> Vector<T> Vector<T>::operator*(const Vector<T>& other) const
-{
-}
-
+template <typename T> Vector<T> Vector<T>::operator*(const Vector<T>& other) const {}
 
 template <typename T> size_t Vector<T>::getLen() const
 {
@@ -276,6 +273,8 @@ template <typename T> void Vector<T>::transpose()
 
 template <typename T> Vector<T> Vector<T>::clone() const
 {
+    std::shared_lock<std::shared_mutex> lock(mMut);
+
     Vector<T> distVec = Vector<T>(mView.length);
 
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
@@ -293,6 +292,8 @@ template <typename T> Vector<T> Vector<T>::clone() const
 
 template <typename T> Vector<T> Vector<T>::subvector(const size_t start, const size_t len) const
 {
+    std::shared_lock<std::shared_mutex> lock(mMut);
+
     constexpr size_t minRowCol = 1;
     const bool transposed = mView.transposed;
     const size_t end = start + len;
@@ -304,16 +305,10 @@ template <typename T> Vector<T> Vector<T>::subvector(const size_t start, const s
         throw OutOfBoundsException(end, minRowCol, mView.length, minRowCol);
 
     Vector<T> subVec = Vector(*this);
-    VectorView subView = {
-        len,
-        mView.stride,
-        mView.start + start,
-        mView.transposed
-    };
+    VectorView subView = {len, mView.stride, mView.start + start, mView.transposed};
 
     return subVec;
 }
-
 
 namespace mlt::math::datastructures
 {
