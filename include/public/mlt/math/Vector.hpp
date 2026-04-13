@@ -39,10 +39,9 @@ namespace mlt::math::datastructures
         Vector& operator=(const Vector& other) noexcept;
         Vector& operator=(Vector&& ohter) noexcept;
 
-        const T operator[](size_t position) const;
+        T operator[](size_t position) const;
         ProxyElement<Vector<T>*, T, 1> operator[](size_t position);
 
-        // it's important if the vector is transposed!!
         Vector operator+(const Vector& other) const;
         Vector& operator+=(const Vector& other);
 
@@ -53,6 +52,7 @@ namespace mlt::math::datastructures
 
         size_t getLen() const;
         void transpose();
+        bool isTransposed() const;
 
         Vector clone() const;
         Vector subvector(size_t start, size_t len) const;

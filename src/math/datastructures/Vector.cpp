@@ -128,7 +128,7 @@ template <typename T> Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcep
     return *this;
 };
 
-template <typename T> const T Vector<T>::operator[](const size_t position) const
+template <typename T> T Vector<T>::operator[](const size_t position) const
 {
     if (position >= mView.length)
         throw OutOfBoundsException(1, position, 1, mView.length);
@@ -146,7 +146,7 @@ template <typename T> ProxyElement<Vector<T>*, T, 1> Vector<T>::operator[](const
     T* data = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     INTERNAL_VIEW(thisView, data, mView)
 
-    const size_t dim = 1;
+    constexpr size_t dim = 1;
     return ProxyElement<Vector<T>*, T, 1>(
         this,
         mMut,
@@ -193,16 +193,77 @@ template <typename T> Vector<T> Vector<T>::operator+(const Vector& other) const
         bool thisT = mView.transposed;
         bool otherT = other.mView.transposed;
 
-        size_t rows = thisT ? 1 : mView.length;
-        size_t cols = thisT ? mView.length : 1;
-        size_t otherRows = otherT ? 1 : other.mView.length;
-        size_t otherCols = otherT ? other.mView.length : 1;
+        const size_t rows = thisT ? 1 : mView.length;
+        const size_t cols = thisT ? mView.length : 1;
+        const size_t otherRows = otherT ? 1 : other.mView.length;
+        const size_t otherCols = otherT ? other.mView.length : 1;
 
         throw ShapeMismatchException(rows, cols, otherRows, otherCols);
     }
 
     return resultVec;
 };
+
+template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
+{
+    std::shared_lock<std::shared_mutex> mutex(mMut);
+
+    if (mView.transposed != other.mView.transposed)
+    {
+        constexpr size_t missmatchCols = 1;
+        constexpr size_t missmatchRows = 1;
+        if (mView.transposed)
+            throw ShapeMismatchException(missmatchRows, mView.length, other.mView.length, missmatchCols);
+        throw ShapeMismatchException(mView.length, missmatchCols, missmatchRows, other.mView.length);
+    }
+
+    if (mView.length != other.mView.length)
+    {
+        constexpr size_t missmatchCols = 1;
+        constexpr size_t missmatchRows = 1;
+        if (!mView.transposed)
+            throw  ShapeMismatchException(mView.length, missmatchCols, other.mView.length, missmatchCols);
+        throw ShapeMismatchException(missmatchRows, mView.length, missmatchRows, other.mView.length);
+    }
+    
+    T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
+    INTERNAL_VIEW(thisView, thisData, mView)
+    INTERNAL_VIEW(otherView, otherData, other.mView)
+
+    mathStatus addStat = MatrixKernel<T>::addInPlace(thisView, otherView);
+
+    if (addStat == MATH_SHAPE_MISSMATCH)
+    {
+        bool thisT = mView.transposed;
+        bool otherT = other.mView.transposed;
+
+        const size_t rows = thisT ? 1 : mView.length;
+        const size_t cols = thisT ? mView.length : 1;
+        const size_t otherRows = otherT ? 1 : other.mView.length;
+        const size_t otherCols = otherT ? other.mView.length : 1;
+
+        throw ShapeMismatchException(rows, cols, otherCols, otherRows);
+    }
+    
+    return *this;
+}
+
+
+template <typename T> size_t Vector<T>::getLen() const
+{
+    return mView.length;
+}
+
+template <typename T> bool Vector<T>::isTransposed() const
+{
+    return mView.transposed;
+}
+
+template <typename T> void Vector<T>::transpose()
+{
+    mView.transposed = !mView.transposed;
+}
 
 namespace mlt::math::datastructures
 {

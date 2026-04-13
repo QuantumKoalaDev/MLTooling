@@ -28,20 +28,20 @@ static void LinearRegressionExample1()
     const std::vector<float> xData = {0.f, 1.f, 2.f, 3.f, 4.f};
     const std::vector<float> y_data = {-14.f, -7.f, 0.f, 7.f, 14};
 
-   // Models::LinearRegressionModel model = Models::LinearRegressionModel();
+    // Models::LinearRegressionModel model = Models::LinearRegressionModel();
 
-   // const Container::Mat mat = Container::Mat(5, 1, xData);
+    // const Container::Mat mat = Container::Mat(5, 1, xData);
 
     constexpr float lr = 0.1f;
     constexpr unsigned int epochs = 500;
 
-   // model.fit(mat, y_data, lr, epochs);
+    // model.fit(mat, y_data, lr, epochs);
 
     // Output: ~126
-   // std::cout << std::fixed << std::setprecision(8) << model.predict({20}) << std::endl;
+    // std::cout << std::fixed << std::setprecision(8) << model.predict({20}) << std::endl;
 }
 
 int main()
 {
- //   LinearRegressionExample1();
+    LinearRegressionExample1();
 }
