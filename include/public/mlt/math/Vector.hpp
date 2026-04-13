@@ -17,6 +17,7 @@ namespace mlt::math::datastructures
         {
             size_t length;
             size_t stride;
+            size_t start;
             bool transposed;
         };
 
@@ -37,21 +38,21 @@ namespace mlt::math::datastructures
         Vector(Vector&& other) noexcept : mData(std::move(other.mData)), mView(other.mView) {}
 
         Vector& operator=(const Vector& other) noexcept;
-        Vector& operator=(Vector&& ohter) noexcept;
+        Vector& operator=(Vector&& other) noexcept;
 
-        const T operator[](size_t position) const;
+        T operator[](size_t position) const;
         ProxyElement<Vector<T>*, T, 1> operator[](size_t position);
 
-        // it's important if the vector is transposed!!
         Vector operator+(const Vector& other) const;
         Vector& operator+=(const Vector& other);
 
-        Vector operator*(const Vector& ohter) const;
-        Vector& operator*=(const Vector& ohter);
+        Vector operator*(const Vector& other) const;
+        Vector& operator*=(const Vector& other);
         Vector operator*(const Matrix<T>& mat) const;
         Vector& operator*(const Matrix<T>& mat);
 
         size_t getLen() const;
+        bool isTransposed() const;
         void transpose();
 
         Vector clone() const;
