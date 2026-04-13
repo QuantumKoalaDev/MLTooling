@@ -260,7 +260,6 @@ template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
 
     Vector<T> resultVec = Vector(mView.length);
     resultVec.mView.transposed = mView.transposed;
-    
 
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     T* resData = static_cast<MatrixStorage<T>::DataType*>(resultVec.mData.get())->data;
@@ -279,10 +278,10 @@ template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
 template <typename T> Vector<T>& Vector<T>::operator*=(const T scalar)
 {
     std::shared_lock<std::shared_mutex> lock(mMut);
-    
+
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     INTERNAL_VIEW(thisView, thisData, mView)
-    
+
     mathStatus mulStat = MatrixKernel<T>::multiplyScalarInPlace(thisView, scalar);
 
     return *this;

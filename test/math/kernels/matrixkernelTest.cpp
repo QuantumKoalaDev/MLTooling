@@ -167,8 +167,8 @@ static void matrixKernelAddScalarTest()
 
         mlt::math::mathStatus unusedStat;
         unusedStat = createMatrixFloatFromBuff(2, 3, aData.data(), aData.size(), A);
-        unusedStat = createMatrixFloat(2, 3, B);    
-    
+        unusedStat = createMatrixFloat(2, 3, B);
+
         MatrixFloatView aView = getMatrixFloatView(A);
         MatrixFloatView bView = getMatrixFloatView(B);
         mlt::math::mathStatus mulStat = multiplyScalarMatrixFloat(aView, mulConst, bView);
@@ -177,19 +177,18 @@ static void matrixKernelAddScalarTest()
 
         for (size_t i = 0; i < aData.size(); ++i)
             assertEq(bView.data[i], aData[i] * mulConst, "Wrong value (float part).");
-    
-    
+
         deleteMatrixFloat(A);
         deleteMatrixFloat(B);
     }
-    
+
     {
         constexpr double mulConst = 2.;
         DoubleVec aData = {1, 4, 2, 5, 3, 6};
 
         MatrixDouble A;
         MatrixDouble B;
-        
+
         mlt::math::mathStatus unusedStat;
         unusedStat = createMatrixDoubleFromBuff(2, 3, aData.data(), aData.size(), A);
         unusedStat = createMatrixDouble(2, 3, B);
@@ -219,13 +218,13 @@ static void matrixKernelAddScalarInPlaceTest()
         unusedStat = createMatrixFloatFromBuff(2, 3, aData.data(), aData.size(), A);
 
         MatrixFloatView aView = getMatrixFloatView(A);
-        
+
         mlt::math::mathStatus mulStat = multiplyScalarMatrixFloatInPlace(aView, mulConst);
-        
+
         assertEq(mulStat, mlt::math::MATH_SUCCESS, "Matrix scalar in place multiplication failed (float part).");
 
         for (size_t i = 0; i < aData.size(); ++i)
-            assertEq(aView.data[i], aData[i] * mulConst,"Wrong value (float part).");
+            assertEq(aView.data[i], aData[i] * mulConst, "Wrong value (float part).");
 
         deleteMatrixFloat(A);
     }
@@ -233,20 +232,20 @@ static void matrixKernelAddScalarInPlaceTest()
     {
         constexpr double mulConst = 2.;
         DoubleVec aData = {1, 4, 2, 5, 3, 6};
-        
+
         MatrixDouble A;
         mlt::math::mathStatus unusedStat;
         unusedStat = createMatrixDoubleFromBuff(2, 3, aData.data(), aData.size(), A);
-    
+
         MatrixDoubleView aView = getMatrixDoubleView(A);
-        
+
         mlt::math::mathStatus mulStat = multiplyScalarMatrixDoubleInPlace(aView, mulConst);
-        
+
         assertEq(mulStat, mlt::math::MATH_SUCCESS, "Matrix scalar in place multiplication failed (double part).");
 
         for (size_t i = 0; i < aData.size(); ++i)
             assertEq(aView.data[i], aData[i] * mulConst, "Wrong value (double part).");
-        
+
         deleteMatrixDouble(A);
     }
 }

@@ -171,15 +171,15 @@ static void testSetter()
 static void testMultiplicationOperator()
 {
     constexpr size_t size = 10;
-    
+
     {
         constexpr float mulConst = 2.f;
-        
+
         std::vector<float> buff = getTestVec(size, 1.f);
         Vector<float> v = Vector(std::span<const float>(buff));
 
         Vector<float> vm = v * mulConst;
-        
+
         for (size_t i = 0; i < size; i++)
         {
             const float val = vm[i];
@@ -190,12 +190,12 @@ static void testMultiplicationOperator()
 
     {
         constexpr double mulConst = 2.;
-        
+
         std::vector<double> buff = getTestVec(size, 1.);
         Vector<double> v = Vector(std::span<const double>(buff));
 
         Vector<double> vm = v * mulConst;
-        
+
         for (size_t i = 0; i < size; i++)
         {
             const double val = vm[i];
@@ -208,15 +208,15 @@ static void testMultiplicationOperator()
 static void testMultiplicationEqualOperator()
 {
     constexpr size_t size = 10;
-    
+
     {
         constexpr float mulConst = 2.f;
-        
+
         std::vector<float> buff = getTestVec(size, 1.f);
         Vector<float> v = Vector(std::span<const float>(buff));
-        
+
         v *= mulConst;
-        
+
         for (size_t i = 0; i < size; i++)
         {
             const float val = v[i];
@@ -227,12 +227,12 @@ static void testMultiplicationEqualOperator()
 
     {
         constexpr double mulConst = 2.;
-        
+
         std::vector<double> buff = getTestVec(size, 1.);
         Vector<double> v = Vector(std::span<const double>(buff));
 
         v *= mulConst;
-        
+
         for (size_t i = 0; i < size; i++)
         {
             const double val = v[i];

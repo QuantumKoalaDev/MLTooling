@@ -47,9 +47,8 @@ namespace mlt::math::kernels
         {
             return multiplyScalarMatrixFloat(mat, scalar, result);
         };
-        
-        [[nodiscard]] static mlt::math::mathStatus
-        multiplyScalarInPlace(ViewType& mat, const float scalar)
+
+        [[nodiscard]] static mlt::math::mathStatus multiplyScalarInPlace(ViewType& mat, const float scalar)
         {
             return multiplyScalarMatrixFloatInPlace(mat, scalar);
         };
@@ -98,9 +97,8 @@ namespace mlt::math::kernels
         {
             return multiplyScalarMatrixDouble(mat, scalar, result);
         };
-        
-        [[nodiscard]] static mlt::math::mathStatus
-        multiplyScalarInPlace(ViewType& mat, const double scalar)
+
+        [[nodiscard]] static mlt::math::mathStatus multiplyScalarInPlace(ViewType& mat, const double scalar)
         {
             return multiplyScalarMatrixDoubleInPlace(mat, scalar);
         };
