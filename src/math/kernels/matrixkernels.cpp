@@ -1,7 +1,9 @@
+#include <cmath>
 #include <mlt/internal/math/criticaldef.hpp>
 #include <mlt/internal/math/datastructures/matrixview.hpp>
 #include <mlt/internal/math/kernels/matrixkernels.hpp>
 #include <mlt/internal/math/mathstatus.hpp>
+#include <system_error>
 
 using namespace mlt::math::datastructures;
 
@@ -246,6 +248,92 @@ namespace mlt::math::kernels
             }
         }
 
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixFloat(const datastructures::MatrixFloatView& mat, const float scalar, datastructures::MatrixFloatView &result)
+    {
+        if ((mat.rows * mat.cols) != (result.rows * result.cols))
+            return MATH_SHAPE_MISSMATCH;
+        
+        float* RESTRICT matData = mat.data;
+        float* RESTRICT resultData = result.data;
+
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            size_t resultBase = col * result.colStride;
+            
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                size_t resultPos = resultBase + row * result.rowStride;
+                
+                resultData[resultPos] = matData[matPos] * scalar;
+            }
+        }
+        
+        return MATH_SUCCESS;
+    }
+    
+    mlt::math::mathStatus multiplyScalarMatrixDouble(const datastructures::MatrixDoubleView &mat, const double scalar, datastructures::MatrixDoubleView &result)
+    {
+        if ((mat.rows * mat.cols) != (result.rows * result.cols))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT matData = mat.data;
+        double* RESTRICT resultData = result.data;
+        
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            size_t resultBase = col * result.colStride;
+            
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                size_t resPos = resultBase + row * result.rowStride;
+                
+                resultData[resPos] = matData[matPos] * scalar;
+            }
+        }
+        
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixFloatInPlace(datastructures::MatrixFloatView &mat, float scalar)
+    {
+        float* RESTRICT matData = mat.data;
+        
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                matData[matPos] *= scalar;
+            }
+        }
+    
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixDoubleInPlace(datastructures::MatrixDoubleView &mat, double scalar)
+    {
+        double* RESTRICT matData = mat.data;
+        
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                matData[matPos] *= scalar;
+            }
+        }
+    
         return MATH_SUCCESS;
     }
 

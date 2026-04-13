@@ -42,6 +42,18 @@ namespace mlt::math::kernels
             return multiplyMatrixFloat(multiplicant, multiplier, product);
         };
 
+        [[nodiscard]] static mlt::math::mathStatus
+        multiplyScalar(const ViewType& mat, const float scalar, ViewType& result)
+        {
+            return multiplyScalarMatrixFloat(mat, scalar, result);
+        };
+        
+        [[nodiscard]] static mlt::math::mathStatus
+        multiplyScalarInPlace(ViewType& mat, const float scalar)
+        {
+            return multiplyScalarMatrixFloatInPlace(mat, scalar);
+        };
+
         [[nodiscard]] static mlt::math::mathStatus clone(const ViewType& src, ViewType& dist)
         {
             return cloneMatrixFloat(src, dist);
@@ -79,6 +91,18 @@ namespace mlt::math::kernels
         multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)
         {
             return multiplyMatrixDouble(multiplicant, multiplier, product);
+        };
+
+        [[nodiscard]] static mlt::math::mathStatus
+        multiplyScalar(const ViewType& mat, const double scalar, ViewType& result)
+        {
+            return multiplyScalarMatrixDouble(mat, scalar, result);
+        };
+        
+        [[nodiscard]] static mlt::math::mathStatus
+        multiplyScalarInPlace(ViewType& mat, const double scalar)
+        {
+            return multiplyScalarMatrixDoubleInPlace(mat, scalar);
         };
 
         [[nodiscard]] static mlt::math::mathStatus clone(const ViewType& src, ViewType& dist)

@@ -32,6 +32,18 @@ namespace mlt::math::kernels
     );
 
     [[nodiscard]] mathStatus
+    multiplyScalarMatrixFloat(const datastructures::MatrixFloatView& mat, float scalar, datastructures::MatrixFloatView& result);
+
+    [[nodiscard]] mathStatus
+    multiplyScalarMatrixDouble(const datastructures::MatrixDoubleView& mat, double scalar, datastructures::MatrixDoubleView& result);
+
+    [[nodiscard]] mathStatus
+    multiplyScalarMatrixFloatInPlace(datastructures::MatrixFloatView& mat, float scalar);
+    
+    [[nodiscard]] mathStatus
+    multiplyScalarMatrixDoubleInPlace(datastructures::MatrixDoubleView& mat, double scalar);
+
+    [[nodiscard]] mathStatus
     cloneMatrixFloat(const datastructures::MatrixFloatView& src, datastructures::MatrixFloatView& dist);
 
     [[nodiscard]] mathStatus
