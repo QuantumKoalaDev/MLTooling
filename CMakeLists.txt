@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
 
-
-
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(MLTooling   
     "src/Container/Mat.cpp" 
@@ -13,6 +13,7 @@ add_library(MLTooling
     "src/math/datastructures/matrix.cpp"
     "src/math/datastructures/Matrix.cpp"
     "src/math/kernels/matrixkernels.cpp"
+    "src/math/datastructures/Vector.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -43,6 +44,7 @@ add_executable(tests
     "test/data/DataFrameTest.cpp"
     "test/math/datastructures/MatrixFloatTest.cpp"
     "test/math/datastructures/MatrixTest.cpp"
+    "test/math/datastructures/VectorTest.cpp"
     "test/math/kernels/matrixkernelTest.cpp"
 )
 

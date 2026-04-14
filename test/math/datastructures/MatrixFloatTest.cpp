@@ -1,6 +1,6 @@
 #include "../../testdef.hpp"
-#include <mlt/internal/math/mathstatus.hpp>
 #include <mlt/internal/math/datastructures/matrix.hpp>
+#include <mlt/internal/math/mathstatus.hpp>
 
 #include <vector>
 
@@ -17,7 +17,7 @@ inline void checkSuccessfullStatus(mlt::math::mathStatus stat, std::string msg)
 FloatVec getTestVec(int start, int end)
 {
     FloatVec vec;
-    
+
     for (int i = start; i < end; ++i)
         vec.push_back(i);
 
@@ -39,14 +39,13 @@ static void testConstruction()
     // Test for 1x1
     {
         MatrixFloat mat;
-        mlt::math::mathStatus createStat = createMatrixFloat(1,1, mat);
+        mlt::math::mathStatus createStat = createMatrixFloat(1, 1, mat);
         CHECK_CREATE_STATUS
         assertEq(mat.rows, static_cast<size_t>(1), "Rows incorrect.");
         assertEq(mat.cols, static_cast<size_t>(1), "Cols incorrect.");
         assertEq(mat.data[0], 0.f, "1x1 matrix not zero initialized.");
 
         deleteMatrixFloat(mat);
-
     }
 
     // Test for 2x5
@@ -76,14 +75,13 @@ static void testConstruction()
             for (size_t row = 0; row < 3; ++row)
             {
                 size_t index = col * 3 + row;
-                assertEq(mat.data[index], buff[index],
-                         "Column-major layout broken.");
+                assertEq(mat.data[index], buff[index], "Column-major layout broken.");
             }
         }
 
         deleteMatrixFloat(mat);
     }
-    
+
     // Test for wrong buffersize
     {
         FloatVec buff = getTestVec(0, 5);
@@ -93,8 +91,7 @@ static void testConstruction()
         if (createStat == mlt::math::MATH_SUCCESS)
             deleteMatrixFloat(mat);
 
-        assertTrue(createStat != mlt::math::MATH_SUCCESS,
-                   "Matrix creation should fail for wrong buffer size.");
+        assertTrue(createStat != mlt::math::MATH_SUCCESS, "Matrix creation should fail for wrong buffer size.");
     }
 }
 
@@ -104,21 +101,16 @@ static void testAddRow()
     MatrixFloat mat;
     mlt::math::mathStatus createStat = createMatrixFloatFromBuff(10, 10, testVec.data(), testVec.size(), mat);
 
-    
-
     FloatVec testRow = getTestVec(-20.f, -10.f);
     mlt::math::mathStatus addRowStat = addRowFloat(testRow.data(), testRow.size(), 10, mat);
- 
+
     CHECK_CREATE_STATUS
 
     FloatVec expected;
 
     for (size_t c = 0; c < 10; ++c)
     {
-        std::span<float> colSpan(
-            testVec.data() + c * 10,
-            10
-        );
+        std::span<float> colSpan(testVec.data() + c * 10, 10);
         expected.append_range(colSpan);
 
         expected.push_back(testRow[c]);
@@ -127,7 +119,6 @@ static void testAddRow()
     assertEq(FloatVec(mat.data, mat.data + mat.rows * mat.cols), expected, "Failed add row to matrix.");
 
     deleteMatrixFloat(mat);
-
 }
 
 static void testAddCol()

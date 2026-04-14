@@ -1,3 +1,4 @@
+#include <cmath>
 #include <mlt/internal/math/criticaldef.hpp>
 #include <mlt/internal/math/datastructures/matrixview.hpp>
 #include <mlt/internal/math/kernels/matrixkernels.hpp>
@@ -111,6 +112,128 @@ namespace mlt::math::kernels
         }
 
         return mlt::math::MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractMatrixFloat(
+        const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend,
+        datastructures::MatrixFloatView& difference
+    )
+    {
+        if (checkShapeFloat(minuend, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        if (checkShapeFloat(minuend, difference))
+            return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT minData = minuend.data;
+        float* RESTRICT subData = subtrahend.data;
+        float* RESTRICT diffData = difference.data;
+
+        for (size_t col = 0; col < minuend.cols; ++col)
+        {
+            size_t minBase = col * minuend.colStride;
+            size_t subBase = col * subtrahend.colStride;
+            size_t diffBase = col * difference.colStride;
+
+            for (size_t row = 0; row < minuend.rows; ++row)
+            {
+                size_t minPos = minBase + row * minuend.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+                size_t diffPos = diffBase + row * difference.rowStride;
+
+                diffData[diffPos] = minData[minPos] - subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractMatrixDouble(
+        const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend,
+        datastructures::MatrixDoubleView& difference
+    )
+    {
+        if (checkShapeDouble(minuend, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        if (checkShapeDouble(minuend, difference))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT minData = minuend.data;
+        double* RESTRICT subData = subtrahend.data;
+        double* RESTRICT diffData = difference.data;
+
+        for (size_t col = 0; col < minuend.cols; ++col)
+        {
+            size_t minBase = col * minuend.colStride;
+            size_t subBase = col * subtrahend.colStride;
+            size_t diffBase = col * difference.colStride;
+
+            for (size_t row = 0; row < minuend.rows; ++row)
+            {
+                size_t minPos = minBase + row * minuend.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+                size_t diffPos = diffBase + row * difference.rowStride;
+
+                diffData[diffPos] = minData[minPos] - subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractInPlaceMatrixFloat(
+        datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend
+    )
+    {
+        if (checkShapeFloat(difference, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT diffData = difference.data;
+        float* RESTRICT subData = subtrahend.data;
+
+        for (size_t col = 0; col < difference.cols; ++col)
+        {
+            size_t diffBase = col * difference.colStride;
+            size_t subBase = col * subtrahend.colStride;
+
+            for (size_t row = 0; row < difference.rows; ++row)
+            {
+                size_t diffPos = diffBase + row * difference.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+
+                diffData[diffPos] -= subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractInPlaceMatrixDouble(
+        datastructures::MatrixDoubleView& difference, const datastructures::MatrixDoubleView& subtrahend
+    )
+    {
+        if (checkShapeDouble(difference, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT diffData = difference.data;
+        double* RESTRICT subData = subtrahend.data;
+
+        for (size_t col = 0; col < difference.cols; ++col)
+        {
+            size_t diffBase = col * difference.colStride;
+            size_t subBase = col * subtrahend.colStride;
+
+            for (size_t row = 0; row < difference.rows; ++row)
+            {
+                size_t diffPos = diffBase + row * difference.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+
+                diffData[diffPos] -= subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
     }
 
     mlt::math::mathStatus multiplyMatrixFloat(
@@ -243,6 +366,96 @@ namespace mlt::math::kernels
                 size_t distPos = distBase + row * dist.rowStride;
 
                 distData[distPos] = srcData[srcPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixFloat(
+        const datastructures::MatrixFloatView& mat, const float scalar, datastructures::MatrixFloatView& result
+    )
+    {
+        if ((mat.rows * mat.cols) != (result.rows * result.cols))
+            return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT matData = mat.data;
+        float* RESTRICT resultData = result.data;
+
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            size_t resultBase = col * result.colStride;
+
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                size_t resultPos = resultBase + row * result.rowStride;
+
+                resultData[resultPos] = matData[matPos] * scalar;
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixDouble(
+        const datastructures::MatrixDoubleView& mat, const double scalar, datastructures::MatrixDoubleView& result
+    )
+    {
+        if ((mat.rows * mat.cols) != (result.rows * result.cols))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT matData = mat.data;
+        double* RESTRICT resultData = result.data;
+
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+            size_t resultBase = col * result.colStride;
+
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                size_t resPos = resultBase + row * result.rowStride;
+
+                resultData[resPos] = matData[matPos] * scalar;
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixFloatInPlace(datastructures::MatrixFloatView& mat, float scalar)
+    {
+        float* RESTRICT matData = mat.data;
+
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                matData[matPos] *= scalar;
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus multiplyScalarMatrixDoubleInPlace(datastructures::MatrixDoubleView& mat, double scalar)
+    {
+        double* RESTRICT matData = mat.data;
+
+        for (size_t col = 0; col < mat.cols; ++col)
+        {
+            size_t matBase = col * mat.colStride;
+
+            for (size_t row = 0; row < mat.rows; ++row)
+            {
+                size_t matPos = matBase + row * mat.rowStride;
+                matData[matPos] *= scalar;
             }
         }
 
