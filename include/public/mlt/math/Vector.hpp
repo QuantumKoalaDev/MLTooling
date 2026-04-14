@@ -28,6 +28,8 @@ namespace mlt::math::datastructures
         static T getImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray);
         static void setImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray, T val);
 
+        void checkShape(const Vector& other) const;
+
       public:
         explicit Vector(size_t size);
         explicit Vector(std::span<const T> buff);
@@ -45,6 +47,9 @@ namespace mlt::math::datastructures
 
         Vector operator+(const Vector& other) const;
         Vector& operator+=(const Vector& other);
+
+        Vector operator-(const Vector& other) const;
+        Vector& operator-=(const Vector& other);
 
         Vector operator*(T scalar) const;
         Vector& operator*=(T scalar);

@@ -24,7 +24,7 @@ static std::vector<double> getTestVec(size_t len, double start)
     return vec;
 }
 
-static void testConstructorVector()
+static void testVectorConstructor()
 {
     {
         const size_t length = 8;
@@ -67,7 +67,7 @@ static void testConstructorVector()
     }
 }
 
-static void testGetters()
+static void testVectorGetters()
 {
     constexpr size_t size = 10;
     constexpr bool expectedTransposed = false;
@@ -129,7 +129,7 @@ static void testGetters()
     }
 }
 
-static void testSetter()
+static void testVectorSetter()
 {
     constexpr bool expectedTransposed = true;
 
@@ -168,7 +168,7 @@ static void testSetter()
     }
 }
 
-static void testMultiplicationOperator()
+static void testVectorMultiplicationOperator()
 {
     constexpr size_t size = 10;
 
@@ -205,7 +205,7 @@ static void testMultiplicationOperator()
     }
 }
 
-static void testMultiplicationEqualOperator()
+static void testVectorMultiplicationEqualOperator()
 {
     constexpr size_t size = 10;
 
@@ -242,8 +242,88 @@ static void testMultiplicationEqualOperator()
     }
 }
 
-REGISTER_TEST(testConstructorVector);
-REGISTER_TEST(testSetter);
-REGISTER_TEST(testGetters);
-REGISTER_TEST(testMultiplicationOperator);
-REGISTER_TEST(testMultiplicationEqualOperator);
+static void testVectorSubtractionOperator()
+{
+    constexpr size_t size = 10;
+
+    {
+        std::vector<float> buffV1 = getTestVec(size, 1.f);
+        std::vector<float> buffV2 = getTestVec(size, 5.f);
+
+        Vector<float> v1 = Vector(std::span<const float>(buffV1));
+        Vector<float> v2 = Vector(std::span<const float>(buffV2));
+
+        Vector<float> vm = v1 - v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = vm[i];
+            const float desiredResult = buffV1[i] - buffV2[i];
+            assertEq(val, desiredResult, "float Vector subtraction went wrong.");
+        }
+    }
+
+    {
+        std::vector<double> buffV1 = getTestVec(size, 1.);
+        std::vector<double> buffV2 = getTestVec(size, 5.);
+
+        Vector<double> v1 = Vector(std::span<const double>(buffV1));
+        Vector<double> v2 = Vector(std::span<const double>(buffV2));
+
+        Vector<double> vm = v1 - v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = vm[i];
+            const double desiredResult = buffV1[i] - buffV2[i];
+            assertEq(val, desiredResult, "double Vector subtraction went wrong.");
+        }
+    }
+}
+
+static void testVectorSubtractionEqualsOperator()
+{
+    constexpr size_t size = 10;
+
+    {
+        std::vector<float> buffV1 = getTestVec(size, 1.f);
+        std::vector<float> buffV2 = getTestVec(size, 5.f);
+
+        Vector<float> v1 = Vector(std::span<const float>(buffV1));
+        Vector<float> v2 = Vector(std::span<const float>(buffV2));
+
+        v1 -= v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const float val = v1[i];
+            const float desiredResult = buffV1[i] - buffV2[i];
+            assertEq(val, desiredResult, "float Vector subtraction went wrong.");
+        }
+    }
+
+    {
+        std::vector<double> buffV1 = getTestVec(size, 1.);
+        std::vector<double> buffV2 = getTestVec(size, 5.);
+
+        Vector<double> v1 = Vector(std::span<const double>(buffV1));
+        Vector<double> v2 = Vector(std::span<const double>(buffV2));
+
+        v1 -= v2;
+
+        for (size_t i = 0; i < size; i++)
+        {
+            const double val = v1[i];
+            const double desiredResult = buffV1[i] - buffV2[i];
+            assertEq(val, desiredResult, "double Vector subtraction went wrong.");
+        }
+    }
+}
+
+REGISTER_TEST(testVectorConstructor);
+REGISTER_TEST(testVectorSetter);
+REGISTER_TEST(testVectorGetters);
+REGISTER_TEST(testVectorMultiplicationOperator);
+REGISTER_TEST(testVectorMultiplicationEqualOperator);
+REGISTER_TEST(testVectorSubtractionOperator);
+REGISTER_TEST(testVectorSubtractionEqualsOperator);
