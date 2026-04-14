@@ -272,10 +272,9 @@ static void matrixKernelSubtractTest()
         mlt::math::mathStatus addStat = subtractMatrixFloat(viewA, viewB, viewC);
 
         assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
-        
+
         for (size_t i = 0; i < buffSize; i++)
             assertEq(C.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
-
 
         deleteMatrixFloat(A);
         deleteMatrixFloat(B);
@@ -302,10 +301,9 @@ static void matrixKernelSubtractTest()
         mlt::math::mathStatus addStat = subtractMatrixDouble(viewA, viewB, viewC);
 
         assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
-        
+
         for (size_t i = 0; i < buffSize; i++)
             assertEq(C.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
-
 
         deleteMatrixDouble(A);
         deleteMatrixDouble(B);
@@ -332,10 +330,9 @@ static void matrixKernelSubtractInPlaceTest()
         mlt::math::mathStatus addStat = subtractInPlaceMatrixFloat(viewA, viewB);
 
         assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
-        
+
         for (size_t i = 0; i < buffSize; i++)
             assertEq(A.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
-
 
         deleteMatrixFloat(A);
         deleteMatrixFloat(B);
@@ -358,10 +355,9 @@ static void matrixKernelSubtractInPlaceTest()
         mlt::math::mathStatus addStat = subtractInPlaceMatrixDouble(viewA, viewB);
 
         assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
-        
+
         for (size_t i = 0; i < buffSize; i++)
             assertEq(A.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
-
 
         deleteMatrixDouble(A);
         deleteMatrixDouble(B);

@@ -21,17 +21,23 @@ namespace mlt::math::kernels
     [[nodiscard]] mathStatus
     addMatrixDoubleInPlace(datastructures::MatrixDoubleView& target, const datastructures::MatrixDoubleView& addend);
 
-    [[nodiscard]] mathStatus
-    subtractMatrixFloat(const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend, datastructures::MatrixFloatView& difference);
+    [[nodiscard]] mathStatus subtractMatrixFloat(
+        const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend,
+        datastructures::MatrixFloatView& difference
+    );
 
-    [[nodiscard]] mathStatus
-    subtractMatrixDouble(const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend, datastructures::MatrixDoubleView& difference);
+    [[nodiscard]] mathStatus subtractMatrixDouble(
+        const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend,
+        datastructures::MatrixDoubleView& difference
+    );
 
-    [[nodiscard]] mathStatus
-    subtractInPlaceMatrixFloat(datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend);
+    [[nodiscard]] mathStatus subtractInPlaceMatrixFloat(
+        datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend
+    );
 
-    [[nodiscard]] mathStatus
-    subtractInPlaceMatrixDouble(datastructures::MatrixDoubleView &difference, const datastructures::MatrixDoubleView &subtrahend);
+    [[nodiscard]] mathStatus subtractInPlaceMatrixDouble(
+        datastructures::MatrixDoubleView& difference, const datastructures::MatrixDoubleView& subtrahend
+    );
 
     [[nodiscard]] mathStatus multiplyMatrixFloat(
         const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,

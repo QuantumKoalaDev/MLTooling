@@ -114,13 +114,16 @@ namespace mlt::math::kernels
         return mlt::math::MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractMatrixFloat(const datastructures::MatrixFloatView &minuend, const datastructures::MatrixFloatView &subtrahend, datastructures::MatrixFloatView &difference)
+    mlt::math::mathStatus subtractMatrixFloat(
+        const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend,
+        datastructures::MatrixFloatView& difference
+    )
     {
         if (checkShapeFloat(minuend, subtrahend))
             return MATH_SHAPE_MISSMATCH;
 
         if (checkShapeFloat(minuend, difference))
-                return MATH_SHAPE_MISSMATCH;
+            return MATH_SHAPE_MISSMATCH;
 
         float* RESTRICT minData = minuend.data;
         float* RESTRICT subData = subtrahend.data;
@@ -145,7 +148,10 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractMatrixDouble(const datastructures::MatrixDoubleView &minuend, const datastructures::MatrixDoubleView &subtrahend, datastructures::MatrixDoubleView &difference)
+    mlt::math::mathStatus subtractMatrixDouble(
+        const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend,
+        datastructures::MatrixDoubleView& difference
+    )
     {
         if (checkShapeDouble(minuend, subtrahend))
             return MATH_SHAPE_MISSMATCH;
@@ -176,7 +182,9 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractInPlaceMatrixFloat(datastructures::MatrixFloatView &difference, const datastructures::MatrixFloatView &subtrahend)
+    mlt::math::mathStatus subtractInPlaceMatrixFloat(
+        datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend
+    )
     {
         if (checkShapeFloat(difference, subtrahend))
             return MATH_SHAPE_MISSMATCH;
@@ -201,7 +209,9 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractInPlaceMatrixDouble(datastructures::MatrixDoubleView &difference, const datastructures::MatrixDoubleView &subtrahend)
+    mlt::math::mathStatus subtractInPlaceMatrixDouble(
+        datastructures::MatrixDoubleView& difference, const datastructures::MatrixDoubleView& subtrahend
+    )
     {
         if (checkShapeDouble(difference, subtrahend))
             return MATH_SHAPE_MISSMATCH;
