@@ -4,6 +4,7 @@
 #include <mlt/internal/math/mathstatus.hpp>
 #include <mlt/math/Exceptions.hpp>
 #include <mlt/math/Matrix.hpp>
+#include <mlt/math/Vector.hpp>
 
 #include <memory>
 #include <mutex>
@@ -102,6 +103,22 @@ template <typename T> Matrix<T>::Matrix(const size_t rowCount, const size_t colC
     mView.startCol = 0;
     mView.strideCol = rowCount;
     mView.strideRow = 1;
+}
+
+template <typename T>
+Matrix<T>::Matrix(
+    const size_t startRow, const size_t startCol, const size_t rowCount, const size_t colCount, const size_t rowStride,
+    const size_t colStride, std::shared_ptr<void> ptr
+)
+{
+    mData = ptr;
+
+    mView.startRow = startRow;
+    mView.startCol = startCol;
+    mView.rows = rowCount;
+    mView.cols = colCount;
+    mView.strideRow = rowStride;
+    mView.strideCol = colStride;
 }
 
 template <typename T> Matrix<T>& Matrix<T>::operator=(Matrix<T>&& other) noexcept
@@ -209,6 +226,33 @@ template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) con
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
 
     return resultMat;
+}
+
+template <typename T> Vector<T> Matrix<T>::operator*(const Vector<T>& vec) const
+{
+    const size_t vecCols = vec.isTransposed() ? vec.getLen() : 1;
+    const size_t vecRows = vec.isTransposed() ? 1 : vec.getLen();
+
+    if (mView.cols != vecRows)
+        throw ShapeMismatchException(mView.rows, mView.cols, vecRows, vecCols);
+
+    Vector<T> resultVec = Vector<T>(mView.rows);
+    Matrix<T> vecMat = vec.asMatrix();
+    Matrix<T> resultMat = resultVec.asMatrix();
+
+    typename MatrixKernel<T>::ViewType thisView =
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(mData.get())->data, mView);
+    typename MatrixKernel<T>::ViewType vecMatView =
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(vecMat.mData.get())->data, vecMat.mView);
+    typename MatrixKernel<T>::ViewType resultView =
+        toInternalView(static_cast<MatrixStorage<T>::DataType*>(resultMat.mData.get())->data, resultMat.mView);
+
+    mathStatus mulStat = MatrixKernel<T>::multiply(thisView, vecMatView, resultView);
+
+    if (mulStat == MATH_SHAPE_MISSMATCH)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, vecMatView.rows, vecMatView.cols);
+
+    return resultVec;
 }
 
 template <typename T> Shape Matrix<T>::getShape() const

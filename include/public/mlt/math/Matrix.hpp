@@ -11,6 +11,7 @@ struct MatrixDouble;
 
 namespace mlt::math::datastructures
 {
+    template <typename T> class Vector;
 
     struct MatrixView
     {
@@ -33,6 +34,10 @@ namespace mlt::math::datastructures
         explicit Matrix(core::Shape shape) : Matrix(shape.rows, shape.cols) {};
         Matrix(size_t rowCount, size_t colCount, std::span<const T> buff);
         Matrix(core::Shape shape, std::span<const T> buff) : Matrix(shape.rows, shape.cols, buff) {};
+        Matrix(
+            size_t startCol, size_t startRow, size_t rowCount, size_t colCount, size_t rowStride, size_t colStride,
+            std::shared_ptr<void> ptr
+        );
 
         ~Matrix();
 
@@ -49,6 +54,7 @@ namespace mlt::math::datastructures
         Matrix& operator+=(const Matrix& other);
 
         Matrix operator*(const Matrix& other) const;
+        Vector<T> operator*(const Vector<T>& vec) const;
 
         core::Shape getShape() const;
 

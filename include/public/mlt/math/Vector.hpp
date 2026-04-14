@@ -60,6 +60,7 @@ namespace mlt::math::datastructures
 
         Vector clone() const;
         Vector subvector(size_t start, size_t len) const;
+        Matrix<T> asMatrix() const;
     };
 
     extern template class Vector<float>;

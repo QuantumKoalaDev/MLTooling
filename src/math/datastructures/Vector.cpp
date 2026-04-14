@@ -352,6 +352,18 @@ template <typename T> Vector<T> Vector<T>::subvector(const size_t start, const s
     return subVec;
 }
 
+template <typename T> Matrix<T> Vector<T>::asMatrix() const
+{
+    const size_t startRows = mView.transposed ? 0 : mView.start;
+    const size_t startCols = mView.transposed ? mView.start : 0;
+    const size_t rows = mView.transposed ? 1 : mView.length;
+    const size_t cols = mView.transposed ? mView.length : 1;
+    const size_t rowStride = mView.transposed ? 1 : mView.stride;
+    const size_t colStride = mView.transposed ? mView.stride : 1;
+
+    return Matrix<T>(startCols, startRows, rows, cols, rowStride, colStride, mData);
+}
+
 namespace mlt::math::datastructures
 {
     template class Vector<float>;

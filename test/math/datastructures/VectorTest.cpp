@@ -1,5 +1,6 @@
 #include "../../testdef.hpp"
 #include <cstddef>
+#include <mlt/math/Matrix.hpp>
 #include <mlt/math/Vector.hpp>
 
 using namespace mlt::math::datastructures;
@@ -320,6 +321,43 @@ static void testVectorSubtractionEqualsOperator()
     }
 }
 
+static void testVectorAsMatrix()
+{
+    constexpr size_t size = 10;
+
+    {
+        std::vector<float> buffV = getTestVec(size, 1.f);
+
+        Vector<float> v = Vector(std::span<const float>(buffV));
+        Matrix<float> A = v.asMatrix();
+
+        for (size_t i = 0; i < size; i++)
+            assertEq(A[i, 0], buffV[i], "float Vector as matrix went wrong.");
+
+        v.transpose();
+        Matrix<float> B = v.asMatrix();
+
+        for (size_t i = 0; i < size; i++)
+            assertEq(B[0, i], buffV[i], "float transposed Vector as matrix went wrong.");
+    }
+
+    {
+        std::vector<double> buffV = getTestVec(size, 1.);
+
+        Vector<double> v = Vector(std::span<const double>(buffV));
+        Matrix<double> A = v.asMatrix();
+
+        for (size_t i = 0; i < size; i++)
+            assertEq(A[i, 0], buffV[i], "float Vector as matrix went wrong.");
+
+        v.transpose();
+        Matrix<double> B = v.asMatrix();
+
+        for (size_t i = 0; i < size; i++)
+            assertEq(B[0, i], buffV[i], "float transposed Vector as matrix went wrong.");
+    }
+}
+
 REGISTER_TEST(testVectorConstructor);
 REGISTER_TEST(testVectorSetter);
 REGISTER_TEST(testVectorGetters);
@@ -327,3 +365,4 @@ REGISTER_TEST(testVectorMultiplicationOperator);
 REGISTER_TEST(testVectorMultiplicationEqualOperator);
 REGISTER_TEST(testVectorSubtractionOperator);
 REGISTER_TEST(testVectorSubtractionEqualsOperator);
+REGISTER_TEST(testVectorAsMatrix);

@@ -1,5 +1,6 @@
 #include "../../testdef.hpp"
 #include <mlt/math/Matrix.hpp>
+#include <mlt/math/Vector.hpp>
 
 using namespace mlt::math::datastructures;
 
@@ -127,6 +128,35 @@ static void testMultiplicationOperatorMatrix()
         assertEq(C[1, 0], buffC[1], "Multiplication failed.");
         assertEq(C[0, 1], buffC[2], "Multiplication failed.");
         assertEq(C[1, 1], buffC[3], "Multiplication failed.");
+    }
+
+    // Tests for matrix-vector multiplication
+    {
+        const std::vector<float> buffA = {1, 4, 2, 5, 3, 6};
+        const std::vector<float> buffV = {7, 8, 9};
+        const std::vector<float> resultBuff = {50, 122};
+
+        Matrix<float> A = Matrix(2, 3, std::span<const float>(buffA));
+        Vector<float> v = Vector(std::span<const float>(buffV));
+
+        Vector<float> vm = A * v;
+
+        assertEq(vm[0], resultBuff[0], "Matrix vector multiplication failed (float part).");
+        assertEq(vm[1], resultBuff[1], "Matrix vector multiplication failed. (float part).");
+    }
+
+    {
+        const std::vector<double> buffA = {1, 4, 2, 5, 3, 6};
+        const std::vector<double> buffV = {7, 8, 9};
+        const std::vector<double> resultBuff = {50, 122};
+
+        Matrix<double> A = Matrix(2, 3, std::span<const double>(buffA));
+        Vector<double> v = Vector(std::span<const double>(buffV));
+
+        Vector<double> vm = A * v;
+
+        assertEq(vm[0], resultBuff[0], "Matrix vector multiplication failed (double part).");
+        assertEq(vm[1], resultBuff[1], "Matrix vector multiplication failed. (double part).");
     }
 }
 
