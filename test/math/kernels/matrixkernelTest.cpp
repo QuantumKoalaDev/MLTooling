@@ -250,8 +250,128 @@ static void matrixKernelAddScalarInPlaceTest()
     }
 }
 
+static void matrixKernelSubtractTest()
+{
+    {
+        constexpr size_t buffSize = 6;
+        FloatVec buffA = {1, 2, 3, 4, 5, 6};
+        FloatVec buffB = {6, 5, 4, 3, 2, 1};
+
+        MatrixFloat A;
+        MatrixFloat B;
+        MatrixFloat C;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixFloatFromBuff(2, 3, buffA.data(), buffA.size(), A);
+        unusedStat = createMatrixFloatFromBuff(2, 3, buffB.data(), buffB.size(), B);
+        unusedStat = createMatrixFloat(2, 3, C);
+
+        MatrixFloatView viewA = getMatrixFloatView(A);
+        MatrixFloatView viewB = getMatrixFloatView(B);
+        MatrixFloatView viewC = getMatrixFloatView(C);
+        mlt::math::mathStatus addStat = subtractMatrixFloat(viewA, viewB, viewC);
+
+        assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
+        
+        for (size_t i = 0; i < buffSize; i++)
+            assertEq(C.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
+
+
+        deleteMatrixFloat(A);
+        deleteMatrixFloat(B);
+        deleteMatrixFloat(C);
+    }
+
+    {
+        constexpr size_t buffSize = 6;
+        DoubleVec buffA = {1, 2, 3, 4, 5, 6};
+        DoubleVec buffB = {6, 5, 4, 3, 2, 1};
+
+        MatrixDouble A;
+        MatrixDouble B;
+        MatrixDouble C;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixDoubleFromBuff(2, 3, buffA.data(), buffA.size(), A);
+        unusedStat = createMatrixDoubleFromBuff(2, 3, buffB.data(), buffB.size(), B);
+        unusedStat = createMatrixDouble(2, 3, C);
+
+        MatrixDoubleView viewA = getMatrixDoubleView(A);
+        MatrixDoubleView viewB = getMatrixDoubleView(B);
+        MatrixDoubleView viewC = getMatrixDoubleView(C);
+        mlt::math::mathStatus addStat = subtractMatrixDouble(viewA, viewB, viewC);
+
+        assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
+        
+        for (size_t i = 0; i < buffSize; i++)
+            assertEq(C.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
+
+
+        deleteMatrixDouble(A);
+        deleteMatrixDouble(B);
+        deleteMatrixDouble(C);
+    }
+}
+
+static void matrixKernelSubtractInPlaceTest()
+{
+    {
+        constexpr size_t buffSize = 6;
+        FloatVec buffA = {1, 2, 3, 4, 5, 6};
+        FloatVec buffB = {6, 5, 4, 3, 2, 1};
+
+        MatrixFloat A;
+        MatrixFloat B;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixFloatFromBuff(2, 3, buffA.data(), buffA.size(), A);
+        unusedStat = createMatrixFloatFromBuff(2, 3, buffB.data(), buffB.size(), B);
+
+        MatrixFloatView viewA = getMatrixFloatView(A);
+        MatrixFloatView viewB = getMatrixFloatView(B);
+        mlt::math::mathStatus addStat = subtractInPlaceMatrixFloat(viewA, viewB);
+
+        assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
+        
+        for (size_t i = 0; i < buffSize; i++)
+            assertEq(A.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
+
+
+        deleteMatrixFloat(A);
+        deleteMatrixFloat(B);
+    }
+
+    {
+        constexpr size_t buffSize = 6;
+        DoubleVec buffA = {1, 2, 3, 4, 5, 6};
+        DoubleVec buffB = {6, 5, 4, 3, 2, 1};
+
+        MatrixDouble A;
+        MatrixDouble B;
+
+        mlt::math::mathStatus unusedStat;
+        unusedStat = createMatrixDoubleFromBuff(2, 3, buffA.data(), buffA.size(), A);
+        unusedStat = createMatrixDoubleFromBuff(2, 3, buffB.data(), buffB.size(), B);
+
+        MatrixDoubleView viewA = getMatrixDoubleView(A);
+        MatrixDoubleView viewB = getMatrixDoubleView(B);
+        mlt::math::mathStatus addStat = subtractInPlaceMatrixDouble(viewA, viewB);
+
+        assertEq(addStat, mlt::math::MATH_SUCCESS, "Matrix shape was missmatched.");
+        
+        for (size_t i = 0; i < buffSize; i++)
+            assertEq(A.data[i], buffA[i] - buffB[i], "Matrix subtraction failed.");
+
+
+        deleteMatrixDouble(A);
+        deleteMatrixDouble(B);
+    }
+}
+
 REGISTER_TEST(matrixKernelAddTest);
 REGISTER_TEST(matrixKernelMultiplyTest);
 REGISTER_TEST(matrixKernelCloneTest);
 REGISTER_TEST(matrixKernelAddScalarTest);
 REGISTER_TEST(matrixKernelAddScalarInPlaceTest);
+REGISTER_TEST(matrixKernelSubtractTest);
+REGISTER_TEST(matrixKernelSubtractInPlaceTest);

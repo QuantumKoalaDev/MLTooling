@@ -21,6 +21,18 @@ namespace mlt::math::kernels
     [[nodiscard]] mathStatus
     addMatrixDoubleInPlace(datastructures::MatrixDoubleView& target, const datastructures::MatrixDoubleView& addend);
 
+    [[nodiscard]] mathStatus
+    subtractMatrixFloat(const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend, datastructures::MatrixFloatView& difference);
+
+    [[nodiscard]] mathStatus
+    subtractMatrixDouble(const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend, datastructures::MatrixDoubleView& difference);
+
+    [[nodiscard]] mathStatus
+    subtractInPlaceMatrixFloat(datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend);
+
+    [[nodiscard]] mathStatus
+    subtractInPlaceMatrixDouble(datastructures::MatrixDoubleView &difference, const datastructures::MatrixDoubleView &subtrahend);
+
     [[nodiscard]] mathStatus multiplyMatrixFloat(
         const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,
         datastructures::MatrixFloatView& product
@@ -52,12 +64,9 @@ namespace mlt::math::kernels
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);
     // mlt::math::mathStatus getColFloat(MatrixFloatView& matView, size_t col, float* out);
-    // mlt::math::mathStatus getElement(MatrixFloatView& matView, size_t row, size_t col, float& out);
-    // mlt::math::mathStatus setElement(MatrixFloatView& matView, size_t row, size_t col, float value);
     // mlt::math::mathStatus transpose(const MatrixFloatView& src, MatrixFloatView& dist);
     // mlt::math::mathStatus fill(MatrixFloatView& mat, float value);
     // mlt::math::mathStatus setZero(MatrixFloatView& mat);
     // mlt::math::mathStatus setIdentity(MatrixFloatView& mat);
-    // mlt::math::mathStatus copy(const MatrixFloatView& src, MatrixFloatView& dist);
 
 } // namespace mlt::math::kernels

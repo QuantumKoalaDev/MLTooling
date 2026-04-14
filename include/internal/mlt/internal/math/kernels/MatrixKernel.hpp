@@ -37,6 +37,18 @@ namespace mlt::math::kernels
         };
 
         [[nodiscard]] static mlt::math::mathStatus
+        subtract(const ViewType& minuend, const ViewType& subtrahend, ViewType& difference)
+        {
+            return subtractMatrixFloat(minuend, subtrahend, difference);
+        }
+
+        [[nodiscard]] static mlt::math::mathStatus
+        subtractInPlace(ViewType& difference, const ViewType& subtrahend)
+        {
+            return subtractInPlaceMatrixFloat(difference, subtrahend);
+        }
+
+        [[nodiscard]] static mlt::math::mathStatus
         multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)
         {
             return multiplyMatrixFloat(multiplicant, multiplier, product);
@@ -85,6 +97,16 @@ namespace mlt::math::kernels
         {
             return addMatrixDoubleInPlace(target, addend);
         };
+
+        [[nodiscard]] static mlt::math::mathStatus subtract(const ViewType& minuend, const ViewType& subtrahend, ViewType& difference)
+        {
+            return subtractMatrixDouble(minuend, subtrahend, difference);
+        }
+
+        [[nodiscard]] static mlt::math::mathStatus subtractInPlace(ViewType& difference, const ViewType& subtrahend)
+        {
+            return subtractInPlaceMatrixDouble(difference, subtrahend);
+        }
 
         [[nodiscard]] static mlt::math::mathStatus
         multiply(const ViewType& multiplicant, const ViewType& multiplier, ViewType& product)

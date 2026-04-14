@@ -3,7 +3,6 @@
 #include <mlt/internal/math/datastructures/matrixview.hpp>
 #include <mlt/internal/math/kernels/matrixkernels.hpp>
 #include <mlt/internal/math/mathstatus.hpp>
-#include <system_error>
 
 using namespace mlt::math::datastructures;
 
@@ -113,6 +112,118 @@ namespace mlt::math::kernels
         }
 
         return mlt::math::MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractMatrixFloat(const datastructures::MatrixFloatView &minuend, const datastructures::MatrixFloatView &subtrahend, datastructures::MatrixFloatView &difference)
+    {
+        if (checkShapeFloat(minuend, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        if (checkShapeFloat(minuend, difference))
+                return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT minData = minuend.data;
+        float* RESTRICT subData = subtrahend.data;
+        float* RESTRICT diffData = difference.data;
+
+        for (size_t col = 0; col < minuend.cols; ++col)
+        {
+            size_t minBase = col * minuend.colStride;
+            size_t subBase = col * subtrahend.colStride;
+            size_t diffBase = col * difference.colStride;
+
+            for (size_t row = 0; row < minuend.rows; ++row)
+            {
+                size_t minPos = minBase + row * minuend.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+                size_t diffPos = diffBase + row * difference.rowStride;
+
+                diffData[diffPos] = minData[minPos] - subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractMatrixDouble(const datastructures::MatrixDoubleView &minuend, const datastructures::MatrixDoubleView &subtrahend, datastructures::MatrixDoubleView &difference)
+    {
+        if (checkShapeDouble(minuend, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        if (checkShapeDouble(minuend, difference))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT minData = minuend.data;
+        double* RESTRICT subData = subtrahend.data;
+        double* RESTRICT diffData = difference.data;
+
+        for (size_t col = 0; col < minuend.cols; ++col)
+        {
+            size_t minBase = col * minuend.colStride;
+            size_t subBase = col * subtrahend.colStride;
+            size_t diffBase = col * difference.colStride;
+
+            for (size_t row = 0; row < minuend.rows; ++row)
+            {
+                size_t minPos = minBase + row * minuend.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+                size_t diffPos = diffBase + row * difference.rowStride;
+
+                diffData[diffPos] = minData[minPos] - subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractInPlaceMatrixFloat(datastructures::MatrixFloatView &difference, const datastructures::MatrixFloatView &subtrahend)
+    {
+        if (checkShapeFloat(difference, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        float* RESTRICT diffData = difference.data;
+        float* RESTRICT subData = subtrahend.data;
+
+        for (size_t col = 0; col < difference.cols; ++col)
+        {
+            size_t diffBase = col * difference.colStride;
+            size_t subBase = col * subtrahend.colStride;
+
+            for (size_t row = 0; row < difference.rows; ++row)
+            {
+                size_t diffPos = diffBase + row * difference.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+
+                diffData[diffPos] -= subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
+    }
+
+    mlt::math::mathStatus subtractInPlaceMatrixDouble(datastructures::MatrixDoubleView &difference, const datastructures::MatrixDoubleView &subtrahend)
+    {
+        if (checkShapeDouble(difference, subtrahend))
+            return MATH_SHAPE_MISSMATCH;
+
+        double* RESTRICT diffData = difference.data;
+        double* RESTRICT subData = subtrahend.data;
+
+        for (size_t col = 0; col < difference.cols; ++col)
+        {
+            size_t diffBase = col * difference.colStride;
+            size_t subBase = col * subtrahend.colStride;
+
+            for (size_t row = 0; row < difference.rows; ++row)
+            {
+                size_t diffPos = diffBase + row * difference.rowStride;
+                size_t subPos = subBase + row * subtrahend.rowStride;
+
+                diffData[diffPos] -= subData[subPos];
+            }
+        }
+
+        return MATH_SUCCESS;
     }
 
     mlt::math::mathStatus multiplyMatrixFloat(
