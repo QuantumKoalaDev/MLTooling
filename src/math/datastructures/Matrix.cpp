@@ -163,6 +163,31 @@ template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t co
 
 template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const
 {
+    return add(other);
+}
+
+template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
+{
+    return addInPlace(other);
+}
+
+template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) const
+{
+    return multiply(other);
+}
+
+template <typename T> Vector<T> Matrix<T>::operator*(const Vector<T>& vec) const
+{
+    return multiplyVec(vec);
+}
+
+template <typename T> Shape Matrix<T>::getShape() const
+{
+    return Shape(mView.rows, mView.cols);
+}
+
+template <typename T> Matrix<T> Matrix<T>::add(const Matrix& other) const
+{
     if (mView.cols != other.mView.cols || mView.rows != other.mView.rows)
         throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
 
@@ -185,7 +210,7 @@ template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) con
     return resultMat;
 }
 
-template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
+template <typename T> Matrix<T>& Matrix<T>::addInPlace(const Matrix<T>& other)
 {
     if (mView.cols != other.mView.cols || mView.rows != other.mView.rows)
         throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
@@ -204,7 +229,7 @@ template <typename T> Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
     return *this;
 }
 
-template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) const
+template <typename T> Matrix<T> Matrix<T>::multiply(const Matrix<T>& other) const
 {
     if (mView.cols != other.mView.rows)
         throw ShapeMismatchException(mView.rows, mView.cols, other.mView.rows, other.mView.cols);
@@ -228,7 +253,7 @@ template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) con
     return resultMat;
 }
 
-template <typename T> Vector<T> Matrix<T>::operator*(const Vector<T>& vec) const
+template <typename T> Vector<T> Matrix<T>::multiplyVec(const Vector<T>& vec) const
 {
     const size_t vecCols = vec.isTransposed() ? vec.getLen() : 1;
     const size_t vecRows = vec.isTransposed() ? 1 : vec.getLen();
@@ -253,11 +278,6 @@ template <typename T> Vector<T> Matrix<T>::operator*(const Vector<T>& vec) const
         throw ShapeMismatchException(thisView.rows, thisView.cols, vecMatView.rows, vecMatView.cols);
 
     return resultVec;
-}
-
-template <typename T> Shape Matrix<T>::getShape() const
-{
-    return Shape(mView.rows, mView.cols);
 }
 
 template <typename T> Matrix<T> Matrix<T>::clone() const

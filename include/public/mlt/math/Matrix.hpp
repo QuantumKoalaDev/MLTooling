@@ -58,6 +58,12 @@ namespace mlt::math::datastructures
 
         core::Shape getShape() const;
 
+        Matrix add(const Matrix& other) const;
+        Matrix& addInPlace(const Matrix& other);
+        
+        Matrix multiply(const Matrix& other) const;
+        Vector<T> multiplyVec(const Vector<T>& vec) const;
+
         Matrix clone() const;
         Matrix submatrix(size_t startRow, size_t startCol, size_t rowCount, size_t colCount) const;
     };
