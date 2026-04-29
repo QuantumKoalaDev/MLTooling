@@ -1,3 +1,4 @@
+#include <atomic>
 #include <mlt/Math.hpp>
 #include <mlt/math/Exceptions.hpp>
 #include <mlt/math/Matrix.hpp>
@@ -158,7 +159,7 @@ extern "C"
 
         try
         {
-            Matrix<float> C = a->implMat + b->implMat;
+            Matrix<float> C = a->implMat.add(b->implMat);
             *out = new mltMatrixF(std::move(C));
         }
         catch (mlt::math::AllocationFailedException)
@@ -188,7 +189,7 @@ extern "C"
 
         try
         {
-            a->implMat += b->implMat;
+            a->implMat.addInPlace(b->implMat);
         }
         catch (mlt::math::ShapeMismatchException)
         {
@@ -209,7 +210,7 @@ extern "C"
 
         try
         {
-            Matrix<float> C = a->implMat * b->implMat;
+            Matrix<float> C = a->implMat.multiply(b->implMat);
             *out = new mltMatrixF(std::move(C));
         }
         catch (mlt::math::AllocationFailedException)
@@ -451,7 +452,7 @@ extern "C"
 
         try
         {
-            Matrix<double> C = a->implMat + b->implMat;
+            Matrix<double> C = a->implMat.add(b->implMat);
             *out = new mltMatrixD(std::move(C));
         }
         catch (mlt::math::AllocationFailedException)
@@ -481,7 +482,7 @@ extern "C"
 
         try
         {
-            a->implMat += b->implMat;
+            a->implMat.addInPlace(b->implMat);
         }
         catch (mlt::math::ShapeMismatchException)
         {
@@ -502,7 +503,7 @@ extern "C"
 
         try
         {
-            Matrix<double> C = a->implMat * b->implMat;
+            Matrix<double> C = a->implMat.multiply(b->implMat);
             *out = new mltMatrixD(std::move(C));
         }
         catch (mlt::math::AllocationFailedException)
