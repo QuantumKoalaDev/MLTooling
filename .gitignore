@@ -26,6 +26,7 @@ Makefile
 *.so
 *.dll
 *.dylib
+*.pyd
 
 # Executables
 *.exe
@@ -67,6 +68,8 @@ cmake-build-*/
 __pycache__/
 *.py[cod]
 *$py.class
+
+bindings/python/**/*.c
 
 # Virtual environments
 venv/

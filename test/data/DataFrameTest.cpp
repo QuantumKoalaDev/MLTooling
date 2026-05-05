@@ -1,6 +1,6 @@
 #include "../testdef.hpp"
 
-#include <MLTooling.h>
+#include <mlt/Data.hpp>
 
 #include <vector>
 
@@ -96,12 +96,11 @@ template <typename T> void testDataColumnConstructorAndAccess()
         assertEq(col2[i], data[i], "Wrong value");
 
     std::vector<T> colData(3);
-    std::vector<bool> mak = { true, false, false};
+    std::vector<bool> mak = {true, false, false};
     DataColumn<T> col3(colData, mak);
     assertEq(col3.getSize(), colData.size(), "Wrong size");
     assertEq(col3[0], colData[0], "Wrong value");
     assertEq(col3.get(1).has_value(), false, "Value should be missing.");
-
 }
 
 template <> void testDataColumnConstructorAndAccess<DateTime>()
@@ -199,46 +198,46 @@ template <typename T> void testDataColumnAppendValues()
 
 template <> void testDataColumnAppendValues<DateTime>()
 {
-     DataColumn<DateTime> col(3);
-     DateTime testVal = ColumnTraits<DateTime>::test();
-     col.append(testVal);
+    DataColumn<DateTime> col(3);
+    DateTime testVal = ColumnTraits<DateTime>::test();
+    col.append(testVal);
 
-     assertEq(std::format("{:%F %T}", col[3]), std::format("{:%F %T}", testVal), "Wrong value");
+    assertEq(std::format("{:%F %T}", col[3]), std::format("{:%F %T}", testVal), "Wrong value");
 
-     DataColumn<DateTime> col2(0);
-     std::vector<DateTime> appendData = ColumnTraits<DateTime>::testVec();
-     col2.append(appendData);
+    DataColumn<DateTime> col2(0);
+    std::vector<DateTime> appendData = ColumnTraits<DateTime>::testVec();
+    col2.append(appendData);
 
-     for (size_t i = 0; i < col2.getSize(); ++i)
-         assertEq(std::format("{:%F %T}", col2[i]), std::format("{:%F %T}", appendData[i]), "Wrong value");
+    for (size_t i = 0; i < col2.getSize(); ++i)
+        assertEq(std::format("{:%F %T}", col2[i]), std::format("{:%F %T}", appendData[i]), "Wrong value");
 
-     DataColumn<DateTime> col3(appendData);
-     DataColumn<DateTime> col4(appendData);
-     col3.append(std::move(col4));
-     const size_t a = appendData.size();
+    DataColumn<DateTime> col3(appendData);
+    DataColumn<DateTime> col4(appendData);
+    col3.append(std::move(col4));
+    const size_t a = appendData.size();
 
-     for (size_t i = 0; i < a; ++i)
-         assertEq(std::format("{:%F %T}", col3[i]), std::format("{:%F %T}", appendData[i]), "Wrong value");
+    for (size_t i = 0; i < a; ++i)
+        assertEq(std::format("{:%F %T}", col3[i]), std::format("{:%F %T}", appendData[i]), "Wrong value");
 
-     for (size_t i = a; i < col3.getSize(); ++i)
-         assertEq(std::format("{:%F %T}", col3[i]), std::format("{:%F %T}", appendData[i - a]), "Wrong value");
+    for (size_t i = a; i < col3.getSize(); ++i)
+        assertEq(std::format("{:%F %T}", col3[i]), std::format("{:%F %T}", appendData[i - a]), "Wrong value");
 }
 
- static void testDataColumnAppendValuesWrapper()
- {
-     testDataColumnAppendValues<int64_t>();
-     testDataColumnAppendValues<float>();
-     testDataColumnAppendValues<double>();
-     testDataColumnAppendValues<std::string>();
-     testDataColumnAppendValues<DateTime>();
- }
+static void testDataColumnAppendValuesWrapper()
+{
+    testDataColumnAppendValues<int64_t>();
+    testDataColumnAppendValues<float>();
+    testDataColumnAppendValues<double>();
+    testDataColumnAppendValues<std::string>();
+    testDataColumnAppendValues<DateTime>();
+}
 
 static void testDataFrameConstructorAndAccess()
 {
-    DataFrame frame {};
+    DataFrame frame{};
 
     DataColumn<int64_t> col(100);
-    frame.append( "test", std::make_unique<DataColumn<int64_t>>(col));
+    frame.append("test", std::make_unique<DataColumn<int64_t>>(col));
     const DataColumn<int64_t>* testCol = frame.get<int64_t>("test");
 
     for (size_t i = 0; i < testCol->getSize(); ++i)

@@ -14,7 +14,7 @@ AlignOperands: AlignAfterOperator
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
-AllowShortBlocksOnASingleLine: Always
+AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
