@@ -6,14 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(MLTooling   
-    "src/Container/Mat.cpp" 
-    "src/Models/LinearRegressionModel.cpp"
     "src/data/DataColumn.cpp"
     "test/data/DataFrame.cpp"
     "src/math/datastructures/matrix.cpp"
     "src/math/datastructures/Matrix.cpp"
     "src/math/kernels/matrixkernels.cpp"
     "src/math/datastructures/Vector.cpp"
+    "src/models/LinearRegression.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)

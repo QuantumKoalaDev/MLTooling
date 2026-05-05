@@ -1,12 +1,12 @@
-#include "mlt/core/ProxyElement.hpp"
+#include <cstddef>
 #include <mlt/internal/math/datastructures/MatrixStorage.hpp>
 #include <mlt/internal/math/kernels/MatrixKernel.hpp>
+#include <mlt/internal/math/kernels/VectorKernel.hpp>
 #include <mlt/internal/math/mathstatus.hpp>
 #include <mlt/math/Exceptions.hpp>
 #include <mlt/math/Vector.hpp>
 
 #include <memory>
-#include <shared_mutex>
 #include <utility>
 
 using namespace mlt::math::datastructures;
@@ -157,33 +157,50 @@ template <typename T> T Vector<T>::operator[](const size_t position) const
     if (position >= mView.length)
         throw OutOfBoundsException(1, position, 1, mView.length);
 
-    std::shared_lock<std::shared_mutex> mutex(mMut);
-
-    return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[position];
+    return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[mView.start + position * mView.stride];
 };
 
-template <typename T> ProxyElement<Vector<T>*, T, 1> Vector<T>::operator[](const size_t position)
+template <typename T> T& Vector<T>::operator[](const size_t position)
 {
     if (position >= mView.length)
         throw OutOfBoundsException(1, position, 1, mView.length);
 
-    T* data = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
-    INTERNAL_VIEW(thisView, data, mView)
-
-    constexpr size_t dim = 1;
-    return ProxyElement<Vector<T>*, T, 1>(
-        this,
-        mMut,
-        &Vector<T>::setImpl,
-        &Vector<T>::getImpl,
-        std::array<size_t, dim>{position + mView.start}
-    );
+    return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[mView.start + position * mView.stride];
 };
 
 template <typename T> Vector<T> Vector<T>::operator+(const Vector& other) const
 {
+    return add(other);
+};
+
+template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
+{
+    return addInPlace(other);
+}
+
+template <typename T> Vector<T> Vector<T>::operator-(const Vector& other) const
+{
+    return subtract(other);
+}
+
+template <typename T> Vector<T>& Vector<T>::operator-=(const Vector<T>& other)
+{
+    return subtractInPlace(other);
+}
+
+template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
+{
+    return mulScalar(scalar);
+}
+
+template <typename T> Vector<T>& Vector<T>::operator*=(const T scalar)
+{
+    return mulScalarInPlace(scalar);
+}
+
+template <typename T> Vector<T> Vector<T>::add(const Vector<T>& other) const
+{
     checkShape(other);
-    std::shared_lock<std::shared_mutex> mutex(mMut);
 
     Vector<T> resultVec = Vector(mView.length);
     resultVec.mView.transposed = mView.transposed;
@@ -202,12 +219,11 @@ template <typename T> Vector<T> Vector<T>::operator+(const Vector& other) const
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
 
     return resultVec;
-};
+}
 
-template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
+template <typename T> Vector<T>& Vector<T>::addInPlace(const Vector<T>& other)
 {
     checkShape(other);
-    std::shared_lock<std::shared_mutex> mutex(mMut);
 
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
@@ -223,10 +239,9 @@ template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
     return *this;
 }
 
-template <typename T> Vector<T> Vector<T>::operator-(const Vector& other) const
+template <typename T> Vector<T> Vector<T>::subtract(const Vector<T>& other) const
 {
     checkShape(other);
-    std::shared_lock<std::shared_mutex> lock(mMut);
 
     Vector<T> resultVec = Vector(mView.length);
 
@@ -246,10 +261,9 @@ template <typename T> Vector<T> Vector<T>::operator-(const Vector& other) const
     return resultVec;
 }
 
-template <typename T> Vector<T>& Vector<T>::operator-=(const Vector<T>& other)
+template <typename T> Vector<T>& Vector<T>::subtractInPlace(const Vector<T>& other)
 {
     checkShape(other);
-    std::shared_lock<std::shared_mutex> lock(mMut);
 
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
@@ -265,10 +279,8 @@ template <typename T> Vector<T>& Vector<T>::operator-=(const Vector<T>& other)
     return *this;
 }
 
-template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
+template <typename T> Vector<T> Vector<T>::mulScalar(const T scalar) const
 {
-    std::shared_lock<std::shared_mutex> lock(mMut);
-
     Vector<T> resultVec = Vector(mView.length);
     resultVec.mView.transposed = mView.transposed;
 
@@ -286,16 +298,46 @@ template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
     return resultVec;
 }
 
-template <typename T> Vector<T>& Vector<T>::operator*=(const T scalar)
+template <typename T> Vector<T>& Vector<T>::mulScalarInPlace(const T scalar)
 {
-    std::shared_lock<std::shared_mutex> lock(mMut);
-
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     INTERNAL_VIEW(thisView, thisData, mView)
 
     mathStatus mulStat = MatrixKernel<T>::multiplyScalarInPlace(thisView, scalar);
 
     return *this;
+}
+
+template <typename T> T Vector<T>::dot(const Vector<T>& other) const
+{
+    T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
+
+    INTERNAL_VIEW(thisView, thisData, mView)
+    INTERNAL_VIEW(otherView, otherData, other.mView)
+
+    if (mView.length != other.mView.length || mView.transposed != other.mView.transposed)
+        throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.rows);
+
+    return VectorKernel<T>::dot(thisData, mView.length, mView.stride, otherData, other.mView.stride);
+}
+
+template <typename T> Vector<T> Vector<T>::hadamard(const Vector& other) const
+{
+    Vector<T> result = clone();
+
+    T* resultData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
+    T* otherData = static_cast<MatrixStorage<T>::DataType*>(other.mData.get())->data;
+
+    INTERNAL_VIEW(resultView, resultData, mView)
+    INTERNAL_VIEW(otherView, otherData, other.mView)
+
+    if (result.mView.length != other.mView.length || result.mView.transposed != other.mView.transposed)
+        throw ShapeMismatchException(resultView.rows, resultView.cols, otherView.rows, otherView.rows);
+
+    VectorKernel<T>::hadamard(resultData, result.mView.length, result.mView.stride, otherData, other.mView.stride);
+
+    return result;
 }
 
 template <typename T> size_t Vector<T>::getLen() const
@@ -315,8 +357,6 @@ template <typename T> void Vector<T>::transpose()
 
 template <typename T> Vector<T> Vector<T>::clone() const
 {
-    std::shared_lock<std::shared_mutex> lock(mMut);
-
     Vector<T> distVec = Vector<T>(mView.length);
 
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
@@ -334,8 +374,6 @@ template <typename T> Vector<T> Vector<T>::clone() const
 
 template <typename T> Vector<T> Vector<T>::subvector(const size_t start, const size_t len) const
 {
-    std::shared_lock<std::shared_mutex> lock(mMut);
-
     constexpr size_t minRowCol = 1;
     const bool transposed = mView.transposed;
     const size_t end = start + len;

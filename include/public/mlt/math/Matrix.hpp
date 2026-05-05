@@ -60,7 +60,7 @@ namespace mlt::math::datastructures
 
         Matrix add(const Matrix& other) const;
         Matrix& addInPlace(const Matrix& other);
-        
+
         Matrix multiply(const Matrix& other) const;
         Vector<T> multiplyVec(const Vector<T>& vec) const;
 

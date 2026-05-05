@@ -1,10 +1,16 @@
-#include <format>
+#include "mlt/math/Vector.hpp"
+#include "mlt/models/LineareRegression.hpp"
 #include <iomanip>
+#include <ios>
 #include <iostream>
+#include <span>
 #include <sstream>
 #include <string>
 
 #include <MLTooling.hpp>
+#include <mlt/Math.hpp>
+
+using namespace mlt::math::datastructures;
 
 template <typename T> std::string toString(const std::vector<T>& v)
 {
@@ -22,26 +28,28 @@ template <typename T> std::string toString(const std::vector<T>& v)
     return oss.str();
 }
 
-static void LinearRegressionExample1()
+static void LinearRegressionNewExample()
 {
-    // y = 7x - 14
-    const std::vector<float> xData = {0.f, 1.f, 2.f, 3.f, 4.f};
-    const std::vector<float> y_data = {-14.f, -7.f, 0.f, 7.f, 14};
+    float xData[] = {0.f, 1.f, 2.f, 3.f, 4.f};
+    float yData[] = {-14.f, -7.f, 0.f, 7.f, 14.f};
+    std::span<float> spanX(xData);
+    std::span<float> spanY(yData);
 
-    // Models::LinearRegressionModel model = Models::LinearRegressionModel();
+    const Matrix<float> xDataMat = Matrix<float>(5, 1, spanX);
+    const Vector<float> yDataVec = Vector<float>(spanY);
+    const float lr = 0.1f;
+    const size_t epochs = 500;
 
-    // const Container::Mat mat = Container::Mat(5, 1, xData);
+    mlt::models::LinearRegression model = mlt::models::LinearRegression();
+    model.fit(xDataMat, yDataVec, lr, epochs);
 
-    constexpr float lr = 0.1f;
-    constexpr unsigned int epochs = 500;
+    Vector<float> testPred = Vector<float>(1);
+    testPred[0] = 20.f;
 
-    // model.fit(mat, y_data, lr, epochs);
-
-    // Output: ~126
-    // std::cout << std::fixed << std::setprecision(8) << model.predict({20}) << std::endl;
+    std::cout << std::fixed << std::setprecision(8) << model.predict(testPred) << std::endl;
 }
 
 int main()
 {
-    LinearRegressionExample1();
+    LinearRegressionNewExample();
 }
