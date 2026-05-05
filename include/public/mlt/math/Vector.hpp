@@ -1,6 +1,5 @@
 #pragma once
 
-#include "mlt/core/ProxyElement.hpp"
 #include <mlt/core/Shape.hpp>
 #include <mlt/math/Matrix.hpp>
 
@@ -43,7 +42,7 @@ namespace mlt::math::datastructures
         Vector& operator=(Vector&& other) noexcept;
 
         T operator[](size_t position) const;
-        ProxyElement<Vector<T>*, T, 1> operator[](size_t position);
+        T& operator[](size_t position);
 
         Vector operator+(const Vector& other) const;
         Vector& operator+=(const Vector& other);
@@ -53,6 +52,17 @@ namespace mlt::math::datastructures
 
         Vector operator*(T scalar) const;
         Vector& operator*=(T scalar);
+
+        Vector add(const Vector& other) const;
+        Vector& addInPlace(const Vector& other);
+        Vector subtract(const Vector& other) const;
+        Vector& subtractInPlace(const Vector& other);
+        Vector mulScalar(T scalar) const;
+        Vector& mulScalarInPlace(T scalar);
+        T dot(const Vector& other) const;
+        // Vector cross(const Vector& other) const; => just allowed for 3D vectors
+        Vector hadamard(const Vector& other) const;
+        // Vector& hadamardInPlace(const Vector& other); => per element
 
         size_t getLen() const;
         bool isTransposed() const;
