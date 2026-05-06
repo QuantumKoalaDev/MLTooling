@@ -51,11 +51,11 @@ namespace mlt::math::datastructures
         Vector& operator*=(T scalar);
 
         Vector add(const Vector& other) const;
-        Vector& addInPlace(const Vector& other);
+        void addInPlace(const Vector& other);
         Vector subtract(const Vector& other) const;
-        Vector& subtractInPlace(const Vector& other);
+        void subtractInPlace(const Vector& other);
         Vector mulScalar(T scalar) const;
-        Vector& mulScalarInPlace(T scalar);
+        void mulScalarInPlace(T scalar);
         T dot(const Vector& other) const;
         // Vector cross(const Vector& other) const; => just allowed for 3D vectors
         Vector hadamard(const Vector& other) const;
