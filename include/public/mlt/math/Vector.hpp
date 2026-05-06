@@ -24,9 +24,6 @@ namespace mlt::math::datastructures
         std::shared_ptr<void> mData;
         mutable std::shared_mutex mMut;
 
-        static T getImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray);
-        static void setImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray, T val);
-
         void checkShape(const Vector& other) const;
 
       public:
