@@ -21,39 +21,6 @@ using namespace mlt::math::kernels;
         .rowStride = view.transposed ? 1 : view.stride,                                                                \
     };
 
-template <typename T> T Vector<T>::getImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray)
-{
-    const bool isTransposed = vec->mView.transposed;
-
-    const size_t row = isTransposed ? 0 : dimArray[0];
-    const size_t col = isTransposed ? dimArray[0] : 0;
-
-    T* data = static_cast<MatrixStorage<T>::DataType*>(vec->mData.get())->data;
-    INTERNAL_VIEW(view, data, vec->mView)
-    T val = 0;
-    const mathStatus stat = MatrixKernel<T>::get(row, col, view, val);
-
-    if (stat == MATH_MATRIX_OUT_OF_BOUND)
-        throw OutOfBoundsException(row, col, view.rows, view.cols);
-
-    return val;
-}
-
-template <typename T> void Vector<T>::setImpl(Vector<T>* vec, const std::array<size_t, 1>& dimArray, T val)
-{
-    const bool isTransposed = vec->mView.transposed;
-
-    const size_t row = isTransposed ? 0 : dimArray[0];
-    const size_t col = isTransposed ? dimArray[0] : 0;
-    T* data = static_cast<MatrixStorage<T>::DataType*>(vec->mData.get())->data;
-    INTERNAL_VIEW(view, data, vec->mView);
-
-    const mathStatus stat = MatrixKernel<T>::set(row, col, view, val);
-
-    if (stat == MATH_MATRIX_OUT_OF_BOUND)
-        throw OutOfBoundsException(row, col, view.rows, view.cols);
-}
-
 template <typename T> void Vector<T>::checkShape(const Vector<T>& other) const
 {
     constexpr size_t minRowCol = 1;
@@ -175,7 +142,8 @@ template <typename T> Vector<T> Vector<T>::operator+(const Vector& other) const
 
 template <typename T> Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
 {
-    return addInPlace(other);
+    addInPlace(other);
+    return *this;
 }
 
 template <typename T> Vector<T> Vector<T>::operator-(const Vector& other) const
@@ -185,7 +153,8 @@ template <typename T> Vector<T> Vector<T>::operator-(const Vector& other) const
 
 template <typename T> Vector<T>& Vector<T>::operator-=(const Vector<T>& other)
 {
-    return subtractInPlace(other);
+    subtractInPlace(other);
+    return *this;
 }
 
 template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
@@ -195,7 +164,8 @@ template <typename T> Vector<T> Vector<T>::operator*(const T scalar) const
 
 template <typename T> Vector<T>& Vector<T>::operator*=(const T scalar)
 {
-    return mulScalarInPlace(scalar);
+    mulScalarInPlace(scalar);
+    return *this;
 }
 
 template <typename T> Vector<T> Vector<T>::add(const Vector<T>& other) const
@@ -221,7 +191,7 @@ template <typename T> Vector<T> Vector<T>::add(const Vector<T>& other) const
     return resultVec;
 }
 
-template <typename T> Vector<T>& Vector<T>::addInPlace(const Vector<T>& other)
+template <typename T> void Vector<T>::addInPlace(const Vector<T>& other)
 {
     checkShape(other);
 
@@ -235,8 +205,6 @@ template <typename T> Vector<T>& Vector<T>::addInPlace(const Vector<T>& other)
 
     if (addStat == MATH_SHAPE_MISSMATCH)
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
-
-    return *this;
 }
 
 template <typename T> Vector<T> Vector<T>::subtract(const Vector<T>& other) const
@@ -261,7 +229,7 @@ template <typename T> Vector<T> Vector<T>::subtract(const Vector<T>& other) cons
     return resultVec;
 }
 
-template <typename T> Vector<T>& Vector<T>::subtractInPlace(const Vector<T>& other)
+template <typename T> void Vector<T>::subtractInPlace(const Vector<T>& other)
 {
     checkShape(other);
 
@@ -275,8 +243,6 @@ template <typename T> Vector<T>& Vector<T>::subtractInPlace(const Vector<T>& oth
 
     if (subStat == MATH_SHAPE_MISSMATCH)
         throw ShapeMismatchException(thisView.rows, thisView.cols, otherView.rows, otherView.cols);
-
-    return *this;
 }
 
 template <typename T> Vector<T> Vector<T>::mulScalar(const T scalar) const
@@ -298,14 +264,12 @@ template <typename T> Vector<T> Vector<T>::mulScalar(const T scalar) const
     return resultVec;
 }
 
-template <typename T> Vector<T>& Vector<T>::mulScalarInPlace(const T scalar)
+template <typename T> void Vector<T>::mulScalarInPlace(const T scalar)
 {
     T* thisData = static_cast<MatrixStorage<T>::DataType*>(mData.get())->data;
     INTERNAL_VIEW(thisView, thisData, mView)
 
     mathStatus mulStat = MatrixKernel<T>::multiplyScalarInPlace(thisView, scalar);
-
-    return *this;
 }
 
 template <typename T> T Vector<T>::dot(const Vector<T>& other) const

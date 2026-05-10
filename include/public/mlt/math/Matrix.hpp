@@ -3,7 +3,6 @@
 #include <mlt/core/Shape.hpp>
 
 #include <memory>
-#include <shared_mutex>
 #include <span>
 
 struct MatrixFloat;
@@ -27,7 +26,6 @@ namespace mlt::math::datastructures
     {
         std::shared_ptr<void> mData;
         MatrixView mView;
-        mutable std::shared_mutex mMut;
 
       public:
         Matrix(size_t rowCount, size_t colCount);

@@ -56,14 +56,16 @@ void LinearRegression::fit(const Matrix<float>& xData, const Vector<float>& yDat
             const float diff = yHat - y;
 
             // Calculating MSE for w: dL/dw = (2/N) * diff * x
-            gradW += rowData.mulScalar(diff);
+            rowData.mulScalarInPlace(diff);
+            gradW += rowData;
             // dL/db = (2/N) * diff
             gradB += diff;
         }
 
-        gradW = gradW.mulScalar(mseHalf);
+        gradW.mulScalarInPlace(mseHalf);
         gradB *= mseHalf;
-        mWeights -= gradW.mulScalar(learningRate);
+        gradW.mulScalarInPlace(learningRate);
+        mWeights -= gradW;
         mBias -= learningRate * gradB;
     }
 }

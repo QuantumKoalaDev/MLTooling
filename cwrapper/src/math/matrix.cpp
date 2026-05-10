@@ -1,32 +1,14 @@
-#include <atomic>
-#include <mlt/Math.hpp>
 #include <mlt/math/Exceptions.hpp>
 #include <mlt/math/Matrix.hpp>
 #include <mlt/math/matrix.h>
+
+#include "matrixInternal.hpp"
 
 #ifdef __cplusplus
 extern "C"
 {
 
     using namespace mlt::math::datastructures;
-
-    struct mltMatrixF
-    {
-        Matrix<float> implMat;
-
-        mltMatrixF(size_t rows, size_t cols) : implMat(rows, cols) {}
-        mltMatrixF(size_t rows, size_t cols, std::span<const float> buff) : implMat(rows, cols, buff) {}
-        mltMatrixF(Matrix<float>&& mat) : implMat(mat) {}
-    };
-
-    struct mltMatrixD
-    {
-        Matrix<double> implMat;
-
-        mltMatrixD(size_t rows, size_t cols) : implMat(rows, cols) {}
-        mltMatrixD(size_t rows, size_t cols, std::span<const double> buff) : implMat(rows, cols, buff) {}
-        mltMatrixD(Matrix<double>&& mat) : implMat(mat) {}
-    };
 
     MLTOOLING_CWRAPPER mltStatus mltFwMatrixFCreate(size_t rows, size_t cols, mltMatrixF** out)
     {

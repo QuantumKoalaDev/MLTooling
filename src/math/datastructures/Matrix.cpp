@@ -7,7 +7,6 @@
 #include <mlt/math/Vector.hpp>
 
 #include <memory>
-#include <mutex>
 
 using namespace mlt::math::datastructures;
 using namespace mlt::math::kernels;
@@ -145,8 +144,6 @@ template <typename T> Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) no
 
 template <typename T> const T Matrix<T>::operator[](const size_t row, const size_t col) const
 {
-    std::shared_lock<std::shared_mutex> lock(mMut);
-
     size_t pos = MATRIX_COMPUTE_INDEX(row, col);
 
     return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[pos];
@@ -154,8 +151,6 @@ template <typename T> const T Matrix<T>::operator[](const size_t row, const size
 
 template <typename T> T& Matrix<T>::operator[](const size_t row, const size_t col)
 {
-    std::unique_lock<std::shared_mutex> lock(mMut);
-
     size_t pos = MATRIX_COMPUTE_INDEX(row, col);
 
     return static_cast<MatrixStorage<T>::DataType*>(mData.get())->data[pos];

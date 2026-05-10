@@ -1,5 +1,7 @@
 add_library(MLToolingCwrapper SHARED
     src/math/matrix.cpp
+    src/math/vector.cpp
+    src/models/linearRegression.cpp
 )
 
 target_link_libraries(MLToolingCwrapper PRIVATE MLTooling)
@@ -9,6 +11,7 @@ target_include_directories(MLToolingCwrapper
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/internal
 )
 
 set_target_properties(MLToolingCwrapper PROPERTIES

@@ -90,3 +90,9 @@ build/
 htmlcov/
 
 .cache/
+
+# =====================
+# C#
+# =====================
+bindings/c#/**/bin
+bindings/c#/**/obj
