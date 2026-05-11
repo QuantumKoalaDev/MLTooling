@@ -2,8 +2,8 @@ namespace MLTooling.Core;
 
 public struct Shape
 {
-    ulong Rows;
-    ulong Cols;
+    public ulong Rows;
+    public ulong Cols;
 
     public Shape(ulong rows, ulong cols)
     {
