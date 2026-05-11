@@ -6,7 +6,7 @@
 #include <limits>
 #include <new>
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
     inline bool overNumericLimit(size_t a, size_t b)
     {
@@ -356,4 +356,4 @@ namespace mlt::math::datastructures
 
         return view;
     }
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

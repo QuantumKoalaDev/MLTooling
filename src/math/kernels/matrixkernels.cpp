@@ -4,7 +4,7 @@
 #include <mlt/internal/math/kernels/matrixkernels.hpp>
 #include <mlt/internal/math/mathstatus.hpp>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 
 namespace mlt::math::kernels
 {
@@ -114,10 +114,8 @@ namespace mlt::math::kernels
         return mlt::math::MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractMatrixFloat(
-        const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend,
-        datastructures::MatrixFloatView& difference
-    )
+    mlt::math::mathStatus
+    subtractMatrixFloat(const MatrixFloatView& minuend, const MatrixFloatView& subtrahend, MatrixFloatView& difference)
     {
         if (checkShapeFloat(minuend, subtrahend))
             return MATH_SHAPE_MISSMATCH;
@@ -149,8 +147,7 @@ namespace mlt::math::kernels
     }
 
     mlt::math::mathStatus subtractMatrixDouble(
-        const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend,
-        datastructures::MatrixDoubleView& difference
+        const MatrixDoubleView& minuend, const MatrixDoubleView& subtrahend, MatrixDoubleView& difference
     )
     {
         if (checkShapeDouble(minuend, subtrahend))
@@ -182,9 +179,7 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractInPlaceMatrixFloat(
-        datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend
-    )
+    mlt::math::mathStatus subtractInPlaceMatrixFloat(MatrixFloatView& difference, const MatrixFloatView& subtrahend)
     {
         if (checkShapeFloat(difference, subtrahend))
             return MATH_SHAPE_MISSMATCH;
@@ -209,9 +204,7 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus subtractInPlaceMatrixDouble(
-        datastructures::MatrixDoubleView& difference, const datastructures::MatrixDoubleView& subtrahend
-    )
+    mlt::math::mathStatus subtractInPlaceMatrixDouble(MatrixDoubleView& difference, const MatrixDoubleView& subtrahend)
     {
         if (checkShapeDouble(difference, subtrahend))
             return MATH_SHAPE_MISSMATCH;
@@ -237,8 +230,7 @@ namespace mlt::math::kernels
     }
 
     mlt::math::mathStatus multiplyMatrixFloat(
-        const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,
-        datastructures::MatrixFloatView& product
+        const MatrixFloatView& multiplicant, const MatrixFloatView& multiplier, MatrixFloatView& product
     )
     {
         if (multiplicant.cols != multiplier.rows)
@@ -279,8 +271,7 @@ namespace mlt::math::kernels
     }
 
     mlt::math::mathStatus multiplyMatrixDouble(
-        const datastructures::MatrixDoubleView& multiplicant, const datastructures::MatrixDoubleView& multiplier,
-        datastructures::MatrixDoubleView& product
+        const MatrixDoubleView& multiplicant, const MatrixDoubleView& multiplier, MatrixDoubleView& product
     )
     {
         if (multiplicant.cols != multiplier.rows)
@@ -320,8 +311,7 @@ namespace mlt::math::kernels
         return mlt::math::MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus
-    cloneMatrixFloat(const datastructures::MatrixFloatView& src, datastructures::MatrixFloatView& dist)
+    mlt::math::mathStatus cloneMatrixFloat(const MatrixFloatView& src, MatrixFloatView& dist)
     {
         if (src.cols != dist.cols || src.rows != dist.rows)
             return MATH_SHAPE_MISSMATCH;
@@ -346,8 +336,7 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus
-    cloneMatrixDouble(const datastructures::MatrixDoubleView& src, datastructures::MatrixDoubleView& dist)
+    mlt::math::mathStatus cloneMatrixDouble(const MatrixDoubleView& src, MatrixDoubleView& dist)
     {
         if (src.cols != dist.cols || src.rows != dist.rows)
             return MATH_SHAPE_MISSMATCH;
@@ -372,9 +361,8 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus multiplyScalarMatrixFloat(
-        const datastructures::MatrixFloatView& mat, const float scalar, datastructures::MatrixFloatView& result
-    )
+    mlt::math::mathStatus
+    multiplyScalarMatrixFloat(const MatrixFloatView& mat, const float scalar, MatrixFloatView& result)
     {
         if ((mat.rows * mat.cols) != (result.rows * result.cols))
             return MATH_SHAPE_MISSMATCH;
@@ -399,9 +387,8 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus multiplyScalarMatrixDouble(
-        const datastructures::MatrixDoubleView& mat, const double scalar, datastructures::MatrixDoubleView& result
-    )
+    mlt::math::mathStatus
+    multiplyScalarMatrixDouble(const MatrixDoubleView& mat, const double scalar, MatrixDoubleView& result)
     {
         if ((mat.rows * mat.cols) != (result.rows * result.cols))
             return MATH_SHAPE_MISSMATCH;
@@ -426,7 +413,7 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus multiplyScalarMatrixFloatInPlace(datastructures::MatrixFloatView& mat, float scalar)
+    mlt::math::mathStatus multiplyScalarMatrixFloatInPlace(MatrixFloatView& mat, float scalar)
     {
         float* RESTRICT matData = mat.data;
 
@@ -444,7 +431,7 @@ namespace mlt::math::kernels
         return MATH_SUCCESS;
     }
 
-    mlt::math::mathStatus multiplyScalarMatrixDoubleInPlace(datastructures::MatrixDoubleView& mat, double scalar)
+    mlt::math::mathStatus multiplyScalarMatrixDoubleInPlace(MatrixDoubleView& mat, double scalar)
     {
         double* RESTRICT matData = mat.data;
 

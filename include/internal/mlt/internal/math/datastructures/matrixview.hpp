@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <system_error>
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
 
     struct MatrixFloatView
@@ -91,4 +91,4 @@ namespace mlt::math::datastructures
 
         return MATH_SUCCESS;
     }
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

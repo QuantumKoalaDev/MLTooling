@@ -4,19 +4,19 @@
 
 struct mltVectorF
 {
-    mlt::math::datastructures::Vector<float> implVec;
+    mlt::math::Vector<float> implVec;
 
     mltVectorF(size_t size) : implVec(size) {}
     mltVectorF(std::span<const float> buff) : implVec(buff) {}
-    mltVectorF(mlt::math::datastructures::Vector<float>&& mat) : implVec(mat) {}
+    mltVectorF(mlt::math::Vector<float>&& mat) : implVec(mat) {}
 };
 
 
 struct mltVectorD
 {
-    mlt::math::datastructures::Vector<double> implVec;
+    mlt::math::Vector<double> implVec;
 
     mltVectorD(size_t size) : implVec(size) {}
     mltVectorD(std::span<const double> buff) : implVec(buff) {}
-    mltVectorD(mlt::math::datastructures::Vector<double>&& mat) : implVec(mat) {}
+    mltVectorD(mlt::math::Vector<double>&& mat) : implVec(mat) {}
 };

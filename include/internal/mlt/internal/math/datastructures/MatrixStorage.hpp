@@ -3,13 +3,13 @@
 #include <mlt/internal/math/datastructures/matrix.hpp>
 #include <mlt/internal/math/mathstatus.hpp>
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
     template <typename T> struct MatrixStorage;
 
     template <> struct MatrixStorage<float>
     {
-        using DataType = mlt::math::datastructures::MatrixFloat;
+        using DataType = mlt::math::MatrixFloat;
 
         static mlt::math::mathStatus create(const size_t rowCount, const size_t colCount, DataType& out)
         {
@@ -29,7 +29,7 @@ namespace mlt::math::datastructures
 
     template <> struct MatrixStorage<double>
     {
-        using DataType = mlt::math::datastructures::MatrixDouble;
+        using DataType = mlt::math::MatrixDouble;
 
         static mlt::math::mathStatus create(const size_t rowCount, const size_t colCount, DataType& out)
         {
@@ -47,4 +47,4 @@ namespace mlt::math::datastructures
         static void del(DataType& mat) { deleteMatrixDouble(mat); }
     };
 
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

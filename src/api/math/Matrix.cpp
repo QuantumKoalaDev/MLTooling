@@ -8,7 +8,7 @@
 
 #include <memory>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 using namespace mlt::math::kernels;
 using namespace mlt::core;
 
@@ -321,8 +321,8 @@ Matrix<T>::submatrix(const size_t rowStart, const size_t colStart, const size_t 
     return subMat;
 }
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
     template class Matrix<float>;
     template class Matrix<double>;
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

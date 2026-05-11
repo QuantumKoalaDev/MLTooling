@@ -11,18 +11,18 @@ namespace mlt::math::kernels
 
     template <> struct MatrixKernel<float>
     {
-        using ViewType = datastructures::MatrixFloatView;
+        using ViewType = MatrixFloatView;
 
         [[nodiscard]] static mlt::math::mathStatus
         get(const size_t row, const size_t col, const ViewType& view, float& out)
         {
-            return datastructures::getFloat(row, col, view, out);
+            return getFloat(row, col, view, out);
         }
 
         [[nodiscard]] static mlt::math::mathStatus
         set(const size_t row, const size_t col, const ViewType& view, float val)
         {
-            return datastructures::setFloat(row, col, view, val);
+            return setFloat(row, col, view, val);
         }
 
         [[nodiscard]] static mlt::math::mathStatus
@@ -72,18 +72,18 @@ namespace mlt::math::kernels
 
     template <> struct MatrixKernel<double>
     {
-        using ViewType = datastructures::MatrixDoubleView;
+        using ViewType = MatrixDoubleView;
 
         [[nodiscard]] static mlt::math::mathStatus
         get(const size_t row, const size_t col, const ViewType& view, double& out)
         {
-            return datastructures::getDouble(row, col, view, out);
+            return getDouble(row, col, view, out);
         }
 
         [[nodiscard]] static mlt::math::mathStatus
         set(const size_t row, const size_t col, const ViewType& view, double val)
         {
-            return datastructures::setDouble(row, col, view, val);
+            return setDouble(row, col, view, val);
         }
 
         [[nodiscard]] static mlt::math::mathStatus

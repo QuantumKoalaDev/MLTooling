@@ -6,7 +6,7 @@
 #include <mlt/internal/math/kernels/matrixkernels.hpp>
 #include <vector>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 using namespace mlt::math::kernels;
 using FloatVec = std::vector<float>;
 using DoubleVec = std::vector<double>;

@@ -6,7 +6,7 @@
 
 #define CHECK_CREATE_STATUS checkSuccessfullStatus(createStat, "Matrix allocation failed.");
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 using FloatVec = std::vector<float>;
 
 inline void checkSuccessfullStatus(mlt::math::mathStatus stat, std::string msg)

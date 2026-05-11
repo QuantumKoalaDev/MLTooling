@@ -9,16 +9,16 @@ namespace mlt::models
     class LinearRegression
     {
       private:
-        mlt::math::datastructures::Vector<float> mWeights;
+        mlt::math::Vector<float> mWeights;
         float mBias;
 
       public:
         LinearRegression();
         ~LinearRegression() = default;
 
-        float predict(const mlt::math::datastructures::Vector<float>& features) const;
+        float predict(const mlt::math::Vector<float>& features) const;
         void
-        fit(const mlt::math::datastructures::Matrix<float>& xData,
-            const mlt::math::datastructures::Vector<float>& yData, float learningRate, size_t epochs);
+        fit(const mlt::math::Matrix<float>& xData,
+            const mlt::math::Vector<float>& yData, float learningRate, size_t epochs);
     };
 } // namespace mlt::models

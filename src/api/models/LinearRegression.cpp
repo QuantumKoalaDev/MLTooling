@@ -4,7 +4,7 @@
 #include <mlt/models/LineareRegression.hpp>
 
 using namespace mlt::models;
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 
 // Current workaround...
 Vector<float> getRowViaCopy(const Matrix<float>& mat, size_t row)

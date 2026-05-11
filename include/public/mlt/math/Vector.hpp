@@ -7,7 +7,7 @@
 #include <shared_mutex>
 #include <span>
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
 
     template <typename T> class Vector
@@ -72,4 +72,4 @@ namespace mlt::math::datastructures
 
     extern template class Vector<float>;
     extern template class Vector<double>;
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

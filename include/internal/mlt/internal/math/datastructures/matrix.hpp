@@ -5,7 +5,7 @@
 
 #include <cstddef>
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
 
     struct MatrixFloat
@@ -45,4 +45,4 @@ namespace mlt::math::datastructures
     addColDouble(const double* col, size_t colLength, size_t atCol, MatrixDouble& mat);
     [[nodiscard]] mlt::math::mathStatus resizeMatrixDouble(MatrixDouble& mat, size_t cSize, size_t rSize);
     [[nodiscard]] MatrixDoubleView getMatrixDoubleView(const MatrixDouble& mat);
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

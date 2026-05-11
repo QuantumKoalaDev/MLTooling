@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 using namespace mlt::math::kernels;
 
 #define INTERNAL_VIEW(varName, myData, view)                                                                           \
@@ -366,8 +366,8 @@ template <typename T> Matrix<T> Vector<T>::asMatrix() const
     return Matrix<T>(startCols, startRows, rows, cols, rowStride, colStride, mData);
 }
 
-namespace mlt::math::datastructures
+namespace mlt::math
 {
     template class Vector<float>;
     template class Vector<double>;
-} // namespace mlt::math::datastructures
+} // namespace mlt::math

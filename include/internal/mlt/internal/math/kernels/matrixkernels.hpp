@@ -6,66 +6,66 @@
 namespace mlt::math::kernels
 {
     [[nodiscard]] mathStatus addMatrixFloat(
-        const datastructures::MatrixFloatView& summandOne, const datastructures::MatrixFloatView& summandTwo,
-        datastructures::MatrixFloatView& result
+        const MatrixFloatView& summandOne, const MatrixFloatView& summandTwo,
+        MatrixFloatView& result
     );
 
     [[nodiscard]] mathStatus addMatrixDouble(
-        const datastructures::MatrixDoubleView& summandOne, const datastructures::MatrixDoubleView& summandTwo,
-        datastructures::MatrixDoubleView& result
+        const MatrixDoubleView& summandOne, const MatrixDoubleView& summandTwo,
+        MatrixDoubleView& result
     );
 
     [[nodiscard]] mathStatus
-    addMatrixFloatInPlace(datastructures::MatrixFloatView& target, const datastructures::MatrixFloatView& addend);
+    addMatrixFloatInPlace(MatrixFloatView& target, const MatrixFloatView& addend);
 
     [[nodiscard]] mathStatus
-    addMatrixDoubleInPlace(datastructures::MatrixDoubleView& target, const datastructures::MatrixDoubleView& addend);
+    addMatrixDoubleInPlace(MatrixDoubleView& target, const MatrixDoubleView& addend);
 
     [[nodiscard]] mathStatus subtractMatrixFloat(
-        const datastructures::MatrixFloatView& minuend, const datastructures::MatrixFloatView& subtrahend,
-        datastructures::MatrixFloatView& difference
+        const MatrixFloatView& minuend, const MatrixFloatView& subtrahend,
+        MatrixFloatView& difference
     );
 
     [[nodiscard]] mathStatus subtractMatrixDouble(
-        const datastructures::MatrixDoubleView& minuend, const datastructures::MatrixDoubleView& subtrahend,
-        datastructures::MatrixDoubleView& difference
+        const MatrixDoubleView& minuend, const MatrixDoubleView& subtrahend,
+        MatrixDoubleView& difference
     );
 
     [[nodiscard]] mathStatus subtractInPlaceMatrixFloat(
-        datastructures::MatrixFloatView& difference, const datastructures::MatrixFloatView& subtrahend
+        MatrixFloatView& difference, const MatrixFloatView& subtrahend
     );
 
     [[nodiscard]] mathStatus subtractInPlaceMatrixDouble(
-        datastructures::MatrixDoubleView& difference, const datastructures::MatrixDoubleView& subtrahend
+        MatrixDoubleView& difference, const MatrixDoubleView& subtrahend
     );
 
     [[nodiscard]] mathStatus multiplyMatrixFloat(
-        const datastructures::MatrixFloatView& multiplicant, const datastructures::MatrixFloatView& multiplier,
-        datastructures::MatrixFloatView& product
+        const MatrixFloatView& multiplicant, const MatrixFloatView& multiplier,
+        MatrixFloatView& product
     );
 
     [[nodiscard]] mathStatus multiplyMatrixDouble(
-        const datastructures::MatrixDoubleView& multiplicant, const datastructures::MatrixDoubleView& multiplier,
-        datastructures::MatrixDoubleView& product
+        const MatrixDoubleView& multiplicant, const MatrixDoubleView& multiplier,
+        MatrixDoubleView& product
     );
 
     [[nodiscard]] mathStatus multiplyScalarMatrixFloat(
-        const datastructures::MatrixFloatView& mat, float scalar, datastructures::MatrixFloatView& result
+        const MatrixFloatView& mat, float scalar, MatrixFloatView& result
     );
 
     [[nodiscard]] mathStatus multiplyScalarMatrixDouble(
-        const datastructures::MatrixDoubleView& mat, double scalar, datastructures::MatrixDoubleView& result
+        const MatrixDoubleView& mat, double scalar, MatrixDoubleView& result
     );
 
-    [[nodiscard]] mathStatus multiplyScalarMatrixFloatInPlace(datastructures::MatrixFloatView& mat, float scalar);
+    [[nodiscard]] mathStatus multiplyScalarMatrixFloatInPlace(MatrixFloatView& mat, float scalar);
 
-    [[nodiscard]] mathStatus multiplyScalarMatrixDoubleInPlace(datastructures::MatrixDoubleView& mat, double scalar);
-
-    [[nodiscard]] mathStatus
-    cloneMatrixFloat(const datastructures::MatrixFloatView& src, datastructures::MatrixFloatView& dist);
+    [[nodiscard]] mathStatus multiplyScalarMatrixDoubleInPlace(MatrixDoubleView& mat, double scalar);
 
     [[nodiscard]] mathStatus
-    cloneMatrixDouble(const datastructures::MatrixDoubleView& src, datastructures::MatrixDoubleView& dist);
+    cloneMatrixFloat(const MatrixFloatView& src, MatrixFloatView& dist);
+
+    [[nodiscard]] mathStatus
+    cloneMatrixDouble(const MatrixDoubleView& src, MatrixDoubleView& dist);
 
     // kernels
     // mlt::math::mathStatus getRowFloat(MatrixFloatView& matView, size_t row, float* out);

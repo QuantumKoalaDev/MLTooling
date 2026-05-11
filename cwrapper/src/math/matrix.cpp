@@ -8,7 +8,7 @@
 extern "C"
 {
 
-    using namespace mlt::math::datastructures;
+    using namespace mlt::math;
 
     MLTOOLING_CWRAPPER mltStatus mltFwMatrixFCreate(size_t rows, size_t cols, mltMatrixF** out)
     {

@@ -10,7 +10,7 @@
 #include <MLTooling.hpp>
 #include <mlt/Math.hpp>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 
 template <typename T> std::string toString(const std::vector<T>& v)
 {

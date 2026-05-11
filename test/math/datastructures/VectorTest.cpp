@@ -3,7 +3,7 @@
 #include <mlt/math/Matrix.hpp>
 #include <mlt/math/Vector.hpp>
 
-using namespace mlt::math::datastructures;
+using namespace mlt::math;
 
 static std::vector<float> getTestVec(size_t len, float start)
 {
