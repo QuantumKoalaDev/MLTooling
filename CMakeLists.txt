@@ -13,6 +13,9 @@ add_library(MLTooling
     "test/data/DataFrame.cpp"
     "src/math/matrix.cpp"
     "src/math/kernels/matrixkernels.cpp"
+    "src/math/backend/cpu/tensorkernels.cpp"
+    "src/compute/core/Storage.cpp"
+    "src/compute/core/MltArray.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -45,6 +48,8 @@ add_executable(tests
     "test/math/datastructures/MatrixTest.cpp"
     "test/math/datastructures/VectorTest.cpp"
     "test/math/kernels/matrixkernelTest.cpp"
+    "test/compute/MltArrayTest.cpp"
+    "test/compute/StorageTest.cpp"
 )
 
 target_link_libraries(tests PRIVATE MLTooling MLTooling_internal)
