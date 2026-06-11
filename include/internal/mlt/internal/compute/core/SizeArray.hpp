@@ -2,10 +2,11 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <format>
 #include <initializer_list>
+#include <ostream>
 #include <stdexcept>
 #include <utility>
-#include <sstream>
 
 namespace mlt::compute::core
 {
@@ -97,7 +98,7 @@ namespace mlt::compute::core
                 return *this;
             
             SizeArray temp(other);
-            *this = std::move(other);
+            *this = std::move(temp);
             
             return *this;
         }
@@ -138,7 +139,7 @@ namespace mlt::compute::core
 
         size_t& operator[](size_t pos)
         {
-            if (pos > mLen)
+            if (pos >= mLen)
                 throw std::out_of_range("");
 
             return mData[pos];
@@ -155,6 +156,10 @@ namespace mlt::compute::core
         bool hasHeap() const { return mIsHeap; }
 
         size_t* getData() { return mData; }
+        const size_t* getData() const { return mData; };
+        
+        std::span<size_t> span() { return std::span<size_t>(mData, mLen); }
+        std::span<const size_t> span() const { return std::span<const size_t>(mData, mLen);};
 
         bool containsZero()
         {
@@ -164,18 +169,54 @@ namespace mlt::compute::core
 
             return false;
         };
-
-        std::string toString()
-        {
-            std::stringstream s;
-            s << "SizeArray(";
-
-            for (size_t i = 0; i < mLen-1; ++i)
-                s << mData[i] << ", ";
-            
-            s << mData[mLen-1] << ")";
-
-            return s.str();
-        }
     };
 }
+
+template <size_t N>
+std::ostream& operator<<(std::ostream& os, const mlt::compute::core::SizeArray<N>& arr)
+{
+    if (arr.size() == 0)
+        return os << "SizeArray()";
+
+    os << "SizeArray(";
+
+    for (size_t i = 0; i < arr.size(); ++i)
+    {
+        if (i > 0)
+            os << ", ";
+            
+        os << arr[i];
+    }
+    
+    return os << ")";
+}
+
+template <size_t N>
+struct std::formatter<mlt::compute::core::SizeArray<N>>
+{
+    constexpr auto parse(std::format_parse_context& ctx)
+    {
+        return ctx.begin();
+    }
+    
+    auto format(const mlt::compute::core::SizeArray<N>& arr,
+                std::format_context& ctx) const
+    {
+        auto out = ctx.out();
+        
+        if (arr.size() == 0)
+            return std::format_to(out, "SizeArray()");
+        
+        out = std::format_to(out, "SizeArray(");
+    
+        for (size_t i = 0; i < arr.size(); ++i)
+        {
+            if (i)
+                out = std::format_to(out, ", ");
+            out = std::format_to(out, "{}", arr[i]);
+        }
+    
+        return out;
+    }
+};
+

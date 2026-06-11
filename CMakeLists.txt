@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
 
+
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -16,6 +18,8 @@ add_library(MLTooling
     "src/math/backend/cpu/tensorkernels.cpp"
     "src/compute/core/Storage.cpp"
     "src/compute/core/MltArray.cpp"
+    "src/compute/backend/cpu/native.cpp"
+    "src/compute/ops/ops.cpp"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -34,7 +38,26 @@ add_executable(example_basic examples/example_basic.cpp
 )
 target_link_libraries(example_basic PRIVATE MLTooling)
 
+target_compile_options(MLTooling PRIVATE
+    "$<$<CONFIG:Release>:-march=native>"
+    "$<$<CONFIG:Release>:-ffast-math>"
+)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(MLTooling PRIVATE
+        "$<$<CONFIG:Release>:-fopt-info-vec>"
+        "$<$<CONFIG:Release>:-fopt-info-vec-missed>"
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(MLTooling PRIVATE
+        "$<$<CONFIG:Release>:-Rpass=loop-vectorize>"
+        "$<$<CONFIG:Release>:-Rpass-missed=loop-vectorize>"
+    )
+endif()
+
+message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "Compiler ID : ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Build Type  : ${CMAKE_BUILD_TYPE}")
 
 add_library(MLTooling_internal INTERFACE)
 target_include_directories(MLTooling_internal INTERFACE
@@ -50,6 +73,7 @@ add_executable(tests
     "test/math/kernels/matrixkernelTest.cpp"
     "test/compute/MltArrayTest.cpp"
     "test/compute/StorageTest.cpp"
+    "test/compute/backend/cpu/NativeTest.cpp"
 )
 
 target_link_libraries(tests PRIVATE MLTooling MLTooling_internal)

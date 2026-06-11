@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <mlt/internal/compute/backend/cpu/native.hpp>
 
 #include <cmath>
