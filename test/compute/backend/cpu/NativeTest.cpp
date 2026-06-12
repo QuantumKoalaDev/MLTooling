@@ -29,6 +29,20 @@ static void NativeMatmulTest()
 #include <chrono>
 #include <vector>
 
+static void NativeBenchTest()
+{
+    constexpr size_t M = 512;
+    constexpr size_t K = 512;
+    constexpr size_t N = 512;
+
+    std::vector<float> a(M * K, 1);
+    std::vector<float> b(K * N, 1);
+    std::vector<float> c(M * N, 0);
+    std::vector<float> d(M * N, 0);
+
+    matmul(a.data(), b.data(), c.data(), M, K, N);
+}
+
 static void NativeMatmulBenchmark()
 {
     constexpr size_t M = 512;
@@ -110,4 +124,5 @@ static void NativeMatmulBenchmark()
 }
 
 REGISTER_TEST(NativeMatmulTest)
-REGISTER_TEST(NativeMatmulBenchmark)
+// REGISTER_TEST(NativeMatmulBenchmark)
+REGISTER_BENCH(NativeMatmulBenchmark)

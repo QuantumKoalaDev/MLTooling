@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+
 BUILD_TYPE=Debug
-BUILD_DIR=build
+BUILD_DIR="$PROJECT_ROOT/build"
 
 C_COMPILER=clang
 CPP_COMPILER=clang++

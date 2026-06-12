@@ -3,4 +3,5 @@
 int main()
 {
     TestRunner::instance().runAll();
+    BenchRunner::instance().run("");
 }
