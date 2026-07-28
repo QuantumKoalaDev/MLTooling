@@ -27,8 +27,6 @@ target_sources(MLTooling
     PUBLIC
         FILE_SET CXX_MODULES FILES
             "modules/Error.cppm"
-    PRIVATE
-        FILE_SET internal_modules TYPE CXX_MODULES FILES
             "modules/Storage.cppm"
 )
 

@@ -5,10 +5,11 @@
 #include <mlt/internal/compute/core/RefCount.hpp>
 #include <mlt/internal/compute/core/SizeArray.hpp>
 #include <mlt/internal/compute/core/Error.hpp>
-#include <mlt/internal/compute/core/Storage.hpp>
 
 #include <cstddef>
 #include <type_traits>
+
+import mlt.internal.core.storage;
 
 #define CHECK_DTYPE()                                                      \
     do {                                                                   \

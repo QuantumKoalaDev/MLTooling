@@ -81,3 +81,8 @@ inline void assertTrue(bool check, std::string msg)
     if (!check)
         throw AssertionFailed(msg + std::format(" (expected: {}, got: {}", true, check));
 }
+
+inline void throwCustomMessage(std::string msg)
+{
+    throw AssertionFailed(msg);
+}
