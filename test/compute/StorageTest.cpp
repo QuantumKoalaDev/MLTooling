@@ -9,7 +9,11 @@ static constexpr size_t testSize = 10;
 
 static void testConstructorStorage()
 {
-    Ref<Storage> s = Storage::alloc(testSize);
+    std::expected<Ref<Storage>, mlt::core::MltError> result = Storage::alloc(testSize);
+
+    Ref<Storage> s;
+    if (result)
+        s = result.value();
 
     assertEq(s->size, testSize, "Storage constructor allocated wrong amount of bytes.");
 }

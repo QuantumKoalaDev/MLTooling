@@ -1,4 +1,7 @@
+#include <expected>
 #include <mlt/internal/compute/core/MltArray.hpp>
+
+#include <mlt/internal/compute/core/Storage.hpp>
 
 using namespace mlt::compute::core;
 
@@ -26,8 +29,6 @@ void computeStrides(
         }
         case DimType::COLUMN_MAJOR:
         {
-            throw NotImplementedException();
-            
             break;
         }
     }
@@ -50,7 +51,10 @@ MltArray::MltArray(SizeArray<DEFAULT_DIM>&& shape, DType dType, DimType dimType)
     strides = SizeArray(this->shape.size());
 
     computeStrides(strides, this->shape, 1, dimType);
-    data = Storage::alloc(product(this->shape.getData(), this->shape.size()) * toByteCount(dType));
+    std::expected<Ref<Storage>, mlt::core::MltError> result = Storage::alloc(product(this->shape.getData(), this->shape.size()) * toByteCount(dType));
+
+    if (result)
+        data = result.value();
 }
 
 MltArray MltArray::from(SizeArray<DEFAULT_DIM>&& shape, const DType dType, const DimType dimType)
@@ -72,4 +76,14 @@ MltArray MltArray::transpose()
     transposed.strides[secoundLastPos] = strides[lastPos];
 
     return transposed;
+}
+
+std::byte& MltArray::getStorageData()
+{
+    return *data->data;
+}
+
+std::byte& MltArray::getStorageData() const
+{
+    return *data->data;
 }

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <format>
 #include <string>
+#include <string_view>
 
 namespace mlt::compute::core
 {
@@ -9,6 +11,7 @@ namespace mlt::compute::core
         TypeMismatch,
         ShapeMismatch,
         RankMismatch,
+        OutOfBounds,
         NotImplemented
     };
 
@@ -17,4 +20,24 @@ namespace mlt::compute::core
         ComputeErrorType type;
         std::string msg;
     };
+
+    inline constexpr std::string getTypeMismatchMsg(std::string_view expected, std::string_view got)
+    {
+        return std::format("Expected type: {}, Got: {}", expected, got);
+    }
+
+    inline constexpr std::string getRankMismatchMsg(const size_t expected, const size_t got)
+    {
+        return std::format("Expected rank: {}, Got: {}", expected, got);
+    }
+
+    inline constexpr std::string getOutOfBoundsMsg(const size_t allowed, const size_t got)
+    {
+        return std::format("Allowed max: {}, Got: {}", allowed, got);
+    }
+
+    inline constexpr std::string getNotImplementedMsg()
+    {
+        return "Functionality currently not implemented.";
+    }
 }
