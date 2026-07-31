@@ -7,6 +7,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <utility>
+#include <span>
 
 namespace mlt::compute::core
 {

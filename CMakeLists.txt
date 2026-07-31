@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
-add_library(MLTooling   
+option(MLTOOLING_IDE_FILES "Add headers and source groups for IDEs" OFF)
+
+set(MLTOOLING_SOURCES
     "src/api/math/Matrix.cpp"
     "src/api/math/Vector.cpp"
     "src/api/models/LinearRegression.cpp"
@@ -23,6 +25,8 @@ add_library(MLTooling
     "src/compute/ops/ops.cpp"
 )
 
+add_library(MLTooling ${MLTOOLING_SOURCES})
+
 target_sources(MLTooling
     PUBLIC
         FILE_SET CXX_MODULES FILES
@@ -30,7 +34,24 @@ target_sources(MLTooling
             "modules/Storage.cppm"
 )
 
-target_compile_options(MLTooling PRIVATE -fPIC)
+if(MLTOOLING_IDE_FILES)
+    file(GLOB_RECURSE MLTOOLING_HEADERS CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/include/*.hpp"
+        "${PROJECT_SOURCE_DIR}/include/*.h"
+    )
+
+    target_sources(MLTooling
+        PRIVATE
+            ${MLTOOLING_HEADERS}
+    )
+
+    source_group(TREE ${PROJECT_SOURCE_DIR}
+        FILES
+            ${MLTOOLING_SOURCES}
+            ${MLTOOLING_HEADERS}
+    )
+
+endif()
 
 target_include_directories(MLTooling
     PUBLIC
@@ -39,17 +60,21 @@ target_include_directories(MLTooling
         ${PROJECT_SOURCE_DIR}/include/internal
 )
 
-install(TARGETS MLTooling DESTINATION lib)
-install(DIRECTORY include/public DESTINATION include)
+if(NOT MSVC)
+    target_compile_options(MLTooling PRIVATE -fPIC)
+endif()
 
-add_executable(example_basic examples/example_basic.cpp
-)
-target_link_libraries(example_basic PRIVATE MLTooling)
-
-target_compile_options(MLTooling PRIVATE
-    "$<$<CONFIG:Release>:-march=native>"
-    "$<$<CONFIG:Release>:-ffast-math>"
-)
+if(MSVC)
+    target_compile_options(MLTooling PRIVATE
+        "$<$<CONFIG:Release>:/O2>"
+        "$<$<CONFIG:Release>:/fp:fast>"
+    )
+else()
+    target_compile_options(MLTooling PRIVATE
+        "$<$<CONFIG:Release>:-march=native>"
+        "$<$<CONFIG:Release>:-ffast-math>"
+    )
+endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(MLTooling PRIVATE
@@ -61,7 +86,18 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         "$<$<CONFIG:Release>:-Rpass=loop-vectorize>"
         "$<$<CONFIG:Release>:-Rpass-missed=loop-vectorize>"
     )
+elseif(MSVC)
+    target_compile_options(MLTooling PRIVATE
+        "$<$<CONFIG:Release>:/Qvec-report:2>"
+    )
 endif()
+
+install(TARGETS MLTooling DESTINATION lib)
+install(DIRECTORY include/public DESTINATION include)
+
+add_executable(example_basic examples/example_basic.cpp
+)
+target_link_libraries(example_basic PRIVATE MLTooling)
 
 message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
 message(STATUS "Compiler ID : ${CMAKE_CXX_COMPILER_ID}")
