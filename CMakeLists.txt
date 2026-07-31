@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(MLTooling   
     "src/data/DataColumn.cpp"
     "test/data/DataFrame.cpp"
-    "src/math/datastructures/matrix.cpp"
+    "src/math/datastructures/matrixl.cpp"
     "src/math/datastructures/Matrix.cpp"
     "src/math/kernels/matrixkernels.cpp"
     "src/math/datastructures/Vector.cpp"
