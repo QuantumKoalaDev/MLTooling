@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include <format>
-#include <stdexcept>
 #include <string>
 #include <typeindex>
 
@@ -13,11 +12,6 @@
     {                                                                                                                  \
         func##_registrar() { TestRunner::instance().registerTest(#func, func); }                                       \
     } func##_instance;
-
-struct AssertionFailed : std::runtime_error
-{
-    using std::runtime_error::runtime_error;
-};
 
 static std::string toString(const std::vector<float>& v)
 {

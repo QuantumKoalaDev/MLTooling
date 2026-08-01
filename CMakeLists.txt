@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
 add_library(MLTooling   
+    "src/api/compute/Tensor.cpp"
     "src/api/math/Matrix.cpp"
     "src/api/math/Vector.cpp"
     "src/api/models/LinearRegression.cpp"
@@ -16,11 +17,8 @@ add_library(MLTooling
     "test/data/DataFrame.cpp"
     "src/math/matrix.cpp"
     "src/math/kernels/matrixkernels.cpp"
-    "src/math/backend/cpu/tensorkernels.cpp"
     "src/compute/core/Storage.cpp"
     "src/compute/core/MltArray.cpp"
-    "src/compute/backend/cpu/native.cpp"
-    "src/compute/ops/ops.cpp"
 )
 
 target_sources(MLTooling
@@ -28,6 +26,8 @@ target_sources(MLTooling
         FILE_SET CXX_MODULES FILES
             "modules/Error.cppm"
             "modules/Storage.cppm"
+            "modules/Tensor.cppm"
+            "modules/SizeArray.cppm"
 )
 
 target_compile_options(MLTooling PRIVATE -fPIC)
@@ -79,7 +79,6 @@ add_executable(tests
     "test/math/datastructures/MatrixTest.cpp"
     "test/math/datastructures/VectorTest.cpp"
     "test/math/kernels/matrixkernelTest.cpp"
-    "test/compute/MltArrayTest.cpp"
     "test/compute/StorageTest.cpp"
     "test/compute/backend/cpu/NativeTest.cpp"
 )

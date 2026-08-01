@@ -11,7 +11,8 @@ export namespace mlt::core
     enum class MltErrorType
     {
         OutOfMemory,
-        InvalidAlignment
+        InvalidAlignment,
+        OutOfBounds
     };
 
     constexpr std::string_view errorTemplate(MltErrorType type)
@@ -20,6 +21,7 @@ export namespace mlt::core
         {
             case MltErrorType::OutOfMemory:             return "Out of Memory.";
             case MltErrorType::InvalidAlignment:        return "Invalid alignment: {}";
+            case MltErrorType::OutOfBounds:             return "Ouf of bounds: {}";
         }
     }
 

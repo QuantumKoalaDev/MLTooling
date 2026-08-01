@@ -3,12 +3,13 @@
 #include <expected>
 #include <mlt/internal/compute/core/DType.hpp>
 #include <mlt/internal/compute/core/RefCount.hpp>
-#include <mlt/internal/compute/core/SizeArray.hpp>
 #include <mlt/internal/compute/core/Error.hpp>
 
 #include <cstddef>
 #include <type_traits>
 
+import mlt.core.error;
+import mlt.internal.compute.core.sizearray;
 import mlt.internal.core.storage;
 
 #define CHECK_DTYPE()                                                      \
@@ -57,6 +58,7 @@ namespace mlt::compute::core
 
     struct MltArray
     {
+        using default_dType = float;
         static constexpr DType DEFAULT_DTYPE = DType::FLOAT32;
         static constexpr DimType DEFAULT_DIM_TYPE = DimType::ROW_MAJOR;
 
@@ -68,16 +70,16 @@ namespace mlt::compute::core
         DimType dimType;
 
         // shape nxnxRowxCol
-        static MltArray from(
-            SizeArray<DEFAULT_DIM>&& shape,
+        static std::expected<MltArray, mlt::core::MltError> from(
+            DefaultSizeArray&& shape,
             DType dType = DEFAULT_DTYPE,
             DimType dimType = DEFAULT_DIM_TYPE
-        );
+        ) noexcept;
 
         template <typename T>
         static MltArray from(
             const T* data,
-            SizeArray<DEFAULT_DIM>&& shape,
+            DefaultSizeArray&& shape,
             DType dType = DEFAULT_DTYPE,
             DimType dimType = DEFAULT_DIM_TYPE
         )
@@ -85,11 +87,10 @@ namespace mlt::compute::core
             
         }
 
-        MltArray transpose();
+        // MltArray transpose();
 
-        template<typename T, typename... Indices>
+        template<typename T = default_dType, typename... Indices>
         requires (std::is_convertible_v<Indices, size_t>&& ...)
-
         std::expected<T*, ComputeError> at(Indices... idx)
         {
             CHECK_DTYPE();
@@ -109,7 +110,7 @@ namespace mlt::compute::core
             return reinterpret_cast<T*>(getStorageData()) + pos;
         }
         
-        template <typename T, typename... Indices>
+        template <typename T = default_dType, typename... Indices>
         requires(std::is_convertible_v<Indices, size_t> && ...)
         T at(Indices... idx) const
         {
@@ -131,8 +132,14 @@ namespace mlt::compute::core
         }
 
         private:
-        MltArray(SizeArray<DEFAULT_DIM>&& shape, DType dType, DimType dimType);
-        std::byte& getStorageData();
-        std::byte& getStorageData() const;
+        MltArray(
+            Ref<Storage> storage,
+            DefaultSizeArray&& shape,
+            DefaultSizeArray&& strides,
+            DType dType,
+            DimType dimType
+        ) noexcept;
+        std::byte* getStorageData();
+        std::byte* getStorageData() const;
     };
 }

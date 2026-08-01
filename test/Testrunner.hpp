@@ -1,6 +1,8 @@
 #pragma once
 
 #include <chrono>
+#include <iterator>
+#include <stdexcept>
 #include <format>
 #include <functional>
 #include <iostream>
@@ -11,6 +13,11 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+struct AssertionFailed : std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
 
 class TestRunner
 {
@@ -42,10 +49,14 @@ class TestRunner
                 func();
                 passed++;
             }
-            catch (const std::exception& e)
+            catch (const AssertionFailed& e)
             {
                 std::cerr << "[FAIL] " << name << ": " << e.what() << std::endl;
                 failed++;
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << "Something else went wrong." << e.what() << std::endl;
             }
         }
 
