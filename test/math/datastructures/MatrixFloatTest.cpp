@@ -3,6 +3,7 @@
 #include <mlt/internal/math/mathstatus.hpp>
 
 #include <vector>
+#include <span>
 
 #define CHECK_CREATE_STATUS checkSuccessfullStatus(createStat, "Matrix allocation failed.");
 

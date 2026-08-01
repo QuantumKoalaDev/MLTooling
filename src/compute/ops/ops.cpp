@@ -2,6 +2,7 @@
 #include "mlt/internal/compute/core/SizeArray.hpp"
 #include <expected>
 #include <format>
+#include <span>
 
 #include <mlt/internal/compute/core/DType.hpp>
 #include <mlt/internal/compute/ops/ops.hpp>
