@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <expected>
+#include <span>
 
 import mlt.core.error;
 import mlt.internal.core.storage;

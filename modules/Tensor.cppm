@@ -2,6 +2,8 @@ module;
 
 #include <mlt/internal/compute/core/MltArray.hpp>
 
+#include <span>
+
 export module mlt.compute.Tensor;
 
 namespace mlt::compute
