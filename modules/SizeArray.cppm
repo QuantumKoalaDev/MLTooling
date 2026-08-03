@@ -1,6 +1,7 @@
 module;
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <expected>
 #include <initializer_list>
@@ -89,11 +90,13 @@ export namespace mlt::compute::core
 
         size_t& operator[](size_t pos) noexcept
         {
+            assert(pos < mLen);
             return mData[pos];
         }
         
         size_t operator[](size_t pos) const noexcept
         {
+            assert(pos < mLen);
             return mData[pos];
         }
 
@@ -106,6 +109,7 @@ export namespace mlt::compute::core
         static std::expected<SizeArray<inlineSize>, mlt::core::MltError> from(size_t len) noexcept
         {
             SizeArray<inlineSize> arr;
+            arr.mLen = len;
 
             if (inlineSize < len)
             {

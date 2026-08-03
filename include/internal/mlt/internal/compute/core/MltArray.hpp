@@ -6,6 +6,7 @@
 #include <mlt/internal/compute/core/Error.hpp>
 
 #include <cstddef>
+#include <span>
 #include <type_traits>
 
 import mlt.core.error;
@@ -77,14 +78,35 @@ namespace mlt::compute::core
         ) noexcept;
 
         template <typename T>
-        static MltArray from(
-            const T* data,
+        static std::expected<MltArray, mlt::core::MltError> from(
+            std::span<T> data,
             DefaultSizeArray&& shape,
-            DType dType = DEFAULT_DTYPE,
             DimType dimType = DEFAULT_DIM_TYPE
-        )
+        ) noexcept
         {
-            
+            std::expected<DefaultSizeArray, mlt::core::MltError> cStrides = DefaultSizeArray::from(shape.size());
+
+            if (!cStrides)
+                return std::unexpected(cStrides.error());
+
+            DefaultSizeArray strides = std::move(cStrides).value();
+            MltArray::computeStrides(strides, shape, 1, dimType);
+
+            std::span<std::byte> bSpan = std::as_writable_bytes(data);
+            std::expected<Ref<Storage>, mlt::core::MltError> cStorage = Storage::from(bSpan);
+
+            if (!cStorage)
+                return std::unexpected(cStorage.error());
+
+            Ref<Storage> storage = cStorage.value();
+
+            return MltArray(
+                storage,
+                std::move(shape),
+                std::move(strides),
+                DTypeMapping<T>::value,
+                dimType
+            );
         }
 
         // MltArray transpose();
@@ -107,7 +129,7 @@ namespace mlt::compute::core
                 pos += indices[i] * strides[i];
             }
             
-            return reinterpret_cast<T*>(getStorageData()) + pos;
+            return reinterpret_cast<T*>(data->data) + pos;
         }
         
         template <typename T = default_dType, typename... Indices>
@@ -128,7 +150,7 @@ namespace mlt::compute::core
                 pos += indices[i] * strides[i];
             }
 
-            return reinterpret_cast<T*>(getStorageData())[pos];
+            return reinterpret_cast<T*>(data->data)[pos];
         }
 
         private:
@@ -139,7 +161,43 @@ namespace mlt::compute::core
             DType dType,
             DimType dimType
         ) noexcept;
-        std::byte* getStorageData();
-        std::byte* getStorageData() const;
+
+        static void computeStrides(
+            DefaultSizeArray& stride,
+            const DefaultSizeArray& shape,
+            const size_t startStride,
+            const DimType type
+        ) noexcept
+        {
+            switch (type)
+            {
+                case DimType::ROW_MAJOR:
+                {
+                    const size_t len = shape.size();
+                    size_t currentStride = startStride;
+
+                    for (size_t i = len; i-- > 0;)
+                    {
+                        stride[i] = currentStride;
+                        currentStride *= shape[i];
+                    }
+
+                    break;
+                }
+                case DimType::COLUMN_MAJOR:
+                {
+                    const size_t len = shape.size();
+                    size_t currentStride = startStride;
+
+                    for (size_t i = 0; i < len; ++i)
+                    {
+                        stride[i] = currentStride;
+                        currentStride *= shape[i];
+                    }
+
+                    break;
+                }
+            }
+        }
     };
 }

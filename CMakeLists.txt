@@ -117,6 +117,7 @@ add_executable(tests
     "test/math/kernels/matrixkernelTest.cpp"
     "test/compute/StorageTest.cpp"
     "test/compute/backend/cpu/NativeTest.cpp"
+    "test/compute/MltArrayTest.cpp"
 )
 
 target_link_libraries(tests PRIVATE MLTooling MLTooling_internal)

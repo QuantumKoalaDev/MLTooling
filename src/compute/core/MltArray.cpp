@@ -1,39 +1,11 @@
 #include <expected>
 #include <mlt/internal/compute/core/MltArray.hpp>
 
+#include <ostream>
+
 import mlt.core.error;
 
 using namespace mlt::compute::core;
-
-void computeStrides(
-    DefaultSizeArray& stride,
-    const DefaultSizeArray& shape,
-    const size_t startStride,
-    const DimType type
-)
-{
-    switch (type) {
-        case DimType::ROW_MAJOR:
-        {
-            const size_t len = shape.size();
-            size_t currentStride = startStride;
-
-            for (size_t i = len; i > 0; --i)
-            {
-                const size_t pos = i - 1;
-                stride[pos] = currentStride;
-                currentStride *= shape[pos];
-            }
-
-            break;
-        }
-        case DimType::COLUMN_MAJOR:
-        {
-            break;
-        }
-    }
-
-}
 
 size_t product(const size_t* arr, size_t n)
 {
@@ -68,12 +40,13 @@ std::expected<MltArray, mlt::core::MltError> MltArray::from(SizeArray<DEFAULT_DI
         return std::unexpected(cStrides.error());
 
     DefaultSizeArray strides = std::move(cStrides).value(); 
-    computeStrides(strides, shape, 1, dimType);
-    std::expected<Ref<Storage>, mlt::core::MltError> cStorage = Storage::alloc(product(shape.getData(), shape.size() * toByteCount(dType)));
+    MltArray::computeStrides(strides, shape, 1, dimType);
+    const size_t bytes = product(shape.getData(), shape.size());
+    std::expected<Ref<Storage>, mlt::core::MltError> cStorage = Storage::alloc(product(shape.getData(), shape.size()) * toByteCount(dType));
 
     if (!cStorage)
         return std::unexpected(cStorage.error());
-
+    
     Ref<Storage> storage = cStorage.value();
 
 
@@ -89,30 +62,21 @@ std::expected<MltArray, mlt::core::MltError> MltArray::from(SizeArray<DEFAULT_DI
 //MltArray MltArray::transpose()
 //{
 //    MltArray transposed = *this;
-//
+
 //    const size_t shapeLen = transposed.shape.size();
 //    SizeArray<DEFAULT_DIM> newShape = SizeArray(shapeLen);
 //    SizeArray<DEFAULT_DIM> newStrides = SizeArray(shapeLen);
-//
-//
+
+
 //    for (size_t i = 0; i < shapeLen; ++i)
 //        newShape[i] = transposed.shape[shapeLen - i - 1];
-//               
+               
 //    for (size_t i = 0; i < shapeLen; ++i)
 //        newStrides[i] = transposed.strides[shapeLen - i - 1];
-//
+
 //    transposed.shape = newShape;
 //    transposed.strides = newStrides;
-//
+
 //    return transposed;
 //}
 
-std::byte* MltArray::getStorageData()
-{
-    return data->data;
-}
-
-std::byte* MltArray::getStorageData() const
-{
-    return data->data;
-}
