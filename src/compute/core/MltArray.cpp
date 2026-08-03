@@ -1,3 +1,4 @@
+#include <exception>
 #include <expected>
 #include <mlt/internal/compute/core/MltArray.hpp>
 
@@ -32,7 +33,7 @@ MltArray::MltArray(
         dimType(dimType)
 {}
 
-std::expected<MltArray, mlt::core::MltError> MltArray::from(SizeArray<DEFAULT_DIM>&& shape, const DType dType, const DimType dimType) noexcept
+std::expected<MltArray, mlt::core::MltError> MltArray::from(DefaultSizeArray&& shape, const DType dType, const DimType dimType) noexcept
 {
     std::expected<DefaultSizeArray, mlt::core::MltError> cStrides = DefaultSizeArray::from(shape.size());
     
@@ -59,24 +60,47 @@ std::expected<MltArray, mlt::core::MltError> MltArray::from(SizeArray<DEFAULT_DI
     );
 }
 
-//MltArray MltArray::transpose()
-//{
-//    MltArray transposed = *this;
+std::expected<MltArray, mlt::core::MltError> MltArray::copyFrom(const MltArray& arr) noexcept
+{
+    auto cpyShape = DefaultSizeArray::copyFrom(arr.shape);
+    auto cpyStrides = DefaultSizeArray::copyFrom(arr.strides);
+    
+    if (!cpyShape)
+        return std::unexpected(cpyShape.error());
 
-//    const size_t shapeLen = transposed.shape.size();
-//    SizeArray<DEFAULT_DIM> newShape = SizeArray(shapeLen);
-//    SizeArray<DEFAULT_DIM> newStrides = SizeArray(shapeLen);
+    if (!cpyStrides)
+        return std::unexpected(cpyStrides.error());
 
+    DefaultSizeArray shape = std::move(cpyShape).value();
+    DefaultSizeArray strides = std::move(cpyStrides).value();
+    
+    return MltArray(
+        arr.data,
+        std::move(shape),
+        std::move(strides),
+        arr.dType,
+        arr.dimType
+    );
+}
 
-//    for (size_t i = 0; i < shapeLen; ++i)
-//        newShape[i] = transposed.shape[shapeLen - i - 1];
-               
-//    for (size_t i = 0; i < shapeLen; ++i)
-//        newStrides[i] = transposed.strides[shapeLen - i - 1];
+std::expected<MltArray, mlt::core::MltError> MltArray::transpose() noexcept
+{
+    auto cpyTransposed = copyFrom(*this);
 
-//    transposed.shape = newShape;
-//    transposed.strides = newStrides;
+    if (!cpyTransposed)
+        return std::unexpected(cpyTransposed.error());
 
-//    return transposed;
-//}
+    MltArray transposed = std::move(cpyTransposed).value();
+    const size_t shapeLen = transposed.shape.size();
+
+    for (size_t i = 0; i < shapeLen / 2; ++i)
+    {
+        const size_t j = shapeLen - 1 - i;
+
+        std::swap(transposed.shape[i], transposed.shape[j]);
+        std::swap(transposed.strides[i], transposed.strides[j]);
+    }
+
+    return transposed;
+}
 

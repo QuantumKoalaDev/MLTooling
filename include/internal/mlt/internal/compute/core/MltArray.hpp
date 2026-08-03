@@ -109,7 +109,9 @@ namespace mlt::compute::core
             );
         }
 
-        // MltArray transpose();
+        static std::expected<MltArray, mlt::core::MltError> copyFrom(const MltArray& arr) noexcept;
+
+        std::expected<MltArray, mlt::core::MltError> transpose() noexcept;
 
         template<typename T = default_dType, typename... Indices>
         requires (std::is_convertible_v<Indices, size_t>&& ...)
