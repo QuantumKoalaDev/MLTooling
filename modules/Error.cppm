@@ -3,6 +3,7 @@ module;
 #include <array>
 #include <cstddef>
 #include <cstdio>
+#include <format>
 #include <string_view>
 
 export module mlt.core.error;
@@ -12,7 +13,9 @@ export namespace mlt::core
     {
         OutOfMemory,
         InvalidAlignment,
-        OutOfBounds
+        OutOfBounds,
+        TypeMismatch,
+        RankMismatch,
     };
 
     constexpr std::string_view errorTemplate(MltErrorType type)
@@ -22,6 +25,8 @@ export namespace mlt::core
             case MltErrorType::OutOfMemory:             return "Out of Memory.";
             case MltErrorType::InvalidAlignment:        return "Invalid alignment: {}";
             case MltErrorType::OutOfBounds:             return "Ouf of bounds: {}";
+            case MltErrorType::TypeMismatch:            return "TypeMismatch: {}";
+            case MltErrorType::RankMismatch:            return "RankMismatch: {}";
         }
     }
 
@@ -47,6 +52,21 @@ export namespace mlt::core
                             (int)detail.size(), detail.data());
             (void)written;
             return err;
+        }
+
+        static MltError makeTypeMismatch(std::string_view expected, std::string_view got)
+        {
+            return make(MltErrorType::TypeMismatch, std::format("Expected: {}, Got: {}", expected, got));
+        }
+
+        static MltError makeRankMismatch(const size_t expected, const size_t got)
+        {
+            return make(MltErrorType::RankMismatch, std::format("Expected: {}, Got: {}", expected, got));
+        }
+
+        static MltError makeOutOfBounds(const size_t max, const size_t got)
+        {
+            return make(MltErrorType::OutOfBounds, std::format("Max: {}, Got {}", max, got));
         }
     };
 

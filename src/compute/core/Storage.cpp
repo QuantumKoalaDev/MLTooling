@@ -53,7 +53,7 @@ std::expected<Ref<Storage>, MltError> Storage::alloc(const size_t bytes, const s
     return Ref<Storage>(storage);
 }
 
-std::expected<Ref<Storage>, MltError> Storage::from(std::span<std::byte> buf, const size_t alignment)
+std::expected<Ref<Storage>, MltError> Storage::from(std::span<const std::byte> buf, const size_t alignment)
 {
     if (alignment == 0 || (alignment & (alignment-1)) != 0)
     {

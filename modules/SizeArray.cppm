@@ -26,15 +26,14 @@ export namespace mlt::compute::core
         size_t mInlineData[inlineSize];
         size_t* mData = nullptr;
         size_t mLen;
-        bool mIsHeap;
 
         public:
-        SizeArray() : mData(mInlineData), mLen(inlineSize), mIsHeap(false)
+        SizeArray() : mData(mInlineData), mLen(inlineSize)
         {}
 
         ~SizeArray()
         {
-            if (mIsHeap)
+            if (hasHeap())
                 delete[] mData;
         }
     
@@ -42,9 +41,9 @@ export namespace mlt::compute::core
         SizeArray& operator=(const SizeArray& other) = delete;
 
         SizeArray(SizeArray&& other) noexcept
-            : mLen(other.mLen), mIsHeap(other.mIsHeap)
+            : mLen(other.mLen)
         {
-            if (mIsHeap)
+            if (other.hasHeap())
             {
                 mData = other.mData;
                 other.mData = nullptr;
@@ -56,7 +55,6 @@ export namespace mlt::compute::core
             }
             
             other.mLen = 0;
-            other.mIsHeap = false;
         }
 
         SizeArray& operator=(SizeArray&& other) noexcept
@@ -64,17 +62,13 @@ export namespace mlt::compute::core
             if (this == &other)
                 return *this;
             
-            if (mIsHeap)
+            if (hasHeap())
                 delete[] mData;
             
-            mLen = other.mLen;
-            mIsHeap = other.mIsHeap;
-
-            if (mIsHeap)
+            if (other.hasHeap())
             {
                 mData = other.mData;
                 other.mData = nullptr;
-                other.mIsHeap = false;
             }
             else
             {
@@ -83,7 +77,6 @@ export namespace mlt::compute::core
             }
             
             other.mLen = 0;
-            other.mIsHeap = false;
             
             return *this;
         }
@@ -101,7 +94,7 @@ export namespace mlt::compute::core
         }
 
         size_t size() const noexcept { return mLen; }       
-        bool hasHeap() const noexcept { return mIsHeap; }
+        bool hasHeap() const noexcept { return inlineSize < mLen; }
 
         size_t* getData() noexcept { return mData; }
         const size_t* getData() const noexcept { return mData; }
@@ -119,7 +112,6 @@ export namespace mlt::compute::core
                     return std::unexpected(mlt::core::MltError::make(mlt::core::MltErrorType::OutOfMemory));
 
                 arr.mData = data;
-                arr.mIsHeap = true;
                 arr.mLen = len;
             }
             

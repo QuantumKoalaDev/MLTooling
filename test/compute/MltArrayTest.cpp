@@ -7,6 +7,7 @@
 
 import mlt.internal.compute.core.sizearray;
 
+using namespace mlt::core;
 using namespace mlt::compute::core;
 
 #define ERROR(var) var.error().msg.data()
@@ -41,34 +42,49 @@ static void MltArrayFromTest()
         assertEq(arr.strides[i], strides[i], "Strides were not initialized properly.");
 }
 
-//static void MltArrayAtTest()
-//{
-//    const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
-//
-//    SizeArray shape = {2, 2};
-//    SizeArray movShape = shape;
-//    MltArray arr = MltArray::from(std::move(movShape));
-//
-//
-//    for (size_t i = 0; i < shape[0]; i++)
-//    {
-//        for (size_t j = 0; j < shape[1]; j++)
-//        {
-//            if (std::expected<float*, ComputeError> val = arr.at(i, j))
-//                *val.value() = testValues[i+j];
-//        }
-//    }
-//
-//
-//    for (size_t i = 0; i < shape[0]; i++)
-//    {
-//        for (size_t j = 0; j < shape[1]; j++)
-//        {
-//            std::expected<float*, ComputeError> val = arr.at(i, j);
-//            assertEq(*val.value(), testValues[i+j], "Value does not match.");
-//        }
-//    }
-//}
+static void MltArrayOpTest()
+{
+    const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
+    auto cShape = DefaultSizeArray::from({ 2, 2});
+    
+    if (!cShape)
+        throwCustomMessage({ERROR(cShape)});
+
+    auto cArr = MltArray::from(std::span<const float>(testValues) , MLT_MOVE_VALUE(cShape));
+
+    if (!cArr)
+        throwCustomMessage({ERROR(cArr)});
+
+    MltArray arr = MLT_MOVE_VALUE(cArr);
+    
+    assertEq(arr[0,0], 1.f, "Value doesnt match.");
+    assertEq(arr[0,1], 2.f, "Value doesnt match.");
+    assertEq(arr[1,0], 3.f, "Value doesnt match.");
+    assertEq(arr[1,1], 4.f, "Value doesnt match.");
+}
+
+static void MltArrayAtTest()
+{
+    const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
+    
+    auto cShape = DefaultSizeArray::from({ 2, 2 });
+
+    if (!cShape)
+        throwCustomMessage({ERROR(cShape)});
+
+    auto cArr = MltArray::from(std::span<const float>(testValues), MLT_MOVE_VALUE(cShape));
+
+    if (!cArr)
+        throwCustomMessage({ERROR(cArr)});
+
+    MltArray arr = MLT_MOVE_VALUE(cArr);
+
+    
+    assertEq(**arr.at(0,0), 1.f, "Value doesnt match.");
+    assertEq(**arr.at(0,1), 2.f, "Value doesnt match.");
+    assertEq(**arr.at(1,0), 3.f, "Value doesnt match.");
+    assertEq(**arr.at(1,1), 4.f, "Value doesnt match.");
+}
 
 static void MltArrayRowMajorTransposeTest()
 {
@@ -81,7 +97,7 @@ static void MltArrayRowMajorTransposeTest()
         for (size_t j = 0; j < shape[1]; j++)
         {
             size_t linIdx = i * shape[1] + j;
-            if (std::expected<float*, ComputeError> val = arr.at(i, j))
+            if (std::expected<float*, MltError> val = arr.at(i, j))
                 **val = testValues[linIdx];
             else
                 throwCustomMessage("at() failed while filling test array.");
@@ -95,8 +111,8 @@ static void MltArrayRowMajorTransposeTest()
         for (size_t j = 0; j < shape[1]; j++)
         {
             // transposed(j, i) == arr(i, j)
-            std::expected<float*, ComputeError> original = arr.at(i, j);
-            std::expected<float*, ComputeError> transposedVal = transposed.at(j, i);
+            std::expected<float*, MltError> original = arr.at(i, j);
+            std::expected<float*, MltError> transposedVal = transposed.at(j, i);
 
             if (!original)
                 throwCustomMessage("at() failed reading original array.");
@@ -138,7 +154,7 @@ static void MltArrayRowMajor3DTransposeTest()
             for (size_t k = 0; k < d2; k++)
             {
                 size_t linIdx = i * (d1 * d2) + j * d2 + k;
-                if (std::expected<float*, ComputeError> val = arr.at(i, j, k))
+                if (std::expected<float*, MltError> val = arr.at(i, j, k))
                     *val.value() = testValues[linIdx];
                 else
                     throwCustomMessage("at() failed while filling 3D test array.");
@@ -155,8 +171,8 @@ static void MltArrayRowMajor3DTransposeTest()
         for (size_t j = 0; j < d1; j++)
             for (size_t k = 0; k < d2; k++)
             {
-                std::expected<float*, ComputeError> original = arr.at(i, j, k);
-                std::expected<float*, ComputeError> transposedVal = transposed.at(k, j, i);
+                std::expected<float*, MltError> original = arr.at(i, j, k);
+                std::expected<float*, MltError> transposedVal = transposed.at(k, j, i);
 
                 if (!original)
                     throwCustomMessage("at() failed reading original 3D array.");
@@ -174,6 +190,7 @@ static void MltArrayRowMajor3DTransposeTest()
 
 
 REGISTER_TEST(MltArrayFromTest)
-// REGISTER_TEST(MltArrayAtTest)
+REGISTER_TEST(MltArrayOpTest);
+REGISTER_TEST(MltArrayAtTest)
 REGISTER_TEST(MltArrayRowMajorTransposeTest)
 REGISTER_TEST(MltArrayRowMajor3DTransposeTest)

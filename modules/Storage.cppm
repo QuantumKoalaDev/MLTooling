@@ -24,7 +24,7 @@ export namespace mlt::compute::core
         ~Storage();
 
         static std::expected<Ref<Storage>, mlt::core::MltError> alloc(const size_t bytes, const size_t alignment = DEFAULT_ALIGNMENT);
-        static std::expected<Ref<Storage>, mlt::core::MltError> from(std::span<std::byte> buf, const size_t alignment = DEFAULT_ALIGNMENT);
+        static std::expected<Ref<Storage>, mlt::core::MltError> from(std::span<const std::byte> buf, const size_t alignment = DEFAULT_ALIGNMENT);
     
         private:
         Storage(std::byte* data, size_t size, size_t alignment = DEFAULT_ALIGNMENT);
