@@ -2,13 +2,13 @@
 
 #include <expected>
 
+#include <mlt/macros.hpp>
 #include <mlt/internal/compute/core/MltArray.hpp>
 
 import mlt.internal.compute.core.sizearray;
 
 using namespace mlt::compute::core;
 
-#define VALUE(var) std::move(var).value()
 #define ERROR(var) var.error().msg.data()
 
 static void MltArrayFromTest()
@@ -22,15 +22,15 @@ static void MltArrayFromTest()
     if (!cStrides)
         throwCustomMessage({ERROR(cStrides)});
     
-    const DefaultSizeArray shape = VALUE(cShape);
-    const DefaultSizeArray strides = VALUE(cStrides);
+    const DefaultSizeArray shape = MLT_MOVE_VALUE(cShape);
+    const DefaultSizeArray strides = MLT_MOVE_VALUE(cStrides);
 
     auto cArr = MltArray::from(DefaultSizeArray::copyFrom(shape).value());
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
 
-    const MltArray arr = VALUE(cArr);
+    const MltArray arr = MLT_MOVE_VALUE(cArr);
 
     assertEq(shape.size(), strides.size(), "Strides have the wrong size.");
 
@@ -73,8 +73,8 @@ static void MltArrayFromTest()
 static void MltArrayRowMajorTransposeTest()
 {
     const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
-    DefaultSizeArray shape = VALUE(DefaultSizeArray::from({2, 2}));
-    MltArray arr = VALUE(MltArray::from(VALUE(DefaultSizeArray::from({2, 2}))));
+    DefaultSizeArray shape = MLT_MOVE_VALUE(DefaultSizeArray::from({2, 2}));
+    MltArray arr = MLT_MOVE_VALUE(MltArray::from(MLT_MOVE_VALUE(DefaultSizeArray::from({2, 2}))));
 
     for (size_t i = 0; i < shape[0]; i++)
     {
@@ -88,7 +88,7 @@ static void MltArrayRowMajorTransposeTest()
         }
     }
 
-    MltArray transposed = VALUE(arr.transpose());
+    MltArray transposed = MLT_MOVE_VALUE(arr.transpose());
 
     for (size_t i = 0; i < shape[0]; i++)
     {
@@ -119,13 +119,13 @@ static void MltArrayRowMajor3DTransposeTest()
     if (!cShape)
         throwCustomMessage({ERROR(cShape)});
     
-    DefaultSizeArray shape = VALUE(cShape);
+    DefaultSizeArray shape = MLT_MOVE_VALUE(cShape);
     auto cArr = MltArray::from(std::move(shape));
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
 
-    MltArray arr = VALUE(cArr);
+    MltArray arr = MLT_MOVE_VALUE(cArr);
     
     const size_t d0 = arr.shape[0], d1 = arr.shape[1], d2 = arr.shape[2];
     std::vector<float> testValues(d0 * d1 * d2);
@@ -149,7 +149,7 @@ static void MltArrayRowMajor3DTransposeTest()
     if (!cTransposed)
         throwCustomMessage({ERROR(cTransposed)});
 
-    MltArray transposed = VALUE(cTransposed);
+    MltArray transposed = MLT_MOVE_VALUE(cTransposed);
 
     for (size_t i = 0; i < d0; i++)
         for (size_t j = 0; j < d1; j++)
