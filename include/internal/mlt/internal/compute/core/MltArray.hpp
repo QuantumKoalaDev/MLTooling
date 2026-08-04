@@ -115,11 +115,11 @@ namespace mlt::compute::core
 
         static std::expected<MltArray, mlt::core::MltError> copyFrom(const MltArray& arr) noexcept;
 
-        std::expected<MltArray, mlt::core::MltError> transpose() noexcept;
+        std::expected<MltArray, mlt::core::MltError> transpose() const noexcept;
 
         template<typename T = default_dType, typename... Indices>
         requires (std::is_convertible_v<Indices, size_t>&& ...)
-        std::expected<T*, mlt::core::MltError> at(Indices... idx)
+        std::expected<T*, mlt::core::MltError> at(Indices... idx) noexcept
         {
             if (DTypeMapping<T>::value != dType)
                 return std::unexpected(mlt::core::MltError::makeTypeMismatch(
@@ -155,7 +155,7 @@ namespace mlt::compute::core
         
         template <typename T = default_dType, typename... Indices>
         requires(std::is_convertible_v<Indices, size_t> && ...)
-        std::expected<T, mlt::core::MltError> at(Indices... idx) const
+        std::expected<T, mlt::core::MltError> at(Indices... idx) const noexcept
         {
             if (DTypeMapping<T>::value != dType)
                 return std::unexpected(mlt::core::MltError::makeTypeMismatch(

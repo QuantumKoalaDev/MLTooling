@@ -3,6 +3,7 @@ module;
 #include <array>
 #include <cstddef>
 #include <cstdio>
+#include <expected>
 #include <format>
 #include <string_view>
 
@@ -70,5 +71,6 @@ export namespace mlt::core
         }
     };
 
-
+    template <typename T>
+    using Result = std::expected<T, MltError>;
 }

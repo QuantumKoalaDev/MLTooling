@@ -83,7 +83,7 @@ std::expected<MltArray, mlt::core::MltError> MltArray::copyFrom(const MltArray& 
     );
 }
 
-std::expected<MltArray, mlt::core::MltError> MltArray::transpose() noexcept
+std::expected<MltArray, mlt::core::MltError> MltArray::transpose() const noexcept
 {
     auto cpyTransposed = copyFrom(*this);
 
