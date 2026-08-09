@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.28)
 project(MLTooling VERSION 0.1.0 LANGUAGES C CXX)
 
-
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
+
 option(MLTOOLING_IDE_FILES "Add headers and source groups for IDEs" OFF)
+
+# Dependencies
+add_subdirectory(external)
 
 set(MLTOOLING_SOURCES
     "src/api/compute/Tensor.cpp"
@@ -21,6 +23,7 @@ set(MLTOOLING_SOURCES
     "src/math/kernels/matrixkernels.cpp"
     "src/compute/core/Storage.cpp"
     "src/compute/core/MltArray.cpp"
+    "src/compute/ops/ops.cpp"
 )
 
 add_library(MLTooling ${MLTOOLING_SOURCES})
@@ -32,6 +35,8 @@ target_sources(MLTooling
             "modules/Storage.cppm"
             "modules/Tensor.cppm"
             "modules/SizeArray.cppm"
+            "modules/Operations.cppm"
+            "modules/MltArray.cppm"
 )
 
 if(MLTOOLING_IDE_FILES)
@@ -92,6 +97,8 @@ elseif(MSVC)
     )
 endif()
 
+target_link_libraries(MLTooling PRIVATE MLTooling_dependencies)
+
 install(TARGETS MLTooling DESTINATION lib)
 install(DIRECTORY include/public DESTINATION include)
 
@@ -118,6 +125,7 @@ add_executable(tests
     "test/compute/StorageTest.cpp"
     "test/compute/backend/cpu/NativeTest.cpp"
     "test/compute/MltArrayTest.cpp"
+    "test/compute/operations/OperationsTest.cpp"
 )
 
 target_link_libraries(tests PRIVATE MLTooling MLTooling_internal)

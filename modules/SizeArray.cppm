@@ -6,6 +6,7 @@ module;
 #include <expected>
 #include <initializer_list>
 #include <new>
+#include <span>
 
 
 export module mlt.internal.compute.core.sizearray;
@@ -141,6 +142,8 @@ export namespace mlt::compute::core
             
             return arr;
         }
+
+        std::span<const size_t> asSpan() const noexcept { return std::span(mData, mLen); }
     };
 
     using DefaultSizeArray = SizeArray<>;

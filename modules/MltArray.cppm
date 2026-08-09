@@ -1,20 +1,21 @@
-#pragma once
+module;
 
-#include <expected>
 #include <mlt/internal/compute/core/DType.hpp>
 #include <mlt/internal/compute/core/RefCount.hpp>
-#include <mlt/internal/compute/core/Error.hpp>
 
 #include <cassert>
 #include <cstddef>
 #include <span>
 #include <type_traits>
+#include <expected>
+
+export module mlt.internal.compute.core.mltarray;
 
 import mlt.core.error;
 import mlt.internal.compute.core.sizearray;
 import mlt.internal.core.storage;
 
-namespace mlt::compute::core 
+export namespace mlt::compute::core 
 {
     enum class DimType
     {
@@ -188,6 +189,37 @@ namespace mlt::compute::core
 
             return *(reinterpret_cast<T*>(data->data) + pos);
         }
+
+        bool isContiguous() const { return shape[shape.size() - 1] == 1; }
+        
+        template <typename T = default_dType>
+        mlt::core::Result<const T*> asPtr() const
+        {
+            DType currentType = DTypeMapping<T>::value;
+
+            if (currentType != dType)
+                return std::unexpected(mlt::core::MltError::makeTypeMismatch(toString(currentType), toString(dType)));
+
+            return reinterpret_cast<const T*>(data->data);
+        };
+        
+        template <typename T = default_dType>
+        mlt::core::Result<T*> asPtr() 
+        {
+            DType currentType = DTypeMapping<T>::value;
+            
+            if (currentType != dType)
+                return std::unexpected(mlt::core::MltError::makeTypeMismatch(toString(currentType), toString(dType)));
+            
+            return reinterpret_cast<T*>(data->data);
+        }
+
+        template <typename T>
+        const T* asPtrUnchecked() const {  return reinterpret_cast<const T*>(data->data); }
+        
+        template <typename T>
+        T* asPtrUnchecked() { return reinterpret_cast<T*>(data->data); }
+
 
         private:
         MltArray(

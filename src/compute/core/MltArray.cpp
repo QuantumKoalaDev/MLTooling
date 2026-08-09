@@ -1,10 +1,15 @@
-#include <exception>
-#include <expected>
-#include <mlt/internal/compute/core/MltArray.hpp>
+module;
 
-#include <ostream>
+#include <expected>
+
+#include <mlt/internal/compute/core/RefCount.hpp>
+#include <mlt/internal/compute/core/DType.hpp>
+
+module mlt.internal.compute.core.mltarray;
 
 import mlt.core.error;
+import mlt.internal.core.storage;
+import mlt.internal.compute.core.sizearray;
 
 using namespace mlt::compute::core;
 

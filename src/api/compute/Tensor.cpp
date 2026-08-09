@@ -1,11 +1,13 @@
 module;
 
 #include <mlt/macros.hpp>
-#include <mlt/internal/compute/core/MltArray.hpp>
 
 #include <cstddef>
+#include <span>
 
 module mlt.compute.Tensor;
+import mlt.internal.compute.core.mltarray;
+import mlt.internal.compute.core.sizearray;
 
 using namespace mlt::core;
 using namespace mlt::compute;
