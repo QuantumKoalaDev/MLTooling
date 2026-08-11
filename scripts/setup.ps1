@@ -2,7 +2,8 @@ param(
     [switch]$Solution,
     [ValidateSet("Debug", "Release")]
     [string]$Config = "Debug",
-    [switch]$Clean
+    [switch]$Clean,
+    [int]$Parallel = 1
 )
 
 $BuildDir = "build"
@@ -46,7 +47,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "Building $Config..."
 
-cmake --build $BuildDir --config $Config
+cmake --build $BuildDir --config $Config --parallel $Parallel
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Build failed!"
