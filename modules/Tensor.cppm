@@ -16,21 +16,19 @@ namespace mlt::compute
     {
         mlt::compute::core::MltArray mArray;
         
-        Tensor(mlt::compute::core::MltArray&& array) : mArray(std::move(array))
+        Tensor(mlt::compute::core::MltArray array) noexcept : mArray(std::move(array))
         {}
 
         public:
-        Tensor(const Tensor&) = delete;
-        Tensor& operator=(const Tensor&) = delete;
-
+        Tensor(const Tensor&) noexcept = default;
+        Tensor& operator=(const Tensor&) noexcept = default;
         Tensor(Tensor&&) noexcept = default;
         Tensor& operator=(Tensor&&) noexcept = default;
 
         static mlt::core::Result<Tensor> from(std::initializer_list<size_t> shape) noexcept;
         static mlt::core::Result<Tensor> from(std::span<const float> buf, std::initializer_list<size_t> shape) noexcept;
-        static mlt::core::Result<Tensor> copyFrom(const Tensor& tensor) noexcept;
 
-        mlt::core::Result<Tensor> transpose() const noexcept;
+        Tensor transpose() const noexcept;
 
         template <typename... Indices>
         mlt::core::Result<float*> at(Indices... idx) noexcept

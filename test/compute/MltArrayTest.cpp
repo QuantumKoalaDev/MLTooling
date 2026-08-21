@@ -16,43 +16,31 @@ using namespace mlt::compute::core;
 
 static void MltArrayFromTest()
 {
-    auto cShape = DefaultSizeArray::from({2, 2, 3, 4});
-    auto cStrides = DefaultSizeArray::from({24, 12, 4, 1});
+    DefaultSizeArray cShape = DefaultSizeArray({2, 2, 3, 4});
+    DefaultSizeArray cStrides = DefaultSizeArray({24, 12, 4, 1});
 
-    if (!cShape)
-        throwCustomMessage({ERROR(cShape)});
-
-    if (!cStrides)
-        throwCustomMessage({ERROR(cStrides)});
-    
-    const DefaultSizeArray shape = MLT_MOVE_VALUE(cShape);
-    const DefaultSizeArray strides = MLT_MOVE_VALUE(cStrides);
-
-    auto cArr = MltArray::from(DefaultSizeArray::copyFrom(shape).value());
+    auto cArr = MltArray::from(cShape);
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
 
     const MltArray arr = MLT_MOVE_VALUE(cArr);
 
-    assertEq(shape.size(), strides.size(), "Strides have the wrong size.");
+    assertEq(cShape.size(), cStrides.size(), "Strides have the wrong size.");
 
     for (size_t i = 0; i < arr.shape.size(); ++i)
-        assertEq(arr.shape[i], shape[i], "Shape was not initialized properly.");
+        assertEq(arr.shape[i], cShape[i], "Shape was not initialized properly.");
 
     for (size_t i = 0; i < arr.strides.size(); ++i)
-        assertEq(arr.strides[i], strides[i], "Strides were not initialized properly.");
+        assertEq(arr.strides[i], cStrides[i], "Strides were not initialized properly.");
 }
 
 static void MltArrayOpTest()
 {
     const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
-    auto cShape = DefaultSizeArray::from({ 2, 2});
+    DefaultSizeArray cShape = DefaultSizeArray({ 2, 2});
     
-    if (!cShape)
-        throwCustomMessage({ERROR(cShape)});
-
-    auto cArr = MltArray::from(std::span<const float>(testValues) , MLT_MOVE_VALUE(cShape));
+    auto cArr = MltArray::from(std::span<const float>(testValues) , cShape);
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
@@ -69,12 +57,9 @@ static void MltArrayAtTest()
 {
     const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
     
-    auto cShape = DefaultSizeArray::from({ 2, 2 });
+    DefaultSizeArray cShape = DefaultSizeArray({ 2, 2 });
 
-    if (!cShape)
-        throwCustomMessage({ERROR(cShape)});
-
-    auto cArr = MltArray::from(std::span<const float>(testValues), MLT_MOVE_VALUE(cShape));
+    auto cArr = MltArray::from(std::span<const float>(testValues), cShape);
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
@@ -91,8 +76,8 @@ static void MltArrayAtTest()
 static void MltArrayRowMajorTransposeTest()
 {
     const float testValues[] = { 1.f, 2.f, 3.f, 4.f };
-    DefaultSizeArray shape = MLT_MOVE_VALUE(DefaultSizeArray::from({2, 2}));
-    MltArray arr = MLT_MOVE_VALUE(MltArray::from(MLT_MOVE_VALUE(DefaultSizeArray::from({2, 2}))));
+    DefaultSizeArray shape = DefaultSizeArray({2, 2});
+    MltArray arr = MLT_MOVE_VALUE(MltArray::from(DefaultSizeArray({2, 2})));
 
     for (size_t i = 0; i < shape[0]; i++)
     {
@@ -106,7 +91,7 @@ static void MltArrayRowMajorTransposeTest()
         }
     }
 
-    MltArray transposed = MLT_MOVE_VALUE(arr.transpose());
+    MltArray transposed = arr.transpose();
 
     for (size_t i = 0; i < shape[0]; i++)
     {
@@ -132,13 +117,9 @@ static void MltArrayRowMajorTransposeTest()
 
 static void MltArrayRowMajor3DTransposeTest()
 {
-    auto cShape = DefaultSizeArray::from({2, 3, 4});
+    DefaultSizeArray cShape = DefaultSizeArray({2, 3, 4});
 
-    if (!cShape)
-        throwCustomMessage({ERROR(cShape)});
-    
-    DefaultSizeArray shape = MLT_MOVE_VALUE(cShape);
-    auto cArr = MltArray::from(std::move(shape));
+    auto cArr = MltArray::from(cShape);
 
     if (!cArr)
         throwCustomMessage({ERROR(cArr)});
@@ -162,12 +143,7 @@ static void MltArrayRowMajor3DTransposeTest()
                     throwCustomMessage("at() failed while filling 3D test array.");
             }
     
-    auto cTransposed = arr.transpose();
-
-    if (!cTransposed)
-        throwCustomMessage({ERROR(cTransposed)});
-
-    MltArray transposed = MLT_MOVE_VALUE(cTransposed);
+    MltArray transposed = arr.transpose();
 
     for (size_t i = 0; i < d0; i++)
         for (size_t j = 0; j < d1; j++)

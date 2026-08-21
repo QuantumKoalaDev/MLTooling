@@ -37,9 +37,8 @@ export namespace mlt::compute::core
         DType dType;
         DimType dimType;
 
-        MltArray(const MltArray&) = delete;
-        MltArray& operator=(const MltArray&) = delete;
-
+        MltArray(const MltArray&) noexcept = default;
+        MltArray& operator=(const MltArray&) noexcept = default;
         MltArray(MltArray&&) noexcept = default;
         MltArray& operator=(MltArray&&) noexcept = default;
 
@@ -77,7 +76,7 @@ export namespace mlt::compute::core
  
         // shape nxnxRowxCol
         static std::expected<MltArray, mlt::core::MltError> from(
-            DefaultSizeArray&& shape,
+            DefaultSizeArray shape,
             DType dType = DEFAULT_DTYPE,
             DimType dimType = DEFAULT_DIM_TYPE
         ) noexcept;
@@ -85,16 +84,12 @@ export namespace mlt::compute::core
         template <typename T = default_dType>
         static std::expected<MltArray, mlt::core::MltError> from(
             std::span<const T> data,
-            DefaultSizeArray&& shape,
+            DefaultSizeArray shape,
             DimType dimType = DEFAULT_DIM_TYPE
         ) noexcept
         {
-            std::expected<DefaultSizeArray, mlt::core::MltError> cStrides = DefaultSizeArray::from(shape.size());
+            DefaultSizeArray strides = DefaultSizeArray(shape.size());
 
-            if (!cStrides)
-                return std::unexpected(cStrides.error());
-
-            DefaultSizeArray strides = std::move(cStrides).value();
             MltArray::computeStrides(strides, shape, 1, dimType);
 
             std::span<const std::byte> bSpan = std::as_bytes(data);
@@ -107,16 +102,14 @@ export namespace mlt::compute::core
 
             return MltArray(
                 storage,
-                std::move(shape),
-                std::move(strides),
+                shape,
+                strides,
                 DTypeMapping<T>::value,
                 dimType
             );
         }
 
-        static std::expected<MltArray, mlt::core::MltError> copyFrom(const MltArray& arr) noexcept;
-
-        std::expected<MltArray, mlt::core::MltError> transpose() const noexcept;
+        MltArray transpose() const noexcept;
 
         template<typename T = default_dType, typename... Indices>
         requires (std::is_convertible_v<Indices, size_t>&& ...)
@@ -224,8 +217,8 @@ export namespace mlt::compute::core
         private:
         MltArray(
             Ref<Storage> storage,
-            DefaultSizeArray&& shape,
-            DefaultSizeArray&& strides,
+            DefaultSizeArray shape,
+            DefaultSizeArray strides,
             DType dType,
             DimType dimType
         ) noexcept;
