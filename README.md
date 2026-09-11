@@ -15,29 +15,6 @@ cmake --build . --config Release
 For Python bindings, the generated dynamic library (.so/.dll) must be copied to pyMLTooling/_lib.
 Consider adding a post-build step or script to automate this.
 
-
-# Coding Conventions
-
-- **Python**
-  - Each binding instance owns its own copy; sharing references is not allowed.
-  - Tests should be written using the `unittest` module.
-  - Python class interacting with the C-wrapper are owning. Therefore the implementation of copy has to be
-	explicitly marked as "Not implemented".
-  - C++ structs should be implemented as dataclasses as they do not have any related functionality.
-  - Python code must use strict type checking (Pylance).
-
-- **C++**
-  - Follow the existing project structure.
-  - Use Allman brace style, with some project-specific rules if needed.
-  - Each class must be defined in a separate file.
-  - Use `.hpp` for C++ headers; `.h` is reserved for C headers for clarity.
-  - `src` and `include` directories must have identical folder structures.
-  - Use structs only for plain data without related functionality.
-
-- **C**
-  - Use K&R brace style.
-  - Custom rules may apply for certain use cases.
-
 # Testing
 
 - **Python**
