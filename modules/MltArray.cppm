@@ -183,7 +183,8 @@ export namespace mlt::compute::core
             return *(reinterpret_cast<T*>(data->data) + pos);
         }
 
-        bool isContiguous() const { return shape[shape.size() - 1] == 1; }
+        bool isContiguous() const;
+        bool isTransposed() const { return shape[shape.size() - 1] == 1; };
         
         template <typename T = default_dType>
         mlt::core::Result<const T*> asPtr() const

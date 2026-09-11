@@ -165,6 +165,21 @@ static void MltArrayRowMajor3DTransposeTest()
             }
 }
 
+static void MltArrayIsContigousTest()
+{
+    DefaultSizeArray cShape = DefaultSizeArray({3, 4});
+
+    auto cArr = MltArray::from(cShape);
+
+    if (!cArr)
+        throwCustomMessage({ERROR(cArr)});
+
+    MltArray arr = MLT_MOVE_VALUE(cArr);
+    MltArray transposed = arr.transpose();
+
+    assertEq(false, transposed.isContiguous(), "Contigous doesnt work.");
+}
+
 
 
 REGISTER_TEST(MltArrayFromTest)
@@ -172,3 +187,4 @@ REGISTER_TEST(MltArrayOpTest);
 REGISTER_TEST(MltArrayAtTest)
 REGISTER_TEST(MltArrayRowMajorTransposeTest)
 REGISTER_TEST(MltArrayRowMajor3DTransposeTest)
+REGISTER_TEST(MltArrayIsContigousTest)

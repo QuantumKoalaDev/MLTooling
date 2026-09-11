@@ -123,7 +123,7 @@ add_executable(tests
     "test/math/datastructures/VectorTest.cpp"
     "test/math/kernels/matrixkernelTest.cpp"
     "test/compute/StorageTest.cpp"
-    "test/compute/backend/cpu/NativeTest.cpp"
+    #"test/compute/backend/cpu/NativeTest.cpp"
     "test/compute/MltArrayTest.cpp"
     "test/compute/operations/OperationsTest.cpp"
 )

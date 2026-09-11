@@ -1,95 +1,93 @@
-#include "mlt/internal/compute/core/Error.hpp"
-#include "mlt/internal/compute/core/SizeArray.hpp"
+module;
+
 #include <expected>
-#include <format>
 #include <span>
 
+#include <mlt/macros.hpp>
 #include <mlt/internal/compute/core/DType.hpp>
-#include <mlt/internal/compute/ops/ops.hpp>
 
+#include <cblas.h>
 
-using namespace mlt::compute;
+module mlt.internal.compute.operations;
 
-std::string createShapeMismatchMsg(const core::SizeArray<>& aShape, const core::SizeArray<>& bShape)
-{
-    return std::format("Shapes do not match: {} and {}", aShape, bShape);
-}
+import mlt.internal.compute.core.sizearray;
+import mlt.internal.compute.core.mltarray;
 
-std::string createTypeMismatchMsg(const core::DType aType, const core::DType bType)
-{
-    return std::format("{} and {} are not compatible", toString(aType), toString(bType));
-}
+using namespace mlt::core;
+using namespace mlt::compute::ops;
+using namespace mlt::compute::core;
 
-std::expected<core::MltArray, core::ComputeError> ops::matmul(const core::MltArray& a, const core::MltArray& b)
+Result<MltArray> mlt::compute::ops::matmul(const MltArray& a, const MltArray& b) noexcept
 {
     if (a.dType != b.dType)
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::TypeMismatch, .msg = createTypeMismatchMsg(a.dType, b.dType) };
-        return std::unexpected(err);
-    }
+        return std::unexpected(MltError::makeTypeMismatch(toString(a.dType), toString(b.dType)));
 
-    if (a.shape.size() < 2 || b.shape.size() < 2)
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::ShapeMismatch, .msg = "matmul requires rank >= 2" };
-        return std::unexpected(err);
-    }
+    // if (a.shape.size() < 2 || b.shape.size() < 2)
+    //     return std::unexpected(MltError::makeShapeMismatch());
+
+    // temporary matrix check
+    if (a.shape.size() != 2 || b.shape.size() != 2)
+        return std::unexpected(MltError::makeShapeMismatch());
+
+    // Does only work as long the above check is here
+    bool aTransposed = a.isTransposed();
+    bool bTransposed = a.isTransposed();
     
-    constexpr size_t ROW = 0;
     constexpr size_t COL = 1;
+    constexpr size_t ROW = 0;
     
-    std::span<const size_t> aShape = a.shape.span().last(2);
-    std::span<const size_t> bShape = b.shape.span().last(2);
+    std::span<const size_t> aShape = a.shape.asSpan().last(2);
+    std::span<const size_t> bShape = b.shape.asSpan().last(2);
     
     if (aShape[COL] != bShape[ROW] || aShape[ROW] != bShape[COL])
-    {
-        const core::ComputeError err = { 
-            .type = core::ComputeErrorType::ShapeMismatch,
-            .msg = createShapeMismatchMsg({aShape[ROW], aShape[COL]}, {bShape[ROW], bShape[COL]}) 
-        };
+        return std::unexpected(MltError::makeShapeMismatch());
 
-        return std::unexpected(err);
-    }
+    const size_t M = aShape[ROW];
+    const size_t K = aShape[COL];
+    const size_t N = bShape[COL];
 
-    if (a.dType == core::DType::FLOAT64)
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::NotImplemented, .msg = "matmul not yet implemented for FLOAT64" };
-        return std::unexpected(err);
-    }
+    DefaultSizeArray resultShape = DefaultSizeArray({M, N});
+    MLT_TRY(result, MltArray::from(resultShape));
+    
+    const float* A = a.asPtrUnchecked<float>();
+    const float* B = b.asPtrUnchecked<float>();
+    float* C = result.asPtrUnchecked<float>();
 
-    // returns the result form the runtime
-    return core::MltArray::from({2}, a.dType);
+    cblas_sgemm(
+        CblasRowMajor,
+        aTransposed ? CblasTrans : CblasNoTrans,
+        bTransposed ? CblasTrans : CblasNoTrans,
+        static_cast<int>(M),
+        static_cast<int>(N),
+        static_cast<int>(K),
+        1.0f,
+        A,
+        static_cast<int>(K),
+        B,
+        static_cast<int>(N),
+        0.0f,
+        C,
+        static_cast<int>(N)
+    );
+
+    
+    return result;
+    // returns the result from the runtime
+    // return MltArray::from(MLT_MOVE_VALUE(DefaultSizeArray::from({2})), a.dType);
 }
 
-std::expected<core::MltArray, core::ComputeError> ops::add(const core::MltArray& a, const core::MltArray& b)
+Result<MltArray> mlt::compute::ops::add(const MltArray& a, const MltArray& b) noexcept
 {
     if (a.dType != b.dType)
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::TypeMismatch, .msg= createTypeMismatchMsg(a.dType, b.dType) };
-        return std::unexpected(err);
-    }
+        return std::unexpected(MltError::makeTypeMismatch(toString(a.dType), toString(b.dType)));
 
     if (a.shape.size() != b.shape.size())
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::ShapeMismatch, .msg = createShapeMismatchMsg(a.shape, b.shape) };
-        return std::unexpected(err);
-    }
+        return std::unexpected(MltError::makeShapeMismatch());
     
     for (size_t i = 0; i < a.shape.size(); ++i)
-    {
         if (a.shape[i] != b.shape[i])
-        {
-            const core::ComputeError err = { .type = core::ComputeErrorType::ShapeMismatch, .msg = createShapeMismatchMsg(a.shape, b.shape) };
-            return std::unexpected(err);
-        }
-    }
+            return std::unexpected(MltError::makeShapeMismatch());
 
-    if (a.dType == core::DType::FLOAT64)
-    {
-        const core::ComputeError err = { .type = core::ComputeErrorType::NotImplemented, .msg = "add not yet implemented for FLOAT64" };
-        return std::unexpected(err);
-    }
-    
-    // returns the runtime result
-    return core::MltArray::from({2});
+    return MltArray::from(DefaultSizeArray({2}));
 }
 

@@ -17,6 +17,8 @@ export namespace mlt::core
         OutOfBounds,
         TypeMismatch,
         RankMismatch,
+        ShapeMismatch,
+        InvalidArgument
     };
 
     constexpr std::string_view errorTemplate(MltErrorType type)
@@ -28,6 +30,8 @@ export namespace mlt::core
             case MltErrorType::OutOfBounds:             return "Ouf of bounds: {}";
             case MltErrorType::TypeMismatch:            return "TypeMismatch: {}";
             case MltErrorType::RankMismatch:            return "RankMismatch: {}";
+            case MltErrorType::ShapeMismatch:           return "ShapeMismatch: {}";
+            case MltErrorType::InvalidArgument:          return "InvalidArgument: {}";
         }
     }
 
@@ -68,6 +72,16 @@ export namespace mlt::core
         static MltError makeOutOfBounds(const size_t max, const size_t got)
         {
             return make(MltErrorType::OutOfBounds, std::format("Max: {}, Got {}", max, got));
+        }
+
+        static MltError makeShapeMismatch()
+        {
+            return make(MltErrorType::ShapeMismatch);
+        }
+        
+        static MltError makeInvalidArgument()
+        {
+            return make(MltErrorType::InvalidArgument);
         }
     };
 

@@ -1,5 +1,6 @@
 module;
 
+#include <cmath>
 #include <expected>
 
 #include <mlt/internal/compute/core/RefCount.hpp>
@@ -74,5 +75,23 @@ MltArray MltArray::transpose() const noexcept
     }
 
     return transposed;
+}
+
+bool MltArray::isContiguous() const
+{
+    if (shape.size() == 0)
+        return true;
+    
+    size_t expected = 1;
+
+    for (size_t i = shape.size(); i-- > 0;)
+    {
+        if (strides[i] != expected)
+            return false;
+        
+        expected *= shape[i];
+    }
+
+    return true;
 }
 
